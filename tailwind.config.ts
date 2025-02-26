@@ -12,6 +12,10 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        heading: ['Nunito Sans', 'sans-serif'],
+        body: ['Montserrat', 'sans-serif'],
+      },
     },
   },
   plugins: [],
