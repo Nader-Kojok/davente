@@ -134,7 +134,7 @@ export default function CurrentListings() {
                 <div className="p-3">
                   <h3 className="font-medium text-gray-900 mb-1">{listing.title}</h3>
                   <p className="text-lg font-semibold text-gray-900 mb-2">
-                    {listing.price.toLocaleString()} €
+                    {listing.price.toLocaleString()} F
                   </p>
                   <div className="flex items-center justify-between text-sm text-gray-500">
                     <span>

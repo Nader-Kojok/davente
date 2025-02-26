@@ -13,32 +13,32 @@ type Category = {
 const categories: Category[] = [
   {
     title: 'Vêtements',
-    image: '/images/categories/vetements.jpg',
+    image: 'https://picsum.photos/800/600?category=fashion',
     href: '/categories/vetements',
   },
   {
     title: 'Vacances',
-    image: '/images/categories/vacances.jpg',
+    image: 'https://picsum.photos/800/600?category=travel',
     href: '/categories/vacances',
   },
   {
     title: 'Astuces Maison',
-    image: '/images/categories/maison.jpg',
+    image: 'https://picsum.photos/800/600?category=home',
     href: '/categories/maison',
   },
   {
     title: "Offres d'emploi",
-    image: '/images/categories/emploi.jpg',
+    image: 'https://picsum.photos/800/600?category=business',
     href: '/categories/emploi',
   },
   {
     title: 'Ventes immo',
-    image: '/images/categories/immobilier.jpg',
+    image: 'https://picsum.photos/800/600?category=architecture',
     href: '/categories/immobilier',
   },
   {
     title: 'Loisirs',
-    image: '/images/categories/loisirs.jpg',
+    image: 'https://picsum.photos/800/600?category=leisure',
     href: '/categories/loisirs',
   },
 ];

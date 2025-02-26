@@ -10,22 +10,22 @@ type TrendingCategory = {
 const trendingCategories: TrendingCategory[] = [
   {
     title: 'Immobilier',
-    image: '/images/trending/immobilier.jpg',
+    image: 'https://picsum.photos/800/1200?category=architecture',
     href: '/categories/immobilier'
   },
   {
     title: 'Véhicules',
-    image: '/images/trending/vehicules.jpg',
+    image: 'https://picsum.photos/800/1200?category=cars',
     href: '/categories/vehicules'
   },
   {
     title: 'Électronique',
-    image: '/images/trending/electronique.jpg',
+    image: 'https://picsum.photos/800/1200?category=tech',
     href: '/categories/electronique'
   },
   {
     title: 'Mode',
-    image: '/images/trending/mode.jpg',
+    image: 'https://picsum.photos/800/1200?category=fashion',
     href: '/categories/mode'
   }
 ];
