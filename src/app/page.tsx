@@ -4,6 +4,10 @@ import RecentSearches from '@/components/RecentSearches';
 import TrendingCategories from '@/components/TrendingCategories';
 import TopCategories from '@/components/TopCategories';
 import CurrentListings from '@/components/CurrentListings';
+import LegalText from '@/components/LegalText';
+import MegaFooter from '@/components/ui/MegaFooter';
+import Footer from '@/components/ui/Footer';
+
 
 export default function Home() {
   return (
@@ -15,6 +19,9 @@ export default function Home() {
         <TrendingCategories />
         <TopCategories />
         <CurrentListings />
+        <LegalText />
+        <MegaFooter />
+        <Footer />
       </main>
     </div>
   );

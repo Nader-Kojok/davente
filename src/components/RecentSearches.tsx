@@ -58,8 +58,8 @@ export default function RecentSearches() {
                 </svg>
               </button>
               <Link href={search.href} className="block">
-                <h3 className="font-medium text-lg mb-1">{search.title}</h3>
-                <p className="text-sm text-gray-600 mb-1">{search.category}</p>
+                <h3 className="font-bold text-lg mb-1">{search.title}</h3>
+                <p className="text-sm font-semibold text-gray-600 mb-1">{search.category}</p>
                 <div className="flex items-center text-sm text-gray-500">
                   <svg
                     className="w-4 h-4 mr-1"
