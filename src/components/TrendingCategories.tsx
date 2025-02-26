@@ -33,7 +33,7 @@ const trendingCategories: TrendingCategory[] = [
 export default function TrendingCategories() {
   return (
     <section className="py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {/* Title Card */}
           <div className="relative overflow-hidden rounded-2xl shadow-sm bg-gradient-to-br from-[#FFE5D9] to-[#FFCDB2] aspect-[3/4] flex items-center justify-center p-6">

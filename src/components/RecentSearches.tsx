@@ -31,7 +31,7 @@ const recentSearches: RecentSearch[] = [
 export default function RecentSearches() {
   return (
     <section className="py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <h2 className="text-xl font-semibold mb-6">Recherches récentes</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {recentSearches.map((search, index) => (

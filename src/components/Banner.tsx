@@ -4,7 +4,7 @@ import Image from 'next/image';
 export default function Banner() {
   return (
     <section className="py-8 px-4 sm:px-6 lg:px-8">
-      <div className="relative overflow-hidden rounded-2xl shadow-lg max-w-7xl mx-auto">
+      <div className="relative overflow-hidden rounded-2xl shadow-lg max-w-6xl mx-auto">
         <div className="absolute inset-0">
           <Image
             src="/adinsertion_banner.avif"
