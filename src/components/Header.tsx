@@ -136,12 +136,6 @@ export default function Header() {
           >
             <nav className="flex space-x-6">
               <Link
-                href="/"
-                className="text-gray-700 hover:text-gray-900 font-medium"
-              >
-                Accueil
-              </Link>
-              <Link
                 href="/annonces"
                 className="text-gray-700 hover:text-gray-900 font-medium"
               >
