@@ -1,264 +1,323 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ChevronRight, MapPin, Heart, Star, Share2, Flag, MessageCircle, ChevronLeft, Truck, ShieldCheck, ArrowLeft } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { ChevronRight, MapPin, Heart, Star, Share2, Flag } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/ui/Footer';
-import { ListingBadge } from '@/components/ui/ListingCard';
+
+interface Specification {
+  label: string;
+  value: string;
+}
+
+interface Seller {
+  id: string;
+  name: string;
+  rating: number;
+  reviewCount: number;
+  memberSince: string;
+  responseRate: string;
+  responseTime: string;
+  avatarUrl: string;
+  badges: string[];
+}
 
 interface Listing {
   id: string;
   title: string;
   description: string;
-  price: number | 'Gratuit';
+  price: number;
+  originalPrice?: number;
   location: string;
   postedAt: string;
-  imageUrl: string;
-  badges: ListingBadge[];
-  isSponsored?: boolean;
-  seller: {
-    name: string;
-    rating: number;
-    reviewCount: number;
-    avatarUrl: string;
-  };
   condition: string;
-  deliveryAvailable: boolean;
-  // Additional fields for detail page
-  images?: string[];
-  category?: string;
-  subcategory?: string;
-  brand?: string;
-  model?: string;
-  year?: number;
-  shippingCost?: number | 'Gratuit';
-  returnPolicy?: string;
-  paymentMethods?: string[];
-  specifications?: Record<string, string>;
+  brand: string;
+  model: string;
+  deliveryOptions: string[];
+  shippingCost: number;
+  images: string[];
+  seller: Seller;
+  specifications: Specification[];
 }
 
-// Example data (in a real app, this would come from an API)
-const listings: Record<string, Listing> = {
+type MockListings = {
+  [key: string]: Listing;
+};
+
+// Mock data for development - In a real app, this would come from an API or database
+const mockListings: MockListings = {
   '1': {
     id: '1',
     title: 'Video projecteur EPSON NEUF H692B LCD projector',
-    description:
-      'Vidéo projecteur EPSON NEUF H692B LCD projector en excellent état. Résolution native Full HD 1080p, luminosité de 3500 lumens, contraste 15000:1. Livré avec télécommande, câble HDMI et sacoche de transport. Idéal pour home cinéma ou présentations professionnelles.\n\nCaractéristiques techniques:\n- Technologie: 3LCD\n- Résolution native: 1920 x 1080 (Full HD)\n- Luminosité: 3500 ANSI lumens\n- Contraste: 15000:1\n- Durée de vie de la lampe: jusqu\'à 5000 heures (mode normal)\n- Connectique: 2x HDMI, VGA, USB, Audio in/out\n- Haut-parleur intégré: 10W\n- Correction keystone: Vertical ±30°, Horizontal ±30°\n- Poids: 2.8 kg\n\nAccessoires inclus:\n- Télécommande avec piles\n- Câble d\'alimentation\n- Câble HDMI\n- Manuel d\'utilisation\n- Sacoche de transport\n\nGarantie 6 mois.',
+    description: 'Projecteur LCD haute performance avec une résolution native Full HD (1920x1080). Luminosité de 3500 lumens et un contraste de 15000:1. Parfait pour home cinéma et présentations professionnelles.',
     price: 520,
+    originalPrice: 699,
     location: 'Paris 75001 1er Arrondissement',
-    postedAt: 'il y a 2 jours',
-    imageUrl: 'https://picsum.photos/800/600?random=1',
-    badges: ['pro'],
-    isSponsored: true,
-    seller: {
-      name: 'Sissibou',
-      rating: 5,
-      reviewCount: 5,
-      avatarUrl: 'https://i.pravatar.cc/150?img=1',
-    },
-    condition: 'État neuf',
-    deliveryAvailable: true,
+    postedAt: '2024-02-26T10:00:00Z',
+    condition: 'Neuf',
+    brand: 'EPSON',
+    model: 'H692B',
+    deliveryOptions: ['Livraison à domicile', 'Retrait en point relais'],
+    shippingCost: 15,
     images: [
       'https://picsum.photos/800/600?random=1',
       'https://picsum.photos/800/600?random=2',
       'https://picsum.photos/800/600?random=3',
       'https://picsum.photos/800/600?random=4',
-      'https://picsum.photos/800/600?random=5',
     ],
-    category: 'Électronique',
-    subcategory: 'Vidéoprojecteurs',
-    brand: 'EPSON',
-    model: 'H692B',
-    year: 2023,
-    shippingCost: 15,
-    returnPolicy: 'Retours acceptés sous 14 jours',
-    paymentMethods: ['Carte bancaire', 'PayPal', 'Virement bancaire'],
-    specifications: {
-      'Marque': 'EPSON',
-      'Modèle': 'H692B',
-      'Résolution': '1920 x 1080 (Full HD)',
-      'Luminosité': '3500 ANSI lumens',
-      'Contraste': '15000:1',
-      'Connectique': '2x HDMI, VGA, USB, Audio in/out',
-      'Poids': '2.8 kg',
-      'Dimensions': '30 x 25 x 10 cm',
-      'Garantie': '6 mois',
+    seller: {
+      id: 'seller1',
+      name: 'Sissibou',
+      rating: 4.8,
+      reviewCount: 156,
+      memberSince: '2023',
+      responseRate: '98%',
+      responseTime: '< 1h',
+      avatarUrl: 'https://i.pravatar.cc/150?img=1',
+      badges: ['pro', 'verified'],
     },
+    specifications: [
+      { label: 'Marque', value: 'EPSON' },
+      { label: 'Modèle', value: 'H692B' },
+      { label: 'État', value: 'Neuf' },
+      { label: 'Résolution', value: '1920x1080 (Full HD)' },
+      { label: 'Luminosité', value: '3500 lumens' },
+      { label: 'Contraste', value: '15000:1' },
+    ],
   },
 };
 
-// Similar listings for the bottom section
-const similarListings: Listing[] = [
-  {
-    id: '2',
-    title: 'Vends vidéo projecteur laser UHD 4K',
-    description: 'Vidéoprojecteur laser UHD 4K en excellent état',
-    price: 1690,
-    location: 'Schoelcher 97233',
-    postedAt: 'il y a 3 heures',
-    imageUrl: 'https://picsum.photos/400/300?random=2',
-    badges: ['pro'],
-    isSponsored: false,
-    seller: {
-      name: 'louloune',
-      rating: 5,
-      reviewCount: 4,
-      avatarUrl: 'https://i.pravatar.cc/30?img=2',
-    },
-    condition: 'Très bon état',
-    deliveryAvailable: false,
-  },
-  {
-    id: '3',
-    title: 'Vidéoprojecteur Philips NeoPix Ultra 2',
-    description: 'Vidéoprojecteur Philips NeoPix Ultra 2 en parfait état',
-    price: 350,
-    location: 'Thiès',
-    postedAt: 'il y a 1 jour',
-    imageUrl: 'https://picsum.photos/400/300?random=3',
-    badges: ['pro', 'urgent'],
-    isSponsored: false,
-    seller: {
-      name: 'John Doe',
-      rating: 4,
-      reviewCount: 10,
-      avatarUrl: 'https://i.pravatar.cc/30?img=3',
-    },
-    condition: 'Neuf',
-    deliveryAvailable: true,
-  },
-  {
-    id: '4',
-    title: 'Mini projecteur portable LED HD',
-    description: 'Mini projecteur portable LED HD compatible smartphone',
-    price: 120,
-    location: 'Dakar',
-    postedAt: 'il y a 5 heures',
-    imageUrl: 'https://picsum.photos/400/300?random=4',
-    badges: ['delivery'],
-    isSponsored: false,
-    seller: {
-      name: 'Jane Smith',
-      rating: 4.5,
-      reviewCount: 25,
-      avatarUrl: 'https://i.pravatar.cc/30?img=4',
-    },
-    condition: 'Occasion',
-    deliveryAvailable: false,
-  },
-];
+export default function ListingDetailPage() {
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [listing, setListing] = useState<Listing | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+  const params = useParams();
 
-// Image Gallery component
-function ImageGallery({ images }: { images: string[] }) {
-  const [mainImage, setMainImage] = useState(images[0]);
+  useEffect(() => {
+    const fetchListing = async () => {
+      setIsLoading(true);
+      try {
+        // Simulate API call with mock data
+        const id = params.id as string;
+        const data = mockListings[id];
+        
+        if (!data) {
+          router.push('/404');
+          return;
+        }
 
-  return (
-    <div className="space-y-4">
-      {/* Main image */}
-      <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-gray-100">
-        <Image
-          src={mainImage}
-          alt="Product image"
-          fill
-          className="object-contain"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
+        setListing(data);
+      } catch (error) {
+        console.error('Error fetching listing:', error);
+        router.push('/404');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchListing();
+  }, [params.id, router]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 bg-gray-50 py-8">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="animate-pulse">
+              <div className="h-4 bg-gray-200 rounded w-3/4 mb-6"></div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                  <div className="aspect-4/3 bg-gray-200 rounded-lg"></div>
+                  <div className="flex space-x-4">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className="w-20 h-20 bg-gray-200 rounded-lg"></div>
+                    ))}
+                  </div>
+                </div>
+                <div className="space-y-6">
+                  <div className="h-8 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-6 bg-gray-200 rounded w-1/4"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+        <Footer />
       </div>
+    );
+  }
 
-      {/* Thumbnails */}
-      <div className="flex space-x-2 overflow-x-auto pb-2">
-        {images.map((img, index) => (
-          <button
-            key={index}
-            onClick={() => setMainImage(img)}
-            className={`relative w-20 h-20 rounded-md overflow-hidden flex-shrink-0 ${mainImage === img ? 'ring-2 ring-[#EC5A12]' : 'ring-1 ring-gray-200'}`}
-          >
-            <Image
-              src={img}
-              alt={`Thumbnail ${index + 1}`}
-              fill
-              className="object-cover"
-              sizes="80px"
-            />
-          </button>
-        ))}
-        <button className="flex items-center justify-center w-20 h-20 bg-gray-100 rounded-md text-gray-500 hover:bg-gray-200 transition-colors flex-shrink-0">
-          <span className="text-xs font-medium">Voir toutes les photos</span>
-        </button>
-      </div>
-    </div>
-  );
-}
+  if (!listing) return null;
 
-// Breadcrumb component
-function Breadcrumb({ category, subcategory }: { category?: string; subcategory?: string }) {
   return (
-    <nav className="flex text-sm text-gray-500 mb-4">
-      <Link href="/" className="hover:text-[#EC5A12] transition-colors">
-        Accueil
-      </Link>
-      <ChevronRight className="w-4 h-4 mx-1" />
-      <Link href="/annonces" className="hover:text-[#EC5A12] transition-colors">
-        Annonces
-      </Link>
-      {category && (
-        <>
-          <ChevronRight className="w-4 h-4 mx-1" />
-          <Link href={`/categories/${category.toLowerCase()}`} className="hover:text-[#EC5A12] transition-colors">
-            {category}
-          </Link>
-        </>
-      )}
-      {subcategory && (
-        <>
-          <ChevronRight className="w-4 h-4 mx-1" />
-          <Link href={`/categories/${category?.toLowerCase()}/${subcategory.toLowerCase()}`} className="hover:text-[#EC5A12] transition-colors">
-            {subcategory}
-          </Link>
-        </>
-      )}
-    </nav>
-  );
-}
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      
+      <main className="flex-1 bg-gray-50 py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Breadcrumb */}
+          <nav className="flex items-center text-sm text-gray-500 mb-6">
+            <Link href="/" className="hover:text-gray-900">Accueil</Link>
+            <ChevronRight className="w-4 h-4 mx-2" />
+            <Link href="/annonces" className="hover:text-gray-900">Annonces</Link>
+            <ChevronRight className="w-4 h-4 mx-2" />
+            <span className="text-gray-900">Projecteur</span>
+          </nav>
 
-// Seller Card component
-function SellerCard({ seller }: { seller: Listing['seller'] }) {
-  return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
-      <div className="flex items-center space-x-3 mb-4">
-        <div className="relative w-12 h-12 rounded-full overflow-hidden">
-          <Image
-            src={seller.avatarUrl}
-            alt={seller.name}
-            fill
-            className="object-cover"
-            sizes="48px"
-          />
-        </div>
-        <div>
-          <h3 className="font-medium text-gray-900">{seller.name}</h3>
-          <div className="flex items-center text-sm text-gray-600">
-            <Star className="w-4 h-4 mr-1 text-yellow-500 fill-yellow-500" />
-            <span>
-              {seller.rating} ({seller.reviewCount} avis)
-            </span>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Left Column - Images */}
+            <div className="space-y-4">
+              <div className="relative aspect-4/3 rounded-lg overflow-hidden bg-gray-200">
+                <Image
+                  src={listing.images[selectedImage]}
+                  alt={listing.title}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="flex space-x-4 overflow-x-auto pb-2">
+                {listing.images.map((image: string, index: number) => (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedImage(index)}
+                    className={`relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 ${selectedImage === index ? 'ring-2 ring-[#EC5A12]' : 'ring-1 ring-gray-200'}`}
+                  >
+                    <Image
+                      src={image}
+                      alt={`${listing.title} - Image ${index + 1}`}
+                      fill
+                      className="object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Right Column - Details */}
+            <div className="space-y-6">
+              {/* Title and Price */}
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 mb-4">{listing.title}</h1>
+                <div className="flex items-baseline space-x-3">
+                  <span className="text-3xl font-bold text-gray-900">{listing.price.toLocaleString()} €</span>
+                  {listing.originalPrice && (
+                    <span className="text-lg text-gray-500 line-through">{listing.originalPrice.toLocaleString()} €</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Seller Info */}
+              <div className="bg-white p-4 rounded-lg border border-gray-200">
+                <div className="flex items-center space-x-4 mb-4">
+                  <div className="relative w-12 h-12 rounded-full overflow-hidden">
+                    <Image
+                      src={listing.seller.avatarUrl}
+                      alt={listing.seller.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900">{listing.seller.name}</h3>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400 mr-1" />
+                      <span>{listing.seller.rating}</span>
+                      <span className="mx-1">•</span>
+                      <span>{listing.seller.reviewCount} avis</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex space-x-2">
+                  <button className="flex-1 bg-[#EC5A12] text-white px-4 py-2 rounded-lg hover:bg-[#d94e0a] transition-colors duration-200">
+                    Contacter
+                  </button>
+                  <button className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors duration-200">
+                    <Heart className="w-5 h-5 text-gray-600" />
+                  </button>
+                  <button className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors duration-200">
+                    <Share2 className="w-5 h-5 text-gray-600" />
+                  </button>
+                  <button className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors duration-200">
+                    <Flag className="w-5 h-5 text-gray-600" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Location and Delivery */}
+              <div className="bg-white p-4 rounded-lg border border-gray-200 space-y-4">
+                <div className="flex items-center text-gray-600">
+                  <MapPin className="w-5 h-5 mr-2" />
+                  <span>{listing.location}</span>
+                </div>
+                <div className="border-t pt-4">
+                  <h4 className="font-medium text-gray-900 mb-2">Options de livraison</h4>
+                  <ul className="space-y-2">
+                    {listing.deliveryOptions.map((option: string, index: number) => (
+                      <li key={index} className="text-gray-600">{option}</li>
+                    ))}
+                  </ul>
+                  <p className="text-sm text-gray-500 mt-2">Frais de livraison: {listing.shippingCost} €</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Description and Specifications */}
+          <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-8">
+              {/* Description */}
+              <div className="bg-white p-6 rounded-lg border border-gray-200">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Description</h2>
+                <p className="text-gray-600 whitespace-pre-line">{listing.description}</p>
+              </div>
+
+              {/* Specifications */}
+              <div className="bg-white p-6 rounded-lg border border-gray-200">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Caractéristiques</h2>
+                <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+                  {listing.specifications.map((spec: Specification, index: number) => (
+                    <div key={index} className="flex justify-between py-2 border-b border-gray-100">
+                      <dt className="text-gray-500">{spec.label}</dt>
+                      <dd className="text-gray-900 font-medium">{spec.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            </div>
+
+            {/* Seller Details */}
+            <div className="bg-white p-6 rounded-lg border border-gray-200 h-fit">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">À propos du vendeur</h2>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500">Membre depuis</span>
+                  <span className="text-gray-900">{listing.seller.memberSince}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500">Taux de réponse</span>
+                  <span className="text-gray-900">{listing.seller.responseRate}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500">Délai de réponse</span>
+                  <span className="text-gray-900">{listing.seller.responseTime}</span>
+                </div>
+                <div className="pt-4 border-t">
+                  <button className="w-full bg-gray-100 text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                    Voir le profil
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="space-y-3">
-        <button className="w-full py-2 px-4 bg-[#EC5A12] text-white rounded-lg hover:bg-[#d94e0a] transition-colors font-medium">
-          Contacter
-        </button>
-        <button className="w-full py-2 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium flex items-center justify-center">
-          <MessageCircle className="w-4 h-4 mr-2" />
-          Chat
-        </button>
-        <div className="text-xs text-gray-500 text-center mt-2">
-          Membre depuis janvier 2023
-        </div>
-      </div>
+      </main>
+
+      <Footer />
     </div>
   );
 }
