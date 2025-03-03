@@ -1,12 +1,19 @@
+// ListingDetailPage.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { ChevronRight, MapPin, Heart, Star, Share2, Flag } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/ui/Footer';
+import ListingImages from '@/components/ui/ListingImages';
+import SellerInfo from '@/components/ui/SellerInfo';
+import ListingDetails from '@/components/ui/ListingDetails';
+import ProductDetails from '@/components/ui/ProductDetails';
+import RelatedListings from '@/components/ui/RelatedListings';
+import SafetyDisclaimer from '@/components/ui/SafetyDisclaimer';
+import { ListingBadge } from '@/components/ui/Badge';
 
 interface Specification {
   label: string;
@@ -22,7 +29,10 @@ interface Seller {
   responseRate: string;
   responseTime: string;
   avatarUrl: string;
-  badges: string[];
+  badges: ListingBadge[];
+  paymentMethods: string[];
+  acceptsReturns: boolean;
+  deliveryAvailable: boolean;
 }
 
 interface Listing {
@@ -52,7 +62,8 @@ const mockListings: MockListings = {
   '1': {
     id: '1',
     title: 'Video projecteur EPSON NEUF H692B LCD projector',
-    description: 'Projecteur LCD haute performance avec une résolution native Full HD (1920x1080). Luminosité de 3500 lumens et un contraste de 15000:1. Parfait pour home cinéma et présentations professionnelles.',
+    description:
+      'Projecteur LCD haute performance avec une résolution native Full HD (1920x1080). Luminosité de 3500 lumens et un contraste de 15000:1. Parfait pour home cinéma et présentations professionnelles.Projecteur LCD haute performance avec une résolution native Full HD (1920x1080). Luminosité de 3500 lumens et un contraste de 15000:1. Parfait pour home cinéma et présentations professionnelles.Projecteur LCD haute performance avec une résolution native Full HD (1920x1080). Luminosité de 3500 lumens et un contraste de 15000:1. Parfait pour home cinéma et présentations professionnelles.Projecteur LCD haute performance avec une résolution native Full HD (1920x1080). Luminosité de 3500 lumens et un contraste de 15000:1. Parfait pour home cinéma et présentations professionnelles.Projecteur LCD haute performance avec une résolution native Full HD (1920x1080). Luminosité de 3500 lumens et un contraste de 15000:1. Parfait pour home cinéma et présentations professionnelles.Projecteur LCD haute performance avec une résolution native Full HD (1920x1080). Luminosité de 3500 lumens et un contraste de 15000:1. Parfait pour home cinéma et présentations professionnelles.',
     price: 520,
     originalPrice: 699,
     location: 'Paris 75001 1er Arrondissement',
@@ -67,6 +78,7 @@ const mockListings: MockListings = {
       'https://picsum.photos/800/600?random=2',
       'https://picsum.photos/800/600?random=3',
       'https://picsum.photos/800/600?random=4',
+      'https://picsum.photos/800/600?random=5',
     ],
     seller: {
       id: 'seller1',
@@ -77,7 +89,10 @@ const mockListings: MockListings = {
       responseRate: '98%',
       responseTime: '< 1h',
       avatarUrl: 'https://i.pravatar.cc/150?img=1',
-      badges: ['pro', 'verified'],
+      badges: ['pro', 'boost'],
+      paymentMethods: ['Wave', 'Orange Money', 'Cash', 'Bank Transfer'],
+      acceptsReturns: true,
+      deliveryAvailable: true
     },
     specifications: [
       { label: 'Marque', value: 'EPSON' },
@@ -91,11 +106,11 @@ const mockListings: MockListings = {
 };
 
 export default function ListingDetailPage() {
-  const [selectedImage, setSelectedImage] = useState(0);
   const [listing, setListing] = useState<Listing | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const params = useParams();
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -104,7 +119,7 @@ export default function ListingDetailPage() {
         // Simulate API call with mock data
         const id = params.id as string;
         const data = mockListings[id];
-        
+
         if (!data) {
           router.push('/404');
           return;
@@ -120,7 +135,41 @@ export default function ListingDetailPage() {
     };
 
     fetchListing();
+
+    const handleFullscreenChange = () => {
+      setIsFullscreen(document.fullscreenElement !== null);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
   }, [params.id, router]);
+
+  const handleContactClick = useCallback(() => {
+    // Implement contact logic (e.g., open a modal, redirect to contact form)
+    alert('Contact button clicked!');
+  }, []);
+
+  const handleFavoriteClick = useCallback(() => {
+    // Implement favorite logic (e.g., add to favorites, update state)
+    alert('Favorite button clicked!');
+  }, []);
+
+  const handleShareClick = useCallback(() => {
+    // Implement share logic (e.g., open share dialog, copy link to clipboard)
+    alert('Share button clicked!');
+  }, []);
+
+  const handleReportClick = useCallback(() => {
+    // Implement report logic (e.g., open report form, send report to server)
+    alert('Report button clicked!');
+  }, []);
+
+  const handleCloseGallery = useCallback(() => {
+    setIsFullscreen(false);
+  }, []);
 
   if (isLoading) {
     return (
@@ -135,7 +184,10 @@ export default function ListingDetailPage() {
                   <div className="aspect-4/3 bg-gray-200 rounded-lg"></div>
                   <div className="flex space-x-4">
                     {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="w-20 h-20 bg-gray-200 rounded-lg"></div>
+                      <div
+                        key={i}
+                        className="w-20 h-20 bg-gray-200 rounded-lg"
+                      ></div>
                     ))}
                   </div>
                 </div>
@@ -156,15 +208,19 @@ export default function ListingDetailPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
-      
+      {!isFullscreen && <Header />}
+
       <main className="flex-1 bg-gray-50 py-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb */}
           <nav className="flex items-center text-sm text-gray-500 mb-6">
-            <Link href="/" className="hover:text-gray-900">Accueil</Link>
+            <Link href="/" className="hover:text-gray-900">
+              Accueil
+            </Link>
             <ChevronRight className="w-4 h-4 mx-2" />
-            <Link href="/annonces" className="hover:text-gray-900">Annonces</Link>
+            <Link href="/annonces" className="hover:text-gray-900">
+              Annonces
+            </Link>
             <ChevronRight className="w-4 h-4 mx-2" />
             <span className="text-gray-900">Projecteur</span>
           </nav>
@@ -172,152 +228,149 @@ export default function ListingDetailPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Left Column - Images */}
             <div className="space-y-4">
-              <div className="relative aspect-4/3 rounded-lg overflow-hidden bg-gray-200">
-                <Image
-                  src={listing.images[selectedImage]}
+              {/* Main Image */}
+              <div 
+                className="relative aspect-4/3 rounded-lg overflow-hidden cursor-pointer"
+                onClick={() => setIsFullscreen(true)}
+              >
+                <img
+                  src={listing.images[0]}
                   alt={listing.title}
-                  fill
-                  className="object-cover"
+                  className="w-full h-full object-cover"
                 />
               </div>
-              <div className="flex space-x-4 overflow-x-auto pb-2">
-                {listing.images.map((image: string, index: number) => (
+              
+              {/* Thumbnails */}
+              <div className="grid grid-cols-5 gap-2">
+                {listing.images.map((image, index) => (
                   <button
-                    key={index}
-                    onClick={() => setSelectedImage(index)}
-                    className={`relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 ${selectedImage === index ? 'ring-2 ring-[#EC5A12]' : 'ring-1 ring-gray-200'}`}
+                    key={image}
+                    onClick={() => setIsFullscreen(true)}
+                    className="relative aspect-square rounded-lg overflow-hidden hover:opacity-90 transition-opacity"
                   >
-                    <Image
+                    <img
                       src={image}
                       alt={`${listing.title} - Image ${index + 1}`}
-                      fill
-                      className="object-cover"
+                      className="w-full h-full object-cover"
                     />
                   </button>
                 ))}
               </div>
             </div>
+            {isFullscreen && (
+              <ListingImages
+                images={listing.images}
+                title={listing.title}
+                onClose={handleCloseGallery}
+              />
+            )}
 
             {/* Right Column - Details */}
-            <div className="space-y-6">
-              {/* Title and Price */}
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 mb-4">{listing.title}</h1>
-                <div className="flex items-baseline space-x-3">
-                  <span className="text-3xl font-bold text-gray-900">{listing.price.toLocaleString()} €</span>
-                  {listing.originalPrice && (
-                    <span className="text-lg text-gray-500 line-through">{listing.originalPrice.toLocaleString()} €</span>
-                  )}
-                </div>
-              </div>
-
-              {/* Seller Info */}
-              <div className="bg-white p-4 rounded-lg border border-gray-200">
-                <div className="flex items-center space-x-4 mb-4">
-                  <div className="relative w-12 h-12 rounded-full overflow-hidden">
-                    <Image
-                      src={listing.seller.avatarUrl}
-                      alt={listing.seller.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-900">{listing.seller.name}</h3>
-                    <div className="flex items-center text-sm text-gray-600">
-                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400 mr-1" />
-                      <span>{listing.seller.rating}</span>
-                      <span className="mx-1">•</span>
-                      <span>{listing.seller.reviewCount} avis</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex space-x-2">
-                  <button className="flex-1 bg-[#EC5A12] text-white px-4 py-2 rounded-lg hover:bg-[#d94e0a] transition-colors duration-200">
-                    Contacter
-                  </button>
-                  <button className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors duration-200">
-                    <Heart className="w-5 h-5 text-gray-600" />
-                  </button>
-                  <button className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors duration-200">
-                    <Share2 className="w-5 h-5 text-gray-600" />
-                  </button>
-                  <button className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors duration-200">
-                    <Flag className="w-5 h-5 text-gray-600" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Location and Delivery */}
-              <div className="bg-white p-4 rounded-lg border border-gray-200 space-y-4">
-                <div className="flex items-center text-gray-600">
-                  <MapPin className="w-5 h-5 mr-2" />
-                  <span>{listing.location}</span>
-                </div>
-                <div className="border-t pt-4">
-                  <h4 className="font-medium text-gray-900 mb-2">Options de livraison</h4>
-                  <ul className="space-y-2">
-                    {listing.deliveryOptions.map((option: string, index: number) => (
-                      <li key={index} className="text-gray-600">{option}</li>
-                    ))}
-                  </ul>
-                  <p className="text-sm text-gray-500 mt-2">Frais de livraison: {listing.shippingCost} €</p>
-                </div>
-              </div>
-            </div>
+            <ListingDetails
+              title={listing.title}
+              price={listing.price}
+              originalPrice={listing.originalPrice}
+              sellerInfo={<SellerInfo seller={listing.seller} />}
+              onContactClick={handleContactClick}
+              onFavoriteClick={handleFavoriteClick}
+              onShareClick={handleShareClick}
+              onReportClick={handleReportClick}
+            />
           </div>
 
           {/* Description and Specifications */}
-          <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-8">
-              {/* Description */}
-              <div className="bg-white p-6 rounded-lg border border-gray-200">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Description</h2>
-                <p className="text-gray-600 whitespace-pre-line">{listing.description}</p>
-              </div>
+          <ProductDetails
+            description={listing.description}
+            specifications={listing.specifications}
+            location={listing.location}
+            deliveryOptions={listing.deliveryOptions}
+            shippingCost={listing.shippingCost}
+          />
 
-              {/* Specifications */}
-              <div className="bg-white p-6 rounded-lg border border-gray-200">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Caractéristiques</h2>
-                <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
-                  {listing.specifications.map((spec: Specification, index: number) => (
-                    <div key={index} className="flex justify-between py-2 border-b border-gray-100">
-                      <dt className="text-gray-500">{spec.label}</dt>
-                      <dd className="text-gray-900 font-medium">{spec.value}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            </div>
+          {/* Safety Disclaimer */}
+          <SafetyDisclaimer />
 
-            {/* Seller Details */}
-            <div className="bg-white p-6 rounded-lg border border-gray-200 h-fit">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">À propos du vendeur</h2>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Membre depuis</span>
-                  <span className="text-gray-900">{listing.seller.memberSince}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Taux de réponse</span>
-                  <span className="text-gray-900">{listing.seller.responseRate}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Délai de réponse</span>
-                  <span className="text-gray-900">{listing.seller.responseTime}</span>
-                </div>
-                <div className="pt-4 border-t">
-                  <button className="w-full bg-gray-100 text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors duration-200">
-                    Voir le profil
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* Related Listings */}
+          <RelatedListings
+            listings={[
+              {
+                id: '2',
+                title: 'Projecteur LED Full HD 4K',
+                price: 450,
+                originalPrice: 599,
+                imageUrl: 'https://picsum.photos/800/600?random=6',
+                condition: 'Neuf',
+                seller: {
+                  name: 'TechPro',
+                  avatarUrl: 'https://i.pravatar.cc/150?img=2'
+                }
+              },
+              {
+                id: '3',
+                title: 'Mini Projecteur Portable',
+                price: 299,
+                imageUrl: 'https://picsum.photos/800/600?random=7',
+                condition: 'Très bon état',
+                seller: {
+                  name: 'MediaShop',
+                  avatarUrl: 'https://i.pravatar.cc/150?img=3'
+                }
+              },
+              {
+                id: '4',
+                title: 'Projecteur Home Cinéma 4K',
+                price: 899,
+                originalPrice: 1299,
+                imageUrl: 'https://picsum.photos/800/600?random=8',
+                condition: 'Neuf',
+                seller: {
+                  name: 'CinemaPlus',
+                  avatarUrl: 'https://i.pravatar.cc/150?img=4'
+                }
+              },
+              {
+                id: '5',
+                title: 'Projecteur Laser Ultra-Courte Focale',
+                price: 1499,
+                originalPrice: 1899,
+                imageUrl: 'https://picsum.photos/800/600?random=9',
+                condition: 'Neuf',
+                seller: {
+                  name: 'HomeTheater',
+                  avatarUrl: 'https://i.pravatar.cc/150?img=5'
+                }
+              },
+              {
+                id: '6',
+                title: 'Mini Projecteur LED WiFi',
+                price: 199,
+                originalPrice: 249,
+                imageUrl: 'https://picsum.photos/800/600?random=10',
+                condition: 'Neuf',
+                seller: {
+                  name: 'SmartGear',
+                  avatarUrl: 'https://i.pravatar.cc/150?img=6'
+                }
+              },
+              {
+                id: '7',
+                title: 'Projecteur Gaming 240Hz',
+                price: 799,
+                imageUrl: 'https://picsum.photos/800/600?random=11',
+                condition: 'Comme neuf',
+                seller: {
+                  name: 'GameTech',
+                  avatarUrl: 'https://i.pravatar.cc/150?img=7'
+                }
+              }
+            ]}
+            currentListingId={listing.id}
+          />
+          
         </div>
       </main>
 
-      <Footer />
+      {!isFullscreen && <Footer />}
     </div>
   );
 }

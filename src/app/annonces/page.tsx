@@ -1,10 +1,11 @@
+// ListingsPage.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/ui/Footer';
-import FilterBar from '@/components/ui/FilterBar';
+import FilterBar, { FilterOptions } from '@/components/ui/FilterBar'; //Import the type
 import { ListingBadge } from '@/components/ui/ListingCard';
 import ListingCard from '@/components/ui/ListingCard';
 
@@ -29,12 +30,12 @@ interface Listing {
 }
 
 // Example data (in a real app, this would come from an API)
-const listings: Listing[] = [
+const initialListings: Listing[] = [
   {
     id: '1',
     title: 'Video projecteur EPSON NEUF H692B LCD projector',
     description:
-      'Mini pelle disponible pour location. Idéale pour travaux de jardinage et petits chantiers.',
+      'Mini pelle disponible pour location. Idéale pour travaux de jardinage et petits chantiers. This is a longer description to test the increased length.',
     price: 520,
     location: 'Paris 75001 1er Arrondissement',
     postedAt: 'il y a 2 jours',
@@ -54,7 +55,7 @@ const listings: Listing[] = [
     id: '2',
     title: 'Vends vidéo projecteur laser UHD 4K',
     description:
-      "Jeu d'échecs de voyage compact avec pièces magnétiques. Parfait état.",
+      "Jeu d'échecs de voyage compact avec pièces magnétiques. Parfait état. This is a longer description to test the increased length. It should now wrap to multiple lines.",
     price: 1690,
     location: 'Schoelcher 97233',
     postedAt: 'il y a 3 heures',
@@ -74,7 +75,7 @@ const listings: Listing[] = [
     id: '3',
     title: 'Ravalement Façade - Artisan Qualifié',
     description:
-      'Service professionnel de ravalement de façade. Devis gratuit.',
+      'Service professionnel de ravalement de façade. Devis gratuit. This is a longer description to test the increased length.  We want to see how it looks with more text.',
     price: 'Gratuit',
     location: 'Thiès',
     postedAt: 'il y a 1 jour',
@@ -94,7 +95,7 @@ const listings: Listing[] = [
     id: '4',
     title: 'Vélo électrique Citadin',
     description:
-      'Vélo électrique urbain, autonomie 60km, excellent état, peu utilisé.',
+      'Vélo électrique urbain, autonomie 60km, excellent état, peu utilisé. This is a longer description to test the increased length.  More details about the bike here.',
     price: 800,
     location: 'Dakar',
     postedAt: 'il y a 5 heures',
@@ -114,7 +115,7 @@ const listings: Listing[] = [
     id: '5',
     title: 'Cours de cuisine traditionnelle',
     description:
-      'Chef expérimenté propose des cours de cuisine sénégalaise traditionnelle.',
+      'Chef expérimenté propose des cours de cuisine sénégalaise traditionnelle. This is a longer description to test the increased length. Learn to cook delicious meals!',
     price: 50,
     location: 'Saint-Louis',
     postedAt: 'il y a 1 jour',
@@ -134,7 +135,7 @@ const listings: Listing[] = [
     id: '6',
     title: 'iPhone 13 Pro - 256GB',
     description:
-      'iPhone 13 Pro en parfait état, débloqué tout opérateur, avec facture et accessoires.',
+      'iPhone 13 Pro en parfait état, débloqué tout opérateur, avec facture et accessoires. This is a longer description to test the increased length. Includes charger and box.',
     price: 600,
     location: 'Dakar',
     postedAt: 'il y a 4 heures',
@@ -154,7 +155,7 @@ const listings: Listing[] = [
     id: '7',
     title: 'Table de massage pliable',
     description:
-      'Table de massage professionnelle pliable, avec housse de transport.',
+      'Table de massage professionnelle pliable, avec housse de transport. This is a longer description to test the increased length.  Perfect for mobile massage therapists.',
     price: 150,
     location: 'Thiès',
     postedAt: 'il y a 3 jours',
@@ -174,7 +175,7 @@ const listings: Listing[] = [
     id: '8',
     title: 'Consultation juridique',
     description:
-      'Avocat propose consultation juridique en droit des affaires et droit immobilier.',
+      'Avocat propose consultation juridique en droit des affaires et droit immobilier. This is a longer description to test the increased length. Get expert legal advice.',
     price: 'Gratuit',
     location: 'Dakar',
     postedAt: 'il y a 6 heures',
@@ -194,7 +195,7 @@ const listings: Listing[] = [
     id: '9',
     title: 'Drone DJI Mini 2',
     description:
-      'Drone DJI Mini 2 avec 2 batteries et accessoires, parfait état.',
+      'Drone DJI Mini 2 avec 2 batteries et accessoires, parfait état. This is a longer description to test the increased length. Capture stunning aerial footage.',
     price: 400,
     location: 'Saint-Louis',
     postedAt: 'il y a 2 jours',
@@ -263,36 +264,78 @@ function Pagination({
 // Main Listings Page component
 export default function ListingsPage() {
   const [currentPage, setCurrentPage] = useState(1);
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({}); // State for filters
   const listingsPerPage = 5;
 
-  // Calculate pagination
+  // Function to update filter options
+  const updateFilterOptions = useCallback(
+    (newOptions: FilterOptions) => {
+      setCurrentPage(1); // Reset to first page on filter change
+      setFilterOptions(newOptions);
+    },
+    [setFilterOptions],
+  );
+
+  // Memoize the filtered listings
+  const filteredListings = useMemo(() => {
+    return initialListings.filter((listing) => {
+      // Example filters (expand as needed)
+      if (
+        filterOptions.location &&
+        !listing.location
+          .toLowerCase()
+          .includes(filterOptions.location.toLowerCase())
+      ) {
+        return false;
+      }
+      if (
+        filterOptions.priceMin &&
+        typeof listing.price === 'number' &&
+        listing.price < filterOptions.priceMin
+      ) {
+        return false;
+      }
+      if (
+        filterOptions.priceMax &&
+        typeof listing.price === 'number' &&
+        listing.price > filterOptions.priceMax
+      ) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [filterOptions]);
+
+  // Calculate pagination values based on filtered listings
   const indexOfLastListing = currentPage * listingsPerPage;
   const indexOfFirstListing: number = indexOfLastListing - listingsPerPage;
-  const currentListings = listings.slice(
-    indexOfFirstListing,
-    indexOfLastListing
+  const currentListings = useMemo(
+    () => filteredListings.slice(indexOfFirstListing, indexOfLastListing),
+    [filteredListings, indexOfFirstListing, indexOfLastListing],
   );
-  const totalPages = Math.ceil(listings.length / listingsPerPage);
+  const totalPages = Math.ceil(filteredListings.length / listingsPerPage);
 
-  const handlePageChange = (pageNumber: number) => {
+  const handlePageChange = useCallback((pageNumber: number) => {
     setCurrentPage(pageNumber);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <FilterBar />
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">Annonces</h1>
-          <div className="space-y-6 flex flex-col items-start">
+          <FilterBar updateFilterOptions={updateFilterOptions} />{' '}
+          {/* Pass the update function */}
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">Annonces</h1>
+          <div className="flex flex-col items-start">
             {currentListings.map((listing, index) => (
               <React.Fragment key={listing.id}>
-                <div className="w-full md:w-3/4">
+                <div className="w-full mt-2">
                   <ListingCard listing={listing} />
                   {index < currentListings.length - 1 && (
-                    <div className="border-b border-gray-300 my-4 w-full" />
+                    <div className="border-b border-gray-300 my-4 w-full mt-6" />
                   )}
                 </div>
               </React.Fragment>
