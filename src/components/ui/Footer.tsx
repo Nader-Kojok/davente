@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import BaseLink from 'next/link';
 import Image from 'next/image';
 
 type FooterSection = {
@@ -62,12 +62,12 @@ export default function Footer() {
               <ul className="space-y-2">
                 {section.links.map((link) => (
                   <li key={link.href}>
-                    <Link
+                    <BaseLink // Use BaseLink
                       href={link.href}
                       className="text-sm text-gray-300 hover:text-white transition-colors duration-200"
                     >
                       {link.label}
-                    </Link>
+                    </BaseLink>
                   </li>
                 ))}
               </ul>
@@ -93,13 +93,13 @@ export default function Footer() {
             </div>
             
             <div className="flex items-center space-x-4">
-              <Link href="/fr" className="text-sm text-gray-400 hover:text-white transition-colors duration-200">
+              <BaseLink href="/fr" className="text-sm text-gray-400 hover:text-white transition-colors duration-200">
                 Français
-              </Link>
+              </BaseLink>
               <span className="text-gray-600">|</span>
-              <Link href="/en" className="text-sm text-gray-400 hover:text-white transition-colors duration-200">
+              <BaseLink href="/en" className="text-sm text-gray-400 hover:text-white transition-colors duration-200">
                 English
-              </Link>
+              </BaseLink>
             </div>
 
           </div>

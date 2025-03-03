@@ -1,9 +1,12 @@
+// src/app/register/page.tsx
 'use client';
 
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Phone, ChevronLeft, User, Lock, Eye, EyeOff } from 'lucide-react';
+import { Phone, ChevronLeft } from 'lucide-react';
+import TextInput from '@/components/ui/TextInput'; // Import TextInput
+import PasswordInput from '@/components/ui/PasswordInput'; // Import PasswordInput
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -16,11 +19,6 @@ export default function RegisterPage() {
   const [errors, setErrors] = useState({
     name: false,
     phoneNumber: false,
-    password: false,
-    confirmPassword: false
-  });
-
-  const [showPassword, setShowPassword] = useState({
     password: false,
     confirmPassword: false
   });
@@ -125,38 +123,23 @@ export default function RegisterPage() {
 
         {/* Register Form */}
         <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
-          <h1 className="text-2xl font-semibold text-gray-900 mb-6 text-center">
+          <h1 className="h2 text-center mb-4">
             Inscription
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Name Field */}
             <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Nom complet
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-4">
-                  <User className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className={`block w-full pl-12 pr-4 py-3 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#E00201] focus:ring-opacity-50 focus:border-[#E00201] transition-colors`}
-                  placeholder="Fallou Doe"
-                />
-              </div>
-              {errors.name && (
-                <p className="mt-2 text-sm text-red-600">
-                  Le nom doit contenir au moins 2 caractères
-                </p>
-              )}
+              <TextInput
+                label="Nom complet"
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Fallou Doe"
+                error={errors.name ? 'Le nom doit contenir au moins 2 caractères' : undefined}
+              />
             </div>
 
             {/* Phone Number Field */}
@@ -172,13 +155,13 @@ export default function RegisterPage() {
                   <Phone className="h-5 w-5 text-gray-400" />
                   <span className="ml-4 text-[#E00201] font-medium">{countryCode}</span>
                 </div>
-                <input
+                <TextInput
                   type="tel"
                   id="phoneNumber"
                   name="phoneNumber"
                   value={formData.phoneNumber}
                   onChange={handleChange}
-                  className={`block w-full pl-24 pr-4 py-3 border ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#E00201] focus:ring-opacity-50 focus:border-[#E00201] transition-colors`}
+                  className={`form-input pl-24 ${errors.phoneNumber ? 'border-red-500' : ''}`}
                   placeholder="77 123 45 67"
                   maxLength={9}
                 />
@@ -192,87 +175,33 @@ export default function RegisterPage() {
 
             {/* Password Field */}
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Mot de passe
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-4">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  type={showPassword.password ? 'text' : 'password'}
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className={`block w-full pl-12 pr-12 py-3 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#E00201] focus:ring-opacity-50 focus:border-[#E00201] transition-colors`}
-                  placeholder="••••••••"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(prev => ({ ...prev, password: !prev.password }))}
-                  className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-[#E00201] transition-colors"
-                >
-                  {showPassword.password ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="mt-2 text-sm text-red-600">
-                  Le mot de passe doit contenir au moins 6 caractères
-                </p>
-              )}
+              <PasswordInput
+                label="Mot de passe"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="••••••••"
+                error={errors.password ? 'Le mot de passe doit contenir au moins 6 caractères' : undefined}
+              />
             </div>
 
             {/* Confirm Password Field */}
             <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Confirmer le mot de passe
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-4">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  type={showPassword.confirmPassword ? 'text' : 'password'}
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className={`block w-full pl-12 pr-12 py-3 border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#E00201] focus:ring-opacity-50 focus:border-[#E00201] transition-colors`}
-                  placeholder="••••••••"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(prev => ({ ...prev, confirmPassword: !prev.confirmPassword }))}
-                  className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-[#E00201] transition-colors"
-                >
-                  {showPassword.confirmPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
-              {errors.confirmPassword && (
-                <p className="mt-2 text-sm text-red-600">
-                  Les mots de passe ne correspondent pas
-                </p>
-              )}
+              <PasswordInput
+                label="Confirmer le mot de passe"
+                id="confirmPassword"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="••••••••"
+                error={errors.confirmPassword ? 'Les mots de passe ne correspondent pas' : undefined}
+              />
             </div>
 
             <button
               type="submit"
-              className={`w-full bg-[#E00201] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#CB0201] transition-colors ${Object.values(errors).some(error => error) ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`btn-primary w-full flex justify-center items-center ${Object.values(errors).some(error => error) ? 'opacity-50 cursor-not-allowed' : ''}`}
               disabled={Object.values(errors).some(error => error)}
             >
               S&apos;inscrire
@@ -327,7 +256,7 @@ export default function RegisterPage() {
             Déjà inscrit ?{' '}
             <Link
               href="/login"
-              className="font-medium text-[#E00201] hover:text-[#CB0201] transition-colors"
+              className="text-primary-500 hover:text-primary-600 transition-colors"
             >
               Se connecter
             </Link>

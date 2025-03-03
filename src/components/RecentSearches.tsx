@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import BaseLink from '@/components/ui/BaseLink'; // Import BaseLink
 
 type RecentSearch = {
   title: string;
@@ -32,7 +32,7 @@ export default function RecentSearches() {
   return (
     <section className="py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-xl font-semibold mb-6">Recherches récentes</h2>
+        <h2 className="h2 mb-6">Recherches récentes</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {recentSearches.map((search, index) => (
             <div
@@ -57,7 +57,7 @@ export default function RecentSearches() {
                   />
                 </svg>
               </button>
-              <Link href={search.href} className="block">
+              <BaseLink href={search.href} className="block">
                 <h3 className="font-bold text-lg mb-1">{search.title}</h3>
                 <p className="text-sm font-semibold text-gray-600 mb-1">{search.category}</p>
                 <div className="flex items-center text-sm text-gray-500">
@@ -82,7 +82,7 @@ export default function RecentSearches() {
                   </svg>
                   {search.location}
                 </div>
-              </Link>
+              </BaseLink>
             </div>
           ))}
         </div>

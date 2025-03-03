@@ -1,7 +1,9 @@
+// src/components/ui/FilterBar.tsx
 'use client';
 
 import { useState, useCallback } from 'react';
-import { MapPin, SlidersHorizontal, ChevronDown } from 'lucide-react';
+import { SlidersHorizontal, ChevronDown } from 'lucide-react';
+import Select from '@/components/ui/Select'; // Import Select
 
 export interface FilterOptions {
   location?: string;
@@ -10,22 +12,23 @@ export interface FilterOptions {
   priceMax?: number; // Add priceMax
 }
 
-
 interface FilterBarProps {
   updateFilterOptions: (options: FilterOptions) => void;
 }
 
 const FilterBar: React.FC<FilterBarProps> = ({ updateFilterOptions }) => {
-  const [location, setLocation] = useState('Choisir une localisation');
-  const [sortBy, setSortBy] = useState('recent');
-  // activeDropdown can be 'location', 'sort', 'filters', or null
-  const [
-    activeDropdown,
-    setActiveDropdown,
-  ] = useState<'location' | 'sort' | 'filters' | null>(null);
+  const [location, setLocation] = useState<string | undefined>(undefined);
+  const [sortBy, setSortBy] = useState<string | undefined>(undefined);
 
-  const locations = ['Dakar', 'Saint-Louis', 'Thiès', 'Toutes les villes'];
+  const locations = [
+    { value: undefined, label: 'Choisir une localisation' },
+    { value: 'Dakar', label: 'Dakar' },
+    { value: 'Saint-Louis', label: 'Saint-Louis' },
+    { value: 'Thiès', label: 'Thiès' },
+    { value: 'Toutes les villes', label: 'Toutes les villes' },
+  ];
   const sortOptions = [
+    { value: undefined, label: 'Trier par' },
     { value: 'recent', label: 'Plus récentes' },
     { value: 'oldest', label: 'Plus anciennes' },
     { value: 'price_asc', label: 'Prix croissant' },
@@ -33,90 +36,42 @@ const FilterBar: React.FC<FilterBarProps> = ({ updateFilterOptions }) => {
   ];
 
   const handleLocationChange = useCallback(
-    (loc: string) => {
+    (loc: string | undefined) => {
       setLocation(loc);
-      setActiveDropdown(null);
       updateFilterOptions({ location: loc });
     },
     [updateFilterOptions],
   );
 
   const handleSortByChange = useCallback(
-    (sortValue: string) => {
+    (sortValue: string | undefined) => {
       setSortBy(sortValue);
-      setActiveDropdown(null);
       updateFilterOptions({ sortBy: sortValue });
     },
     [updateFilterOptions],
   );
 
   return (
-    <div className="z-40 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div className="z-40 max-w-6xl mx-auto py-4">
       <div className="flex flex-wrap gap-4">
         {/* Location selector */}
         <div className="relative w-full sm:w-72">
-          <button
-            className="w-full px-4 py-2 text-left bg-white border border-gray-300 rounded-lg
-                         hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-[#E00201]
-                         focus:border-transparent flex items-center justify-between"
-            onClick={() =>
-              setActiveDropdown(activeDropdown === 'location' ? null : 'location')
-            }
-          >
-            <div className="flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-gray-400" />
-              <span className="text-gray-700">{location}</span>
-            </div>
-            <ChevronDown className="w-4 h-4 text-gray-500" />
-          </button>
-          {activeDropdown === 'location' && (
-            <div className="absolute mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-              {locations.map((loc) => (
-                <button
-                  key={loc}
-                  className="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700
-                               first:rounded-t-lg last:rounded-b-lg"
-                  onClick={() => handleLocationChange(loc)}
-                >
-                  {loc}
-                </button>
-              ))}
-            </div>
-          )}
+          <Select
+            id="location"
+            value={location}
+            onChange={(e) => handleLocationChange(e.target.value)}
+            options={locations}
+          />
         </div>
 
         {/* Sort by filter */}
         <div className="relative w-full sm:w-48">
-          <button
-            className="w-full px-4 py-2 text-left bg-white border border-gray-300 rounded-lg
-                         hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-[#E00201]
-                         focus:border-transparent flex items-center justify-between"
-            onClick={() =>
-              setActiveDropdown(activeDropdown === 'sort' ? null : 'sort')
-            }
-          >
-            <span className="text-gray-700">
-              {
-                sortOptions.find((option) => option.value === sortBy)?.label ||
-                'Trier par'
-              }
-            </span>
-            <ChevronDown className="w-4 h-4 text-gray-500" />
-          </button>
-          {activeDropdown === 'sort' && (
-            <div className="absolute mt-2 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-              {sortOptions.map((option) => (
-                <button
-                  key={option.value}
-                  className="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700
-                               first:rounded-t-lg last:rounded-b-lg"
-                  onClick={() => handleSortByChange(option.value)}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          )}
+          <Select
+            id="sortBy"
+            value={sortBy}
+            onChange={(e) => handleSortByChange(e.target.value)}
+            options={sortOptions}
+          />
         </div>
 
         {/* Price filter (static button for now) */}
@@ -148,23 +103,10 @@ const FilterBar: React.FC<FilterBarProps> = ({ updateFilterOptions }) => {
           className="w-full sm:w-auto px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg
                        hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#E00201] focus:ring-opacity-50
                        flex items-center gap-2 transition-colors duration-200 justify-center"
-          onClick={() =>
-            setActiveDropdown(activeDropdown === 'filters' ? null : 'filters')
-          }
+          onClick={() => console.log('Filters Clicked')}
         >
           <SlidersHorizontal className="w-4 h-4" />
           <span>Filtres</span>
-        </button>
-      </div>
-
-      {/* Category filter */}
-      <div className="mt-4">
-        <button
-          className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-full
-                       hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-[#E00201]
-                       focus:ring-opacity-50 transition-colors duration-200"
-        >
-          Services de jardinerie &amp; bricolage
         </button>
       </div>
     </div>

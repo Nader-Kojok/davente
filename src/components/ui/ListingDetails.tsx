@@ -1,4 +1,6 @@
-// components/ListingDetails.tsx
+// components/ui/ListingDetails.tsx
+import React from 'react';
+
 interface ListingDetailsProps {
   title: string;
   price: number | 'Gratuit';
@@ -20,7 +22,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
     <div className="space-y-6">
       {/* Title and Price */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">{title}</h1>
+        <h1 className="h2">{title}</h1> {/* Use base heading style */}
         <div className="flex items-baseline space-x-3">
           <span className="text-3xl font-bold text-gray-900">
             {price.toLocaleString()} €

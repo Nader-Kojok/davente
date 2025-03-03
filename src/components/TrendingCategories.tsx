@@ -1,7 +1,8 @@
+// src/components/TrendingCategories.tsx
 'use client';
 
 import { useRef } from 'react';
-import Link from 'next/link';
+import BaseLink from '@/components/ui/BaseLink'; // Import BaseLink
 import Image from 'next/image';
 import { Flame } from 'lucide-react';
 
@@ -111,7 +112,7 @@ export default function TrendingCategories() {
             {/* Title Card */}
             <div className="flex-none w-[280px] lg:w-auto relative overflow-hidden rounded-2xl shadow-sm bg-gradient-to-bl from-[#FFEECD] to-[#F7D8D5] aspect-[3/4] p-6 scroll-snap-align-start">
               <div className="flex flex-col">
-                <h2 className="text-xl font-bold text-gray-800 mb-2">
+                <h2 className="h2">
                   Tendance en ce moment
                 </h2>
                 <Flame className="w-6 h-6 text-[#152233]" />
@@ -120,7 +121,7 @@ export default function TrendingCategories() {
 
             {/* Category Cards */}
             {trendingCategories.map((category) => (
-              <Link
+              <BaseLink // Use BaseLink
                 key={category.title}
                 href={category.href}
                 className="flex-none w-[280px] lg:w-auto group relative overflow-hidden rounded-2xl shadow-sm aspect-[3/4] bg-gray-100 scroll-snap-align-start"
@@ -138,7 +139,7 @@ export default function TrendingCategories() {
                     </h3>
                   </div>
                 </div>
-              </Link>
+              </BaseLink>
             ))}
           </div>
         </div>

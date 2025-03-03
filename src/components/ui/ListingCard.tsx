@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { MapPin, Heart, Star } from 'lucide-react';
 import { useState } from 'react';
+import { formatPrice } from '@/lib/utils/formatPrice';
 
 export const ListingBadgeTypes = [
   'new',
@@ -134,9 +135,7 @@ const ListingDetails = ({ listing }: { listing: Listing }) => {
           )}
         </p>
         <div className="text-lg sm:text-xl font-bold text-gray-900 mb-3">
-          {typeof listing.price === 'number'
-            ? `${listing.price.toLocaleString()} €`
-            : listing.price}
+          {formatPrice(listing.price)}
           {listing.condition && (
             <span className="text-sm font-normal text-gray-600 ml-1">
               • {listing.condition}

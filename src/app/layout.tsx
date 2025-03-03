@@ -1,3 +1,4 @@
+// src/app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { montserrat, nunitoSans } from "./fonts";
@@ -25,7 +26,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" className={`${montserrat.variable} ${nunitoSans.variable}`}>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased font-body`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased font-body ${nunitoSans.className}`}
+      >
         {children}
       </body>
     </html>

@@ -2,7 +2,7 @@
 
 import { useRef } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import BaseLink from '@/components/ui/BaseLink'; // Import BaseLink
 
 type Category = {
   title: string;
@@ -66,15 +66,15 @@ export default function TopCategories() {
   return (
     <section className="py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-2xl font-semibold mb-6">Top catégories</h2>
+        <h2 className="h2 mb-6">Top catégories</h2> {/* Added mb-6 */}
 
         <div className="relative">
           {/* Left Arrow */}
           <button
             onClick={() => scroll('left')}
-            className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 
-                       bg-white/80 rounded-full p-2 shadow-md 
-                       hover:bg-white transition-colors duration-200 
+            className="absolute -left-4 top-1/2 -translate-y-1/2 z-10
+                       bg-white/80 rounded-full p-2 shadow-md
+                       hover:bg-white transition-colors duration-200
                        focus:outline-none focus:ring-2 focus:ring-[#E00201]"
             aria-label="Scroll left"
           >
@@ -105,10 +105,10 @@ export default function TopCategories() {
           >
             <div className="flex space-x-4 pb-4">
               {categories.map((category) => (
-                <Link
+                <BaseLink // Use BaseLink
                   key={category.title}
                   href={category.href}
-                  className="flex-none w-64 relative overflow-hidden 
+                  className="flex-none w-64 relative overflow-hidden
                              rounded-xl shadow-sm group"
                 >
                   <div className="aspect-[4/3] relative">
@@ -116,10 +116,10 @@ export default function TopCategories() {
                       src={category.image}
                       alt={category.title}
                       fill
-                      className="object-cover transition-transform 
+                      className="object-cover transition-transform
                                  duration-300 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t 
+                    <div className="absolute inset-0 bg-gradient-to-t
                                    from-black/60 to-transparent">
                       <div className="absolute bottom-0 left-0 right-0 p-4">
                         <h3 className="text-lg font-medium text-white">
@@ -128,7 +128,7 @@ export default function TopCategories() {
                       </div>
                     </div>
                   </div>
-                </Link>
+                </BaseLink>
               ))}
             </div>
           </div>
@@ -136,9 +136,9 @@ export default function TopCategories() {
           {/* Right Arrow */}
           <button
             onClick={() => scroll('right')}
-            className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 
-                       bg-white/80 rounded-full p-2 shadow-md 
-                       hover:bg-white transition-colors duration-200 
+            className="absolute -right-4 top-1/2 -translate-y-1/2 z-10
+                       bg-white/80 rounded-full p-2 shadow-md
+                       hover:bg-white transition-colors duration-200
                        focus:outline-none focus:ring-2 focus:ring-[#E00201]"
             aria-label="Scroll right"
           >

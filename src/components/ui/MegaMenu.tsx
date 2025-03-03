@@ -1,7 +1,9 @@
+// src/components/ui/MegaMenu.tsx
 'use client';
 
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import BaseLink from "@/components/ui/BaseLink"; // Import BaseLink
 
 type SubCategory = {
   name: string;
@@ -147,12 +149,12 @@ export default function MegaMenu({ category, isOpen }: MegaMenuProps) {
             <div key={section.name} className="col-span-1">
               <div className="flex items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  <Link
+                  <BaseLink // Use BaseLink
                     href={section.href}
                     className="hover:text-[#E00201] transition-colors duration-200"
                   >
                     {section.name}
-                  </Link>
+                  </BaseLink>
                 </h3>
                 <ChevronRight className="ml-2 h-5 w-5 text-gray-400" />
               </div>
@@ -164,9 +166,9 @@ export default function MegaMenu({ category, isOpen }: MegaMenuProps) {
                         {item.name}
                       </span>
                       {item.description && (
-                        <span className="mt-1 text-sm text-gray-500 group-hover:text-gray-700 transition-colors duration-200">
+                        <p className="mt-1 text-sm text-gray-500 group-hover:text-gray-700 transition-colors duration-200">
                           {item.description}
-                        </span>
+                        </p>
                       )}
                     </Link>
                   </li>

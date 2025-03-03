@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import BaseLink from "@/components/ui/BaseLink"; // Import BaseLink
 import { Plus } from "lucide-react";
 
 type Listing = {
@@ -101,8 +101,8 @@ export default function CurrentListings() {
     if (!container) return;
 
     // Each card is w-72 (288px) plus space-x-4 (16px) => 304px total
-    const cardWidth = 288; 
-    const cardSpacing = 16; 
+    const cardWidth = 288;
+    const cardSpacing = 16;
     const scrollAmount = cardWidth + cardSpacing;
     const currentScroll = container.scrollLeft;
     const newPosition =
@@ -122,15 +122,14 @@ export default function CurrentListings() {
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-2xl font-semibold">En ce moment sur davente</h2>
+            <h2 className="h2">En ce moment sur davente</h2> {/* Use base heading style */}
             <p className="text-gray-600 mt-1">Téléphones & Objets connectés</p>
           </div>
-          <Link
+          <BaseLink // Use BaseLink
             href="/categories/electronique"
-            className="text-[#E00201] hover:text-[#CB0201] font-medium transition-colors duration-200"
           >
             Voir plus d&apos;annonces
-          </Link>
+          </BaseLink>
         </div>
 
         {/* Listings Grid */}
@@ -138,9 +137,9 @@ export default function CurrentListings() {
           {/* Left Arrow */}
           <button
             onClick={() => scroll("left")}
-            className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 
-                       bg-white/80 rounded-full p-2 shadow-md 
-                       hover:bg-white transition-colors duration-200 
+            className="absolute -left-4 top-1/2 -translate-y-1/2 z-10
+                       bg-white/80 rounded-full p-2 shadow-md
+                       hover:bg-white transition-colors duration-200
                        focus:outline-none focus:ring-2 focus:ring-[#E00201]"
             aria-label="Scroll left"
           >
@@ -224,25 +223,25 @@ export default function CurrentListings() {
             ))}
 
             {/* 'Voir plus d'annonces' Card */}
-            <Link
+            <BaseLink // Use BaseLink
               href="/categories/electronique"
-              className="flex-none w-36 bg-gray-50 rounded-lg shadow-sm border border-gray-200 
-                         overflow-hidden flex flex-col items-center justify-center 
+              className="flex-none w-36 bg-gray-50 rounded-lg shadow-sm border border-gray-200
+                         overflow-hidden flex flex-col items-center justify-center
                          p-6 text-center"
             >
               <Plus className="w-10 h-10 text-[#E00201] mb-2" />
               <span className="text-gray-900 font-medium">
                 Voir plus d&apos;annonces
               </span>
-            </Link>
+            </BaseLink>
           </div>
 
           {/* Right Arrow */}
           <button
             onClick={() => scroll("right")}
-            className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 
-                       bg-white/80 rounded-full p-2 shadow-md 
-                       hover:bg-white transition-colors duration-200 
+            className="absolute -right-4 top-1/2 -translate-y-1/2 z-10
+                       bg-white/80 rounded-full p-2 shadow-md
+                       hover:bg-white transition-colors duration-200
                        focus:outline-none focus:ring-2 focus:ring-[#E00201]"
             aria-label="Scroll right"
           >

@@ -1,23 +1,23 @@
 "use client";
 
-import Link from "next/link";
+import BaseLink from "@/components/ui/BaseLink";
 
 export default function LegalText() {
   return (
     <section className="py-8 px-4 sm:px-6 lg:px-8 bg-gray-50">
       <div className="max-w-6xl mx-auto">
-        <p className="text-sm text-gray-600 leading-relaxed">
+        <p className="p text-sm text-gray-600 leading-relaxed">
           Avec davente, trouvez la bonne affaire sur le site référent de petites annonces de particulier à particulier et de professionnels. Avec des millions de petites annonces, trouvez la bonne occasion dans nos catégories{" "}
-          <Link href="/categories/voitures" className="text-[#E00201] hover:text-[#CB0201] transition-colors duration-200">voitures</Link>,{" "}
-          <Link href="/categories/immobilier" className="text-[#E00201] hover:text-[#CB0201] transition-colors duration-200">immobilier</Link>,{" "}
-          <Link href="/categories/emploi" className="text-[#E00201] hover:text-[#CB0201] transition-colors duration-200">emploi</Link>,{" "}
-          <Link href="/categories/vacances" className="text-[#E00201] hover:text-[#CB0201] transition-colors duration-200">location de vacances</Link>,{" "}
-          <Link href="/categories/vetements" className="text-[#E00201] hover:text-[#CB0201] transition-colors duration-200">vêtements</Link>,{" "}
-          <Link href="/categories/meubles" className="text-[#E00201] hover:text-[#CB0201] transition-colors duration-200">meubles</Link>,{" "}
-          <Link href="/categories/bricolage" className="text-[#E00201] hover:text-[#CB0201] transition-colors duration-200">bricolage</Link>,{" "}
-          <Link href="/categories/telephonie" className="text-[#E00201] hover:text-[#CB0201] transition-colors duration-200">téléphonie</Link>,{" "}
-          <Link href="/categories/jeux-video" className="text-[#E00201] hover:text-[#CB0201] transition-colors duration-200">jeux vidéo</Link>, etc. Déposez une annonce gratuite en toute simplicité pour vendre, rechercher, donner vos biens de seconde main ou promouvoir vos services. Pour cet été, découvrez nos idées de destination avec notre{" "}
-          <Link href="/guide-vacances" className="text-[#E00201] hover:text-[#CB0201] transition-colors duration-200">guide de vacances au Sénégal</Link>. Achetez en toute sécurité avec notre système de paiement en ligne et de livraison pour les annonces éligibles.
+          <BaseLink href="/categories/voitures">voitures</BaseLink>,{" "}
+          <BaseLink href="/categories/immobilier">immobilier</BaseLink>,{" "}
+          <BaseLink href="/categories/emploi">emploi</BaseLink>,{" "}
+          <BaseLink href="/categories/vacances">location de vacances</BaseLink>,{" "}
+          <BaseLink href="/categories/vetements">vêtements</BaseLink>,{" "}
+          <BaseLink href="/categories/meubles">meubles</BaseLink>,{" "}
+          <BaseLink href="/categories/bricolage">bricolage</BaseLink>,{" "}
+          <BaseLink href="/categories/telephonie">téléphonie</BaseLink>,{" "}
+          <BaseLink href="/categories/jeux-video">jeux vidéo</BaseLink>, etc. Déposez une annonce gratuite en toute simplicité pour vendre, rechercher, donner vos biens de seconde main ou promouvoir vos services. Pour cet été, découvrez nos idées de destination avec notre{" "}
+          <BaseLink href="/guide-vacances">guide de vacances au Sénégal</BaseLink>. Achetez en toute sécurité avec notre système de paiement en ligne et de livraison pour les annonces éligibles.
         </p>
       </div>
     </section>

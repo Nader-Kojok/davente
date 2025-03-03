@@ -1,3 +1,4 @@
+// src/app/annonces/page.tsx
 // ListingsPage.tsx
 'use client';
 
@@ -328,7 +329,7 @@ export default function ListingsPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <FilterBar updateFilterOptions={updateFilterOptions} />{' '}
           {/* Pass the update function */}
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Annonces</h1>
+          <h1 className="h1">Annonces</h1>
           <div className="flex flex-col items-start">
             {currentListings.map((listing, index) => (
               <React.Fragment key={listing.id}>

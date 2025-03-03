@@ -1,3 +1,4 @@
+// src/app/vendeurs/[id]/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,6 +9,7 @@ import Footer from '@/components/ui/Footer';
 import ListingCard from '@/components/ui/ListingCard';
 import { Star, MapPin, MessageCircle, UserPlus, Share2, Flag, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ListingBadge } from '@/components/ui/ListingCard';
+import Textarea from '@/components/ui/Textarea'; // Import Textarea
 
 interface Review {
   id: string;
@@ -470,6 +472,7 @@ export default function SellerProfilePage() {
             </div>
           )}
 
+          {/* Content */}
           {activeTab === 'listings' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-12">
               {listings
@@ -603,10 +606,10 @@ export default function SellerProfilePage() {
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">Votre avis</label>
-              <textarea
+              <Textarea // Use Textarea component
                 value={newReview.comment}
                 onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E00201] focus:border-transparent"
+                className="w-full"
                 rows={4}
                 placeholder="Partagez votre expérience avec ce vendeur..."
               />

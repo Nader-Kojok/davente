@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import { Star, Heart, Share2, Flag, Truck, RotateCcw, Wallet } from 'lucide-react';
 import Badge, { ListingBadge } from './Badge';
-import Link from 'next/link';
+import BaseLink from '@/components/ui/BaseLink'; // Import BaseLink
 
 interface SellerInfoProps {
   seller: {
@@ -25,7 +25,7 @@ interface SellerInfoProps {
   onReportClick?: () => void;
 }
 
-const SellerInfo: React.FC<SellerInfoProps> = ({ 
+const SellerInfo: React.FC<SellerInfoProps> = ({
   seller,
   onContactClick,
   onFavoriteClick,
@@ -35,7 +35,7 @@ const SellerInfo: React.FC<SellerInfoProps> = ({
   return (
     <div className="bg-white p-6 rounded-lg border border-gray-200">
       {/* User Profile Header */}
-      <Link href={`/vendeurs/${seller.id}`} className="group block mb-6">
+      <BaseLink href={`/vendeurs/${seller.id}`} className="group block mb-6"> {/* Use BaseLink */}
         <div className="flex items-center space-x-4">
           <div className="relative w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
             <Image
@@ -50,7 +50,7 @@ const SellerInfo: React.FC<SellerInfoProps> = ({
             />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-medium text-lg text-gray-900 group-hover:text-[#E00201] transition-colors">
+            <h3 className="font-medium text-lg text-gray-900 group-hover:text-[#E00201] transition-colors"> {/* h3 style */}
               {seller.name}
             </h3>
             <div className="flex items-center text-sm text-gray-600 mt-1">
@@ -61,7 +61,7 @@ const SellerInfo: React.FC<SellerInfoProps> = ({
             </div>
           </div>
         </div>
-      </Link>
+      </BaseLink>
 
       {/* Seller Details */}
       <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-gray-600 mb-6">
@@ -85,7 +85,7 @@ const SellerInfo: React.FC<SellerInfoProps> = ({
           </div>
         )}
       </div>
-      
+
       {/* Additional Seller Information */}
       <div className="space-y-3 text-sm mb-6">
         {/* Payment Methods */}
@@ -97,7 +97,7 @@ const SellerInfo: React.FC<SellerInfoProps> = ({
             </span>
           </div>
         )}
-        
+
         {/* Returns Policy */}
         <div className="flex items-center space-x-2">
           <RotateCcw className="w-4 h-4 text-gray-500" />
@@ -105,7 +105,7 @@ const SellerInfo: React.FC<SellerInfoProps> = ({
             {seller.acceptsReturns ? 'Retours acceptés' : 'Retours non acceptés'}
           </span>
         </div>
-        
+
         {/* Delivery */}
         <div className="flex items-center space-x-2">
           <Truck className="w-4 h-4 text-gray-500" />

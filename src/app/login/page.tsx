@@ -1,13 +1,17 @@
+// src/app/login/page.tsx
 'use client';
 
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Phone, ChevronLeft } from 'lucide-react';
+import TextInput from '@/components/ui/TextInput'; // Import TextInput
+import Checkbox from '@/components/ui/Checkbox'; // Import Checkbox
 
 export default function LoginPage() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isValid, setIsValid] = useState(true);
+  const [rememberMe, setRememberMe] = useState(false); // Add rememberMe state
   const countryCode = '+221';
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,7 +24,7 @@ export default function LoginPage() {
     e.preventDefault();
     if (phoneNumber.length === 9) {
       // Handle phone number submission with country code
-      console.log('Phone number submitted:', `${countryCode}${phoneNumber}`);
+      console.log('Phone number submitted:', `${countryCode}${phoneNumber}`, rememberMe); // Include rememberMe
     }
   };
 
@@ -52,7 +56,7 @@ export default function LoginPage() {
 
         {/* Login Form */}
         <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
-          <h1 className="text-2xl font-semibold text-gray-900 mb-6 text-center">
+          <h1 className="h2 text-center mb-4">
             Connexion
           </h1>
 
@@ -69,13 +73,13 @@ export default function LoginPage() {
                   <Phone className="h-5 w-5 text-gray-400" />
                   <span className="ml-4 text-[#E00201] font-medium">{countryCode}</span>
                 </div>
-                <input
+                <TextInput
                   type="tel"
                   id="phone"
                   name="phone"
                   value={phoneNumber}
                   onChange={handlePhoneChange}
-                  className={`block w-full pl-24 pr-4 py-3 border ${isValid ? 'border-gray-300' : 'border-red-500'} rounded-lg focus:ring-2 focus:ring-[#E00201] focus:ring-opacity-50 focus:border-[#E00201] transition-colors`}
+                  className={`form-input pl-24 ${isValid ? '' : 'border-red-500'}`}
                   placeholder="77 123 45 67"
                   maxLength={9}
                 />
@@ -87,9 +91,21 @@ export default function LoginPage() {
               )}
             </div>
 
+            <div className="flex items-center justify-between">
+              <Checkbox
+                id="remember-me"
+                label="Se souvenir de moi"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
+              <Link href="/forgot-password" className="text-sm text-primary-500 hover:text-primary-600">
+                Mot de passe oublié ?
+              </Link>
+            </div>
+
             <button
               type="submit"
-              className={`w-full bg-[#E00201] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#CB0201] transition-colors ${!isValid ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`btn-primary w-full flex justify-center items-center ${!isValid ? 'opacity-50 cursor-not-allowed' : ''}`}
               disabled={!isValid}
             >
               Continuer
@@ -144,9 +160,9 @@ export default function LoginPage() {
             Pas encore de compte ?{' '}
             <Link
               href="/register"
-              className="font-medium text-[#E00201] hover:text-[#CB0201] transition-colors"
+              className="text-primary-500 hover:text-primary-600 transition-colors"
             >
-              S&apos;inscrire
+              Se connecter
             </Link>
           </p>
         </div>
