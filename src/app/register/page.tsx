@@ -148,7 +148,7 @@ export default function RegisterPage() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className={`block w-full pl-12 pr-4 py-3 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#EC5A12] focus:ring-opacity-50 focus:border-[#EC5A12] transition-colors`}
+                  className={`block w-full pl-12 pr-4 py-3 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#E00201] focus:ring-opacity-50 focus:border-[#E00201] transition-colors`}
                   placeholder="Fallou Doe"
                 />
               </div>
@@ -170,7 +170,7 @@ export default function RegisterPage() {
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-4">
                   <Phone className="h-5 w-5 text-gray-400" />
-                  <span className="ml-4 text-orange-500 font-medium">{countryCode}</span>
+                  <span className="ml-4 text-[#E00201] font-medium">{countryCode}</span>
                 </div>
                 <input
                   type="tel"
@@ -178,7 +178,7 @@ export default function RegisterPage() {
                   name="phoneNumber"
                   value={formData.phoneNumber}
                   onChange={handleChange}
-                  className={`block w-full pl-24 pr-4 py-3 border ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#EC5A12] focus:ring-opacity-50 focus:border-[#EC5A12] transition-colors`}
+                  className={`block w-full pl-24 pr-4 py-3 border ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#E00201] focus:ring-opacity-50 focus:border-[#E00201] transition-colors`}
                   placeholder="77 123 45 67"
                   maxLength={9}
                 />
@@ -208,13 +208,13 @@ export default function RegisterPage() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`block w-full pl-12 pr-12 py-3 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#EC5A12] focus:ring-opacity-50 focus:border-[#EC5A12] transition-colors`}
+                  className={`block w-full pl-12 pr-12 py-3 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#E00201] focus:ring-opacity-50 focus:border-[#E00201] transition-colors`}
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(prev => ({ ...prev, password: !prev.password }))}
-                  className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-[#EC5A12] transition-colors"
+                  className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-[#E00201] transition-colors"
                 >
                   {showPassword.password ? (
                     <EyeOff className="h-5 w-5" />
@@ -248,13 +248,13 @@ export default function RegisterPage() {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className={`block w-full pl-12 pr-12 py-3 border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#EC5A12] focus:ring-opacity-50 focus:border-[#EC5A12] transition-colors`}
+                  className={`block w-full pl-12 pr-12 py-3 border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#E00201] focus:ring-opacity-50 focus:border-[#E00201] transition-colors`}
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(prev => ({ ...prev, confirmPassword: !prev.confirmPassword }))}
-                  className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-[#EC5A12] transition-colors"
+                  className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-[#E00201] transition-colors"
                 >
                   {showPassword.confirmPassword ? (
                     <EyeOff className="h-5 w-5" />
@@ -272,7 +272,7 @@ export default function RegisterPage() {
 
             <button
               type="submit"
-              className={`w-full bg-[#EC5A12] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#d94e0a] transition-colors ${Object.values(errors).some(error => error) ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`w-full bg-[#E00201] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#CB0201] transition-colors ${Object.values(errors).some(error => error) ? 'opacity-50 cursor-not-allowed' : ''}`}
               disabled={Object.values(errors).some(error => error)}
             >
               S&apos;inscrire
@@ -327,7 +327,7 @@ export default function RegisterPage() {
             Déjà inscrit ?{' '}
             <Link
               href="/login"
-              className="font-medium text-[#EC5A12] hover:text-[#d94e0a] transition-colors"
+              className="font-medium text-[#E00201] hover:text-[#CB0201] transition-colors"
             >
               Se connecter
             </Link>

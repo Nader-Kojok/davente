@@ -8,7 +8,7 @@ export default function Banner() {
       <div className="relative overflow-hidden rounded-2xl shadow-lg max-w-6xl mx-auto">
         <div className="absolute inset-0">
           <Image
-            src="/adinsertion_banner.avif"
+            src="/adinsertion_banner.png"
             alt="Background"
             fill
             className="object-cover"

@@ -48,7 +48,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
             )}
             <button
               onClick={toggleExpanded}
-              className="mt-4 text-[#EC5A12] hover:text-[#d94e0a] font-medium transition-colors duration-200 relative z-10 bg-white py-2 px-4"
+              className="mt-4 text-[#E00201] hover:text-[#CB0201] font-medium transition-colors duration-200 relative z-10 bg-white py-2 px-4"
             >
               {expanded ? 'Voir moins' : 'Lire la suite'}
             </button>
@@ -112,7 +112,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
             <div className="mt-4 pt-4 border-t border-gray-100">
               <p className="text-sm font-medium text-gray-900">
                 Frais de livraison:{' '}
-                <span className="text-[#EC5A12]">{shippingCost} €</span>
+                <span className="text-[#E00201]">{shippingCost} €</span>
               </p>
             </div>
           </div>

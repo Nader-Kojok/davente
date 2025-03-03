@@ -75,7 +75,7 @@ export default function TopCategories() {
             className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 
                        bg-white/80 rounded-full p-2 shadow-md 
                        hover:bg-white transition-colors duration-200 
-                       focus:outline-none focus:ring-2 focus:ring-[#EC5A12]"
+                       focus:outline-none focus:ring-2 focus:ring-[#E00201]"
             aria-label="Scroll left"
           >
             <svg
@@ -139,7 +139,7 @@ export default function TopCategories() {
             className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 
                        bg-white/80 rounded-full p-2 shadow-md 
                        hover:bg-white transition-colors duration-200 
-                       focus:outline-none focus:ring-2 focus:ring-[#EC5A12]"
+                       focus:outline-none focus:ring-2 focus:ring-[#E00201]"
             aria-label="Scroll right"
           >
             <svg

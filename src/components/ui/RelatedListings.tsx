@@ -61,7 +61,7 @@ export default function RelatedListings({ listings, currentListingId }: RelatedL
             className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 
                      bg-white/80 rounded-full p-2 shadow-md 
                      hover:bg-white transition-colors duration-200 
-                     focus:outline-none focus:ring-2 focus:ring-[#EC5A12]"
+                     focus:outline-none focus:ring-2 focus:ring-[#E00201]"
             aria-label="Scroll left"
           >
             <ChevronLeft className="w-6 h-6 text-gray-600" />
@@ -138,7 +138,7 @@ export default function RelatedListings({ listings, currentListingId }: RelatedL
             className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 
                      bg-white/80 rounded-full p-2 shadow-md 
                      hover:bg-white transition-colors duration-200 
-                     focus:outline-none focus:ring-2 focus:ring-[#EC5A12]"
+                     focus:outline-none focus:ring-2 focus:ring-[#E00201]"
             aria-label="Scroll right"
           >
             <ChevronRight className="w-6 h-6 text-gray-600" />

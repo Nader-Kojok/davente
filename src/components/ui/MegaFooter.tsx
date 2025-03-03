@@ -115,7 +115,7 @@ export default function MegaFooter() {
                   <li key={link}>
                     <Link
                       href="#"
-                      className="text-sm text-gray-600 hover:text-[#EC5A12] transition-colors duration-200"
+                      className="text-sm text-gray-600 hover:text-[#E00201] transition-colors duration-200"
                     >
                       {link}
                     </Link>

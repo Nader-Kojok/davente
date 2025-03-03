@@ -17,7 +17,7 @@ export default function PrimaryButton({
   return (
     <Link
       href={href}
-      className={`inline-flex items-center px-8 py-2 border border-transparent text-base font-medium rounded-lg text-white bg-[#EC5A12] hover:bg-[#d94e0a] transition-colors duration-200 shadow-sm ${className}`}
+      className={`inline-flex items-center px-8 py-2 border border-transparent text-base font-medium rounded-lg text-white bg-[#E00201] hover:bg-[#CB0201] transition-colors duration-200 shadow-sm ${className}`}
     >
       {Icon && <Icon className="-ml-1 mr-2 h-5 w-5" />}
       {children}

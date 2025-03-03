@@ -127,7 +127,7 @@ export default function CurrentListings() {
           </div>
           <Link
             href="/categories/electronique"
-            className="text-[#EC5A12] hover:text-[#d94e0a] font-medium transition-colors duration-200"
+            className="text-[#E00201] hover:text-[#CB0201] font-medium transition-colors duration-200"
           >
             Voir plus d&apos;annonces
           </Link>
@@ -141,7 +141,7 @@ export default function CurrentListings() {
             className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 
                        bg-white/80 rounded-full p-2 shadow-md 
                        hover:bg-white transition-colors duration-200 
-                       focus:outline-none focus:ring-2 focus:ring-[#EC5A12]"
+                       focus:outline-none focus:ring-2 focus:ring-[#E00201]"
             aria-label="Scroll left"
           >
             <svg
@@ -204,7 +204,7 @@ export default function CurrentListings() {
                     {listing.title}
                   </h3>
                   <p className="text-lg font-semibold text-gray-900 mb-2">
-                    {listing.price.toLocaleString()} F
+                    {listing.price.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} F
                   </p>
                   <div className="flex items-center justify-between text-sm text-gray-500">
                     <span>{listing.location}</span>
@@ -230,7 +230,7 @@ export default function CurrentListings() {
                          overflow-hidden flex flex-col items-center justify-center 
                          p-6 text-center"
             >
-              <Plus className="w-10 h-10 text-[#EC5A12] mb-2" />
+              <Plus className="w-10 h-10 text-[#E00201] mb-2" />
               <span className="text-gray-900 font-medium">
                 Voir plus d&apos;annonces
               </span>
@@ -243,7 +243,7 @@ export default function CurrentListings() {
             className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 
                        bg-white/80 rounded-full p-2 shadow-md 
                        hover:bg-white transition-colors duration-200 
-                       focus:outline-none focus:ring-2 focus:ring-[#EC5A12]"
+                       focus:outline-none focus:ring-2 focus:ring-[#E00201]"
             aria-label="Scroll right"
           >
             <svg

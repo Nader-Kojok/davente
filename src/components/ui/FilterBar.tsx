@@ -57,7 +57,7 @@ const FilterBar: React.FC<FilterBarProps> = ({ updateFilterOptions }) => {
         <div className="relative w-full sm:w-72">
           <button
             className="w-full px-4 py-2 text-left bg-white border border-gray-300 rounded-lg
-                         hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-[#EC5A12]
+                         hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-[#E00201]
                          focus:border-transparent flex items-center justify-between"
             onClick={() =>
               setActiveDropdown(activeDropdown === 'location' ? null : 'location')
@@ -89,7 +89,7 @@ const FilterBar: React.FC<FilterBarProps> = ({ updateFilterOptions }) => {
         <div className="relative w-full sm:w-48">
           <button
             className="w-full px-4 py-2 text-left bg-white border border-gray-300 rounded-lg
-                         hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-[#EC5A12]
+                         hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-[#E00201]
                          focus:border-transparent flex items-center justify-between"
             onClick={() =>
               setActiveDropdown(activeDropdown === 'sort' ? null : 'sort')
@@ -123,7 +123,7 @@ const FilterBar: React.FC<FilterBarProps> = ({ updateFilterOptions }) => {
         <div className="relative w-full sm:w-48">
           <button
             className="w-full px-4 py-2 text-left bg-white border border-gray-300 rounded-lg
-                         hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-[#EC5A12]
+                         hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-[#E00201]
                          focus:border-transparent flex items-center justify-between"
           >
             <span className="text-gray-700">Prix</span>
@@ -135,7 +135,7 @@ const FilterBar: React.FC<FilterBarProps> = ({ updateFilterOptions }) => {
         <div className="relative w-full sm:w-48">
           <button
             className="w-full px-4 py-2 text-left bg-white border border-gray-300 rounded-lg
-                         hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-[#EC5A12]
+                         hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-[#E00201]
                          focus:border-transparent flex items-center justify-between"
           >
             <span className="text-gray-700">Type</span>
@@ -146,7 +146,7 @@ const FilterBar: React.FC<FilterBarProps> = ({ updateFilterOptions }) => {
         {/* Filters button */}
         <button
           className="w-full sm:w-auto px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg
-                       hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#EC5A12] focus:ring-opacity-50
+                       hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#E00201] focus:ring-opacity-50
                        flex items-center gap-2 transition-colors duration-200 justify-center"
           onClick={() =>
             setActiveDropdown(activeDropdown === 'filters' ? null : 'filters')
@@ -161,7 +161,7 @@ const FilterBar: React.FC<FilterBarProps> = ({ updateFilterOptions }) => {
       <div className="mt-4">
         <button
           className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-full
-                       hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-[#EC5A12]
+                       hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-[#E00201]
                        focus:ring-opacity-50 transition-colors duration-200"
         >
           Services de jardinerie &amp; bricolage

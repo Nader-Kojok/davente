@@ -112,7 +112,7 @@ export default function Header() {
         <div className="flex justify-between items-center h-20 relative px-4">
           <button
             onClick={toggleMenu}
-            className={`md:hidden items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#EC5A12] transition-all duration-300 ease-in-out ${isSearchFocused ? "opacity-0 transform -translate-x-10 absolute left-0 invisible" : "opacity-100 transform translate-x-0 relative visible"}`}
+            className={`md:hidden items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#E00201] transition-all duration-300 ease-in-out ${isSearchFocused ? "opacity-0 transform -translate-x-10 absolute left-0 invisible" : "opacity-100 transform translate-x-0 relative visible"}`}
             aria-expanded={isMenuOpen}
             aria-controls="mobile-menu"
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
@@ -169,12 +169,12 @@ export default function Header() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Rechercher sur davente"
-                  className={`w-full pl-10 pr-10 py-2 rounded-lg border transition-all duration-300 ease-in-out [&::-webkit-search-cancel-button]:hidden ${isSearchFocused ? "shadow-md border-[#EC5A12] ring-2 ring-[#EC5A12] ring-opacity-30" : "border-gray-300 hover:border-gray-400"} focus:outline-none`}
+                  className={`w-full pl-10 pr-10 py-2 rounded-lg border transition-all duration-300 ease-in-out [&::-webkit-search-cancel-button]:hidden ${isSearchFocused ? "shadow-md border-[#E00201] ring-2 ring-[#E00201] ring-opacity-30" : "border-gray-300 hover:border-gray-400"} focus:outline-none`}
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
                   aria-label="Search"
                 />
-                <Search className={`absolute left-3 top-2.5 h-5 w-5 transition-colors duration-300 ${isSearchFocused ? "text-[#EC5A12]" : "text-gray-400"}`} />
+                <Search className={`absolute left-3 top-2.5 h-5 w-5 transition-colors duration-300 ${isSearchFocused ? "text-[#E00201]" : "text-gray-400"}`} />
                 {searchQuery && (
                   <button
                     type="button"
@@ -229,7 +229,7 @@ export default function Header() {
             </Link>
             <button
               onClick={() => setIsMenuOpen(false)}
-              className="p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#EC5A12]"
+              className="p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#E00201]"
               aria-label="Close menu"
             >
               <X className="h-6 w-6" />
@@ -242,19 +242,19 @@ export default function Header() {
               <div className="space-y-3">
                 <Link
                   href="/annonces"
-                  className="block text-base font-medium text-gray-900 hover:text-[#EC5A12] transition-colors"
+                  className="block text-base font-medium text-gray-900 hover:text-[#E00201] transition-colors"
                 >
                   Annonces
                 </Link>
                 <Link
                   href="/publier"
-                  className="block text-base font-medium text-gray-900 hover:text-[#EC5A12] transition-colors"
+                  className="block text-base font-medium text-gray-900 hover:text-[#E00201] transition-colors"
                 >
                   Publier une annonce
                 </Link>
                 <Link
                   href="/contact"
-                  className="block text-base font-medium text-gray-900 hover:text-[#EC5A12] transition-colors"
+                  className="block text-base font-medium text-gray-900 hover:text-[#E00201] transition-colors"
                 >
                   Contact
                 </Link>
@@ -268,7 +268,7 @@ export default function Header() {
                   <Link
                     key={category.name}
                     href={category.href}
-                    className="block text-base font-medium text-gray-900 hover:text-[#EC5A12] transition-colors"
+                    className="block text-base font-medium text-gray-900 hover:text-[#E00201] transition-colors"
                   >
                     {category.name}
                   </Link>
@@ -281,13 +281,13 @@ export default function Header() {
             <div className="pt-6 border-t border-gray-200">
               <Link
                 href="/login"
-                className="block w-full py-3 px-4 rounded-lg text-center font-medium text-[#EC5A12] border-2 border-[#EC5A12] hover:bg-[#EC5A12] hover:text-white transition-colors mb-3"
+                className="block w-full py-3 px-4 rounded-lg text-center font-medium text-[#E00201] border-2 border-[#E00201] hover:bg-[#E00201] hover:text-white transition-colors mb-3"
               >
                 Connexion
               </Link>
               <Link
                 href="/register"
-                className="block w-full py-3 px-4 rounded-lg text-center font-medium text-white bg-[#EC5A12] hover:bg-[#d94e0a] transition-colors"
+                className="block w-full py-3 px-4 rounded-lg text-center font-medium text-white bg-[#E00201] hover:bg-[#CB0201] transition-colors"
               >
                 Inscription
               </Link>

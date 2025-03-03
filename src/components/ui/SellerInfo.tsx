@@ -50,7 +50,7 @@ const SellerInfo: React.FC<SellerInfoProps> = ({
             />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-medium text-lg text-gray-900 group-hover:text-[#EC5A12] transition-colors">
+            <h3 className="font-medium text-lg text-gray-900 group-hover:text-[#E00201] transition-colors">
               {seller.name}
             </h3>
             <div className="flex items-center text-sm text-gray-600 mt-1">
@@ -119,7 +119,7 @@ const SellerInfo: React.FC<SellerInfoProps> = ({
       <div className="flex space-x-2">
         <button
           onClick={onContactClick}
-          className="flex-1 bg-[#EC5A12] text-white px-4 py-2 rounded-lg hover:bg-[#d94e0a] transition-colors duration-200"
+          className="flex-1 bg-[#E00201] text-white px-4 py-2 rounded-lg hover:bg-[#CB0201] transition-colors duration-200"
         >
           Contacter
         </button>

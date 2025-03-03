@@ -3,6 +3,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import Image from 'next/image';
 
 interface ListingImagesProps {
   images: string[];
@@ -76,11 +77,16 @@ const ListingImages: React.FC<ListingImagesProps> = ({ images, title, onClose })
       <div className="flex-1 flex">
         {/* Main image */}
         <div className="flex-1 relative flex items-center justify-center p-4">
-          <img
-            src={images[currentIndex]}
-            alt={`${title} - Image ${currentIndex + 1}`}
-            className="max-h-full max-w-full object-contain"
-          />
+          <div className="relative w-full h-full">
+            <Image
+              src={images[currentIndex]}
+              alt={`${title} - Image ${currentIndex + 1}`}
+              fill
+              sizes="(max-width: 768px) 100vw, 80vw"
+              priority
+              className="object-contain"
+            />
+          </div>
 
           {/* Navigation buttons */}
           <button
@@ -105,13 +111,17 @@ const ListingImages: React.FC<ListingImagesProps> = ({ images, title, onClose })
             <button
               key={image}
               onClick={() => handleThumbnailClick(index)}
-              className={`w-full aspect-square relative rounded-lg overflow-hidden transition-all ${currentIndex === index ? 'ring-2 ring-[#EC5A12] opacity-100' : 'opacity-60 hover:opacity-100'}`}
+              className={`w-full aspect-square relative rounded-lg overflow-hidden transition-all ${currentIndex === index ? 'ring-2 ring-[#E00201] opacity-100' : 'opacity-60 hover:opacity-100'}`}
             >
-              <img
-                src={image}
-                alt={`${title} - Thumbnail ${index + 1}`}
-                className="w-full h-full object-cover"
-              />
+              <div className="relative w-full h-full">
+                <Image
+                  src={image}
+                  alt={`${title} - Thumbnail ${index + 1}`}
+                  fill
+                  sizes="(max-width: 768px) 96px, 128px"
+                  className="object-cover"
+                />
+              </div>
             </button>
           ))}
         </div>
@@ -119,7 +129,7 @@ const ListingImages: React.FC<ListingImagesProps> = ({ images, title, onClose })
 
       {/* Buy button */}
       <div className="p-4 bg-black/50 flex justify-center">
-        <button className="bg-[#EC5A12] hover:bg-[#d94e0a] text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+        <button className="bg-[#E00201] hover:bg-[#CB0201] text-white px-8 py-3 rounded-lg font-semibold transition-colors">
           Acheter
         </button>
       </div>

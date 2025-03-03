@@ -67,7 +67,7 @@ export default function LoginPage() {
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-4">
                   <Phone className="h-5 w-5 text-gray-400" />
-                  <span className="ml-4 text-orange-500 font-medium">{countryCode}</span>
+                  <span className="ml-4 text-[#E00201] font-medium">{countryCode}</span>
                 </div>
                 <input
                   type="tel"
@@ -75,7 +75,7 @@ export default function LoginPage() {
                   name="phone"
                   value={phoneNumber}
                   onChange={handlePhoneChange}
-                  className={`block w-full pl-24 pr-4 py-3 border ${isValid ? 'border-gray-300' : 'border-red-500'} rounded-lg focus:ring-2 focus:ring-[#EC5A12] focus:ring-opacity-50 focus:border-[#EC5A12] transition-colors`}
+                  className={`block w-full pl-24 pr-4 py-3 border ${isValid ? 'border-gray-300' : 'border-red-500'} rounded-lg focus:ring-2 focus:ring-[#E00201] focus:ring-opacity-50 focus:border-[#E00201] transition-colors`}
                   placeholder="77 123 45 67"
                   maxLength={9}
                 />
@@ -89,7 +89,7 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              className={`w-full bg-[#EC5A12] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#d94e0a] transition-colors ${!isValid ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`w-full bg-[#E00201] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#CB0201] transition-colors ${!isValid ? 'opacity-50 cursor-not-allowed' : ''}`}
               disabled={!isValid}
             >
               Continuer
@@ -144,7 +144,7 @@ export default function LoginPage() {
             Pas encore de compte ?{' '}
             <Link
               href="/register"
-              className="font-medium text-[#EC5A12] hover:text-[#d94e0a] transition-colors"
+              className="font-medium text-[#E00201] hover:text-[#CB0201] transition-colors"
             >
               S&apos;inscrire
             </Link>

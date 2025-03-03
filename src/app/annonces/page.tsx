@@ -240,7 +240,7 @@ function Pagination({
           onClick={() => onPageChange(page)}
           className={`px-4 py-2 rounded-lg border ${
             currentPage === page
-              ? 'bg-[#EC5A12] text-white border-[#EC5A12]'
+              ? 'bg-[#E00201] text-white border-[#E00201]'
               : 'border-gray-300 hover:bg-gray-50 text-gray-700'
           } 
             transition-colors duration-200`}

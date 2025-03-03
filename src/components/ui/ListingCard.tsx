@@ -115,7 +115,7 @@ const ListingDetails = ({ listing }: { listing: Listing }) => {
   return (
     <div className="relative flex flex-col justify-between h-full mt-6">
       <div>
-        <h2 className="text-base sm:text-lg font-semibold text-gray-900 group-hover:text-[#EC5A12] transition-all duration-300 mb-2">
+        <h2 className="text-base sm:text-lg font-semibold text-gray-900 group-hover:text-[#E00201] transition-all duration-300 mb-2">
           {listing.title}
         </h2>
         <p className="text-sm text-gray-700 mb-3">

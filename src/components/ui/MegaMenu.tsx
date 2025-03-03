@@ -149,7 +149,7 @@ export default function MegaMenu({ category, isOpen }: MegaMenuProps) {
                 <h3 className="text-lg font-semibold text-gray-900">
                   <Link
                     href={section.href}
-                    className="hover:text-[#EC5A12] transition-colors duration-200"
+                    className="hover:text-[#E00201] transition-colors duration-200"
                   >
                     {section.name}
                   </Link>
@@ -160,7 +160,7 @@ export default function MegaMenu({ category, isOpen }: MegaMenuProps) {
                 {section.subcategories.map((item) => (
                   <li key={item.name}>
                     <Link href={item.href} className="group flex flex-col">
-                      <span className="text-base font-medium text-gray-900 group-hover:text-[#EC5A12] transition-colors duration-200">
+                      <span className="text-base font-medium text-gray-900 group-hover:text-[#E00201] transition-colors duration-200">
                         {item.name}
                       </span>
                       {item.description && (

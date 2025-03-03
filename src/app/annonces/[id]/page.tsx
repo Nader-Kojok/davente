@@ -3,8 +3,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Maximize2 } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/ui/Footer';
 import ListingImages from '@/components/ui/ListingImages';
@@ -92,7 +93,7 @@ const mockListings: MockListings = {
       badges: ['pro', 'boost'],
       paymentMethods: ['Wave', 'Orange Money', 'Cash', 'Bank Transfer'],
       acceptsReturns: true,
-      deliveryAvailable: true
+      deliveryAvailable: true,
     },
     specifications: [
       { label: 'Marque', value: 'EPSON' },
@@ -111,6 +112,7 @@ export default function ListingDetailPage() {
   const router = useRouter();
   const params = useParams();
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -171,6 +173,10 @@ export default function ListingDetailPage() {
     setIsFullscreen(false);
   }, []);
 
+  const handleThumbnailClick = useCallback((index: number) => {
+    setCurrentImageIndex(index);
+  }, []);
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -228,29 +234,101 @@ export default function ListingDetailPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Left Column - Images */}
             <div className="space-y-4">
-              {/* Main Image */}
-              <div 
-                className="relative aspect-4/3 rounded-lg overflow-hidden cursor-pointer"
-                onClick={() => setIsFullscreen(true)}
-              >
-                <img
-                  src={listing.images[0]}
-                  alt={listing.title}
-                  className="w-full h-full object-cover"
-                />
+              {/* Main Image with Gallery */}
+              <div className="relative">
+                <div
+                  className="relative aspect-4/3 rounded-lg overflow-hidden h-[400px] group"
+                >
+                  {listing.images.map((image, index) => (
+                    <div
+                      key={image}
+                      className={`absolute inset-0 transition-opacity duration-300 ${
+                        index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+                      }`}
+                      onClick={() => setIsFullscreen(true)}
+                    >
+                      <Image
+                        src={image}
+                        alt={`${listing.title} - Image ${index + 1}`}
+                        fill
+                        priority={index === 0}
+                        sizes="(max-width: 1024px) 100vw, 50vw"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          console.error(
+                            `Image ${index + 1} failed to load:`,
+                            e,
+                          );
+                        }}
+                      />
+                    </div>
+                  ))}
+
+                  {/* Navigation Arrows */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentImageIndex((prev) =>
+                        prev === 0 ? listing.images.length - 1 : prev - 1,
+                      );
+                    }}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full
+                             bg-black/50 text-white opacity-0 group-hover:opacity-100
+                             transition-opacity duration-200 hover:bg-black/70"
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentImageIndex((prev) =>
+                        prev === listing.images.length - 1 ? 0 : prev + 1,
+                      );
+                    }}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full
+                             bg-black/50 text-white opacity-0 group-hover:opacity-100
+                             transition-opacity duration-200 hover:bg-black/70"
+                    aria-label="Next image"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
+
+                  {/* Fullscreen Button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsFullscreen(true);
+                    }}
+                    className="absolute top-2 right-2 p-2 rounded-full
+                             bg-black/50 text-white opacity-0 group-hover:opacity-100
+                             transition-opacity duration-200 hover:bg-black/70"
+                    aria-label="Toggle fullscreen"
+                  >
+                    <Maximize2 className="w-6 h-6" />
+                  </button>
+                </div>
+
+                {/* Image Counter */}
+                <div className="absolute bottom-4 right-4 bg-black/50 text-white
+                            px-3 py-1 rounded-full text-sm">
+                  {currentImageIndex + 1} / {listing.images.length}
+                </div>
               </div>
-              
+
               {/* Thumbnails */}
               <div className="grid grid-cols-5 gap-2">
                 {listing.images.map((image, index) => (
                   <button
                     key={image}
-                    onClick={() => setIsFullscreen(true)}
+                    onClick={() => handleThumbnailClick(index)}
                     className="relative aspect-square rounded-lg overflow-hidden hover:opacity-90 transition-opacity"
                   >
-                    <img
+                    <Image
                       src={image}
                       alt={`${listing.title} - Image ${index + 1}`}
+                      fill
+                      sizes="(max-width: 640px) 20vw, 10vw"
                       className="w-full h-full object-cover"
                     />
                   </button>
@@ -302,8 +380,8 @@ export default function ListingDetailPage() {
                 condition: 'Neuf',
                 seller: {
                   name: 'TechPro',
-                  avatarUrl: 'https://i.pravatar.cc/150?img=2'
-                }
+                  avatarUrl: 'https://i.pravatar.cc/150?img=2',
+                },
               },
               {
                 id: '3',
@@ -313,8 +391,8 @@ export default function ListingDetailPage() {
                 condition: 'Très bon état',
                 seller: {
                   name: 'MediaShop',
-                  avatarUrl: 'https://i.pravatar.cc/150?img=3'
-                }
+                  avatarUrl: 'https://i.pravatar.cc/150?img=3',
+                },
               },
               {
                 id: '4',
@@ -325,8 +403,8 @@ export default function ListingDetailPage() {
                 condition: 'Neuf',
                 seller: {
                   name: 'CinemaPlus',
-                  avatarUrl: 'https://i.pravatar.cc/150?img=4'
-                }
+                  avatarUrl: 'https://i.pravatar.cc/150?img=4',
+                },
               },
               {
                 id: '5',
@@ -337,8 +415,8 @@ export default function ListingDetailPage() {
                 condition: 'Neuf',
                 seller: {
                   name: 'HomeTheater',
-                  avatarUrl: 'https://i.pravatar.cc/150?img=5'
-                }
+                  avatarUrl: 'https://i.pravatar.cc/150?img=5',
+                },
               },
               {
                 id: '6',
@@ -349,8 +427,8 @@ export default function ListingDetailPage() {
                 condition: 'Neuf',
                 seller: {
                   name: 'SmartGear',
-                  avatarUrl: 'https://i.pravatar.cc/150?img=6'
-                }
+                  avatarUrl: 'https://i.pravatar.cc/150?img=6',
+                },
               },
               {
                 id: '7',
@@ -360,13 +438,12 @@ export default function ListingDetailPage() {
                 condition: 'Comme neuf',
                 seller: {
                   name: 'GameTech',
-                  avatarUrl: 'https://i.pravatar.cc/150?img=7'
-                }
-              }
+                  avatarUrl: 'https://i.pravatar.cc/150?img=7',
+                },
+              },
             ]}
             currentListingId={listing.id}
           />
-          
         </div>
       </main>
 
