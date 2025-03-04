@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { ChevronRight, ChevronLeft, Maximize2 } from 'lucide-react';
 import Header from '@/components/Header';
-import Footer from '@/components/ui/Footer';
+import Footer from '@/components/Footer';
 import ListingImages from '@/components/ui/ListingImages';
 import SellerInfo from '@/components/ui/SellerInfo';
 import ListingDetails from '@/components/ui/ListingDetails';

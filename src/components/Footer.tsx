@@ -31,31 +31,21 @@ const footerSections: FooterSection[] = [
     ],
   },
   {
-    title: 'Nos solutions pros',
-    links: [
-      { label: 'Publicité', href: '/pro/advertising' },
-      { label: 'Professionnels de l\'immobilier', href: '/pro/real-estate' },
-      { label: 'Professionnels de l\'auto', href: '/pro/automotive' },
-      { label: 'Toutes nos solutions', href: '/pro' },
-    ],
-  },
-  {
     title: 'Des questions ?',
     links: [
       { label: 'Centre d\'aide', href: '/help' },
       { label: 'FAQ', href: '/faq' },
       { label: 'Contact', href: '/contact' },
-      { label: 'Vous êtes à l\'étranger ?', href: '/international' },
     ],
   },
 ];
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer className="bg-gray-800 text-gray-300">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-8 mb-8">
           {footerSections.map((section) => (
             <div key={section.title}>
               <h3 className="text-white font-semibold text-lg mb-4">{section.title}</h3>
@@ -76,7 +66,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-gray-800">
+        <div className="pt-8 border-t border-gray-700">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center">
               <Image

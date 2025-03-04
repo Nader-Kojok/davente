@@ -6,7 +6,7 @@ import TopCategories from '@/components/TopCategories';
 import CurrentListings from '@/components/CurrentListings';
 import LegalText from '@/components/LegalText';
 import MegaFooter from '@/components/ui/MegaFooter';
-import Footer from '@/components/ui/Footer';
+import Footer from '@/components/Footer';
 
 
 export default function Home() {

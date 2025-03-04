@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Header from '@/components/Header';
-import Footer from '@/components/ui/Footer';
+import Footer from '@/components/Footer';
 import ListingCard from '@/components/ui/ListingCard';
 import { Star, MapPin, MessageCircle, UserPlus, Share2, Flag, ChevronLeft, ChevronRight } from 'lucide-react';
 import { ListingBadge } from '@/components/ui/ListingCard';

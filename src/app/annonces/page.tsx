@@ -5,7 +5,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Header from '@/components/Header';
-import Footer from '@/components/ui/Footer';
+import Footer from '@/components/Footer';
 import FilterBar, { FilterOptions } from '@/components/ui/FilterBar'; //Import the type
 import { ListingBadge } from '@/components/ui/ListingCard';
 import ListingCard from '@/components/ui/ListingCard';
