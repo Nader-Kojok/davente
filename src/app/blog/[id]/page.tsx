@@ -258,7 +258,7 @@ Conclusion Des photos de qualité augmenteront significativement vos chances de 
               </div>
               <div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  À propos de l'auteur
+                  À propos de l&apos;auteur
                 </h3>
                 <p className="text-lg text-gray-600 leading-relaxed">
                   {blogPost.author.bio}

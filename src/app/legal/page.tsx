@@ -126,7 +126,7 @@ Nous nous efforçons de répondre dans les meilleurs délais.`
           {/* Contact Section */}
           <div className="mt-12 text-center">
             <p className="text-gray-600 mb-4">
-              Pour toute question concernant nos mentions légales, n'hésitez pas à nous contacter.
+              Pour toute question concernant nos mentions légales, n&apos;hésitez pas à nous contacter.
             </p>
             <Link
               href="/contact"

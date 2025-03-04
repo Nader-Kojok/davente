@@ -90,7 +90,7 @@ Notre équipe est disponible du lundi au vendredi, de 9h à 18h.`
               priority
             />
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Centre d'aide
+              Centre d&apos;aide
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Trouvez toutes les réponses à vos questions et apprenez à utiliser davente efficacement.

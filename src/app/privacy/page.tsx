@@ -133,7 +133,7 @@ Nous ne vendons jamais vos données personnelles à des tiers.`
           {/* Contact Section */}
           <div className="mt-12 text-center">
             <p className="text-gray-600 mb-4">
-              Pour toute question concernant notre politique de confidentialité, n'hésitez pas à nous contacter.
+              Pour toute question concernant notre politique de confidentialité, n&apos;hésitez pas à nous contacter.
             </p>
             <Link
               href="/contact"

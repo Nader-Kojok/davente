@@ -131,7 +131,7 @@ Notez que la désactivation de certains cookies peut affecter votre expérience 
           {/* Contact Section */}
           <div className="mt-12 text-center">
             <p className="text-gray-600 mb-4">
-              Pour toute question concernant notre utilisation des cookies, n'hésitez pas à nous contacter.
+              Pour toute question concernant notre utilisation des cookies, n&apos;hésitez pas à nous contacter.
             </p>
             <Link
               href="/contact"

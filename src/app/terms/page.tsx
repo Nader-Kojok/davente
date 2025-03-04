@@ -85,7 +85,7 @@ Vos données sont traitées conformément aux lois sur la protection des donnée
               Conditions Générales
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Veuillez lire attentivement nos conditions d'utilisation et notre politique de confidentialité.
+              Veuillez lire attentivement nos conditions d&apos;utilisation et notre politique de confidentialité.
             </p>
           </div>
 

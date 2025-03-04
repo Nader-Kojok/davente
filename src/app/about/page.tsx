@@ -83,7 +83,7 @@ export default function AboutPage() {
                   </svg>
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Communauté</h3>
-                <p className="text-gray-600">Nous créons une communauté dynamique d'acheteurs et de vendeurs de confiance.</p>
+                <p className="text-gray-600">Nous créons une communauté dynamique d&apos;acheteurs et de vendeurs de confiance.</p>
               </div>
               <div>
                 <div className="w-12 h-12 bg-[#E00201] rounded-lg flex items-center justify-center mb-4">

@@ -101,10 +101,10 @@ export default function CareersPage() {
             </h2>
             <div className="prose max-w-none text-gray-600">
               <p className="mb-4">
-                Chez davente, nous cultivons un environnement de travail dynamique et inclusif où chaque membre de l'équipe peut s'épanouir et contribuer à notre mission commune.
+                Chez davente, nous cultivons un environnement de travail dynamique et inclusif où chaque membre de l&apos;équipe peut s&apos;épanouir et contribuer à notre mission commune.
               </p>
               <p>
-                Nous valorisons l'innovation, la collaboration et l'apprentissage continu. Notre culture est basée sur la confiance, le respect mutuel et la passion pour l'excellence.
+                Nous valorisons l&apos;innovation, la collaboration et l&apos;apprentissage continu. Notre culture est basée sur la confiance, le respect mutuel et la passion pour l&apos;excellence.
               </p>
             </div>
           </div>
