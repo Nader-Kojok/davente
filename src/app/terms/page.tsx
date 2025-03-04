@@ -9,8 +9,8 @@ import Footer from '@/components/Footer';
 export default function TermsPage() {
   const sections = [
     {
-      title: 'Conditions Générales d\'Utilisation',
-      content: `En accédant à davente, vous acceptez d'être lié par ces conditions d'utilisation, toutes les lois et réglementations applicables, et acceptez que vous êtes responsable du respect des lois locales applicables. Si vous n'acceptez pas ces conditions, vous ne devez pas utiliser ou accéder à ce site.
+      title: 'Conditions Générales d&apos;Utilisation',
+      content: `En accédant à davente, vous acceptez d&apos;être lié par ces conditions d&apos;utilisation, toutes les lois et réglementations applicables, et acceptez que vous êtes responsable du respect des lois locales applicables. Si vous n&apos;acceptez pas ces conditions, vous ne devez pas utiliser ou accéder à ce site.
 
 Les documents contenus dans ce site Web sont protégés par les lois applicables sur la propriété intellectuelle.`
     },
@@ -122,7 +122,7 @@ Vos données sont traitées conformément aux lois sur la protection des donnée
           {/* Contact Section */}
           <div className="mt-12 text-center">
             <p className="text-gray-600 mb-4">
-              Pour toute question concernant nos conditions d'utilisation, veuillez nous contacter.
+              Pour toute question concernant nos conditions d&apos;utilisation, veuillez nous contacter.
             </p>
             <Link
               href="/contact"
