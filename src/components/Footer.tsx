@@ -70,11 +70,11 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center">
               <Image
-                src="/logo.svg"
+                src="/logo_white.svg"
                 alt="Davente Logo"
                 width={80}
                 height={30}
-                className="h-6 w-auto"
+                className="h-10 w-auto"
               />
             </div>
 

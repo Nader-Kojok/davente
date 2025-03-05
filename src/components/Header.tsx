@@ -145,7 +145,7 @@ export default function Header() {
               alt="Davente Logo"
               width={80}
               height={30}
-              className="h-6 w-auto"
+              className="h-10 w-auto"
               priority
             />
           </Link>
@@ -223,7 +223,7 @@ export default function Header() {
                 alt="Davente Logo"
                 width={80}
                 height={30}
-                className="h-6 w-auto"
+                className="h-10 w-auto"
                 priority
               />
             </Link>

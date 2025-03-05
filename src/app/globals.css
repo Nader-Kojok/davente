@@ -17,11 +17,11 @@
   }
 
   h2 {
-    @apply text-2xl font-semibold text-gray-900 font-heading;
+    @apply text-2xl font-bold text-gray-900 font-heading;
   }
 
   h3 {
-    @apply text-xl font-semibold text-gray-900 font-heading;
+    @apply text-xl font-bold text-gray-900 font-heading;
   }
 
   p {
@@ -52,4 +52,21 @@
 body {
   color: var(--foreground);
   background: var(--background);
+}
+@keyframes scaleCheck {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-scale-check {
+  animation: scaleCheck 0.5s ease-out forwards;
 }
