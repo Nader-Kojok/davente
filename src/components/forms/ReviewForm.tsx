@@ -103,7 +103,7 @@ export default function ReviewForm({ adData, onEdit, onSubmit }: ReviewFormProps
 
   return (
     <div className="space-y-8">
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">Aperçu de l'annonce</h2>
+      <h2 className="text-xl font-semibold text-gray-900 mb-6">Aperçu de l&apos;annonce</h2>
 
       {/* Preview Section */}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
@@ -222,7 +222,7 @@ export default function ReviewForm({ adData, onEdit, onSubmit }: ReviewFormProps
             <p>Durée de publication: {adData.options.duration} jours</p>
             {adData.options.featured && <p>✓ Annonce en vedette</p>}
             {adData.options.highlighted && <p>✓ Annonce surlignée</p>}
-            {adData.options.pushToTop && <p>✓ Remonter l'annonce</p>}
+            {adData.options.pushToTop && <p>✓ Remonter l&apos;annonce</p>}
             {adData.options.autoRenew && <p>✓ Renouvellement automatique</p>}
           </div>
         </div>
