@@ -6,6 +6,16 @@ import BaseLink from "next/link";
 // Example data array to populate the footer columns
 const megaFooterData = [
   {
+    title: "Mode & Accessoires",
+    links: [
+      "Vêtements",
+      "Chaussures",
+      "Bijoux & Montres",
+      "Sacs & Bagagerie",
+      "Accessoires de mode",
+    ],
+  },
+  {
     title: "Emploi",
     links: [
       "Offres d'emploi",

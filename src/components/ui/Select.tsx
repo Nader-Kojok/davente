@@ -28,10 +28,11 @@ const Select: React.FC<SelectProps> = ({
       <div className="relative">
         <select
           id={props.id}
-          className={`form-input appearance-none pr-8 ${className} ${error ? 'border-red-500' : ''
-            } w-full px-4 py-2 text-left bg-white border border-gray-300 rounded-lg
+          className={`form-input appearance-none pr-8 ${className} ${
+            error ? 'border-red-500' : ''
+          } w-full px-4 py-3 text-left bg-white border border-gray-300 rounded-lg
                          hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-[#E00201]
-                         focus:border-transparent flex items-center justify-between`}
+                         focus:border-transparent`}
           {...props}
         >
           {options.map((option) => (
@@ -39,7 +40,7 @@ const Select: React.FC<SelectProps> = ({
               {option.label}
             </option>
           ))}
-        </select>
+          </select>
         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
           <ChevronDown className="w-4 h-4" />
         </div>
