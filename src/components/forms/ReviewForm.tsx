@@ -1,8 +1,19 @@
-'use client';
+// ReviewForm.tsx
+"use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
-import { ChevronRight, Edit2, ChevronLeft, Phone, Mail, MessageSquare, Clock, MapPin, X, Check, Facebook, Twitter } from 'lucide-react';
+import { useState } from "react";
+import Image from "next/image";
+import {
+  ChevronRight,
+  Edit2,
+  ChevronLeft,
+  Phone,
+  Mail,
+  MessageSquare,
+  Clock,
+  MapPin,
+  X,
+} from "lucide-react";
 
 type ReviewFormProps = {
   adData: {
@@ -35,13 +46,17 @@ type ReviewFormProps = {
   onSubmit: () => void;
 };
 
-export default function ReviewForm({ adData, onEdit, onSubmit }: ReviewFormProps) {
+export default function ReviewForm({
+  adData,
+  onEdit,
+  onSubmit,
+}: ReviewFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedPayment, setSelectedPayment] = useState<'wave' | 'om' | null>(null);
+  const [selectedPayment, setSelectedPayment] =
+    useState<"wave" | "om" | null>(null);
   const [showQRCode, setShowQRCode] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
 
-  const handlePaymentSelect = (method: 'wave' | 'om') => {
+  const handlePaymentSelect = (method: "wave" | "om") => {
     setSelectedPayment(method);
     setShowQRCode(true);
   };
@@ -54,41 +69,25 @@ export default function ReviewForm({ adData, onEdit, onSubmit }: ReviewFormProps
     e.preventDefault();
     setIsSubmitting(true);
     // TODO: Implement actual ad submission
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
-    setShowSuccess(true);
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulated API call
     setIsSubmitting(false);
     onSubmit();
   };
 
-  const handleShare = (platform: string) => {
-    const url = window.location.href;
-    const text = `Check out my ad: ${adData.title}`;
 
-    switch (platform) {
-      case 'facebook':
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
-        break;
-      case 'twitter':
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
-        break;
-      case 'whatsapp':
-        window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
-        break;
-    }
-  };
 
   const formatPrice = (price: number) => {
-    return price.toLocaleString() + ' FCFA';
+    return price.toLocaleString() + " FCFA";
   };
 
   const formatAvailability = (availability: string[]) => {
     const labels: Record<string, string> = {
-      morning: 'Matin (8h-12h)',
-      afternoon: 'Après-midi (12h-17h)',
-      evening: 'Soir (17h-20h)',
-      anytime: 'À tout moment'
+      morning: "Matin (8h-12h)",
+      afternoon: "Après-midi (12h-17h)",
+      evening: "Soir (17h-20h)",
+      anytime: "À tout moment",
     };
-    return availability.map(a => labels[a]).join(', ');
+    return availability.map((a) => labels[a]).join(", ");
   };
 
   const [currentImage, setCurrentImage] = useState(0);
@@ -98,12 +97,16 @@ export default function ReviewForm({ adData, onEdit, onSubmit }: ReviewFormProps
   };
 
   const prevImage = () => {
-    setCurrentImage((prev) => (prev - 1 + adData.images.length) % adData.images.length);
+    setCurrentImage(
+      (prev) => (prev - 1 + adData.images.length) % adData.images.length
+    );
   };
 
   return (
     <div className="space-y-8">
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">Aperçu de l&apos;annonce</h2>
+      <h2 className="text-xl font-semibold text-gray-900 mb-6">
+        Aperçu de l&apos;annonce
+      </h2>
 
       {/* Preview Section */}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
@@ -147,7 +150,11 @@ export default function ReviewForm({ adData, onEdit, onSubmit }: ReviewFormProps
             <button
               key={index}
               onClick={() => setCurrentImage(index)}
-              className={`relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden ${currentImage === index ? 'ring-2 ring-[#E00201]' : 'opacity-70 hover:opacity-100'}`}
+              className={`relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden ${
+                currentImage === index
+                  ? "ring-2 ring-[#E00201]"
+                  : "opacity-70 hover:opacity-100"
+              }`}
             >
               <Image
                 src={image}
@@ -162,9 +169,13 @@ export default function ReviewForm({ adData, onEdit, onSubmit }: ReviewFormProps
         {/* Main Content */}
         <div className="p-6 space-y-6">
           <div className="space-y-4">
-            <h1 className="text-2xl font-semibold text-gray-900">{adData.title}</h1>
+            <h1 className="text-2xl font-semibold text-gray-900">
+              {adData.title}
+            </h1>
             <div className="flex items-baseline space-x-4">
-              <span className="text-3xl font-bold text-[#E00201]">{formatPrice(adData.price)}</span>
+              <span className="text-3xl font-bold text-[#E00201]">
+                {formatPrice(adData.price)}
+              </span>
               <span className="text-gray-600">État: {adData.condition}</span>
             </div>
           </div>
@@ -175,7 +186,9 @@ export default function ReviewForm({ adData, onEdit, onSubmit }: ReviewFormProps
 
           <div className="flex items-center text-gray-600 space-x-2">
             <MapPin className="w-4 h-4" />
-            <span>{adData.city}, {adData.region}</span>
+            <span>
+              {adData.city}, {adData.region}
+            </span>
           </div>
 
           {/* Additional Fields */}
@@ -233,7 +246,7 @@ export default function ReviewForm({ adData, onEdit, onSubmit }: ReviewFormProps
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-medium text-gray-900">Catégorie</h3>
           <button
-            onClick={() => onEdit('category')}
+            onClick={() => onEdit("category")}
             className="text-[#E00201] hover:text-[#CB0201] flex items-center text-sm font-medium"
           >
             <Edit2 className="w-4 h-4 mr-1" />
@@ -250,9 +263,11 @@ export default function ReviewForm({ adData, onEdit, onSubmit }: ReviewFormProps
       {/* Details Section */}
       <div className="border rounded-lg p-6 space-y-4">
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-medium text-gray-900">Détails de l&apos;annonce</h3>
+          <h3 className="text-lg font-medium text-gray-900">
+            Détails de l&apos;annonce
+          </h3>
           <button
-            onClick={() => onEdit('details')}
+            onClick={() => onEdit("details")}
             className="text-[#E00201] hover:text-[#CB0201] flex items-center text-sm font-medium"
           >
             <Edit2 className="w-4 h-4 mr-1" />
@@ -284,7 +299,7 @@ export default function ReviewForm({ adData, onEdit, onSubmit }: ReviewFormProps
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-medium text-gray-900">Photos</h3>
           <button
-            onClick={() => onEdit('media')}
+            onClick={() => onEdit("media")}
             className="text-[#E00201] hover:text-[#CB0201] flex items-center text-sm font-medium"
           >
             <Edit2 className="w-4 h-4 mr-1" />
@@ -299,7 +314,7 @@ export default function ReviewForm({ adData, onEdit, onSubmit }: ReviewFormProps
                 alt={`Image ${index + 1}`}
                 className="object-cover rounded-lg"
                 fill
-                style={{ objectFit: 'cover' }} // Add objectFit style
+                style={{ objectFit: "cover" }} // Add objectFit style
               />
             </div>
           ))}
@@ -309,9 +324,11 @@ export default function ReviewForm({ adData, onEdit, onSubmit }: ReviewFormProps
       {/* Contact Section */}
       <div className="border rounded-lg p-6 space-y-4">
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-medium text-gray-900">Informations de contact</h3>
+          <h3 className="text-lg font-medium text-gray-900">
+            Informations de contact
+          </h3>
           <button
-            onClick={() => onEdit('contact')}
+            onClick={() => onEdit("contact")}
             className="text-[#E00201] hover:text-[#CB0201] flex items-center text-sm font-medium"
           >
             <Edit2 className="w-4 h-4 mr-1" />
@@ -320,12 +337,8 @@ export default function ReviewForm({ adData, onEdit, onSubmit }: ReviewFormProps
         </div>
         <div className="space-y-2 text-gray-600">
           <p>Téléphone: {adData.contact.phoneNumber}</p>
-          {adData.contact.whatsapp && (
-            <p>Disponible sur WhatsApp</p>
-          )}
-          {adData.contact.email && (
-            <p>Email: {adData.contact.email}</p>
-          )}
+          {adData.contact.whatsapp && <p>Disponible sur WhatsApp</p>}
+          {adData.contact.email && <p>Email: {adData.contact.email}</p>}
           <p>Mode de contact préféré: {adData.contact.preferredContact}</p>
           <p>Disponibilité: {formatAvailability(adData.contact.availability)}</p>
         </div>
@@ -334,9 +347,11 @@ export default function ReviewForm({ adData, onEdit, onSubmit }: ReviewFormProps
       {/* Options Section */}
       <div className="border rounded-lg p-6 space-y-4">
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-medium text-gray-900">Options de publication</h3>
+          <h3 className="text-lg font-medium text-gray-900">
+            Options de publication
+          </h3>
           <button
-            onClick={() => onEdit('options')}
+            onClick={() => onEdit("options")}
             className="text-[#E00201] hover:text-[#CB0201] flex items-center text-sm font-medium"
           >
             <Edit2 className="w-4 h-4 mr-1" />
@@ -345,28 +360,26 @@ export default function ReviewForm({ adData, onEdit, onSubmit }: ReviewFormProps
         </div>
         <div className="space-y-2 text-gray-600">
           <p>Durée de publication: {adData.options.duration} jours</p>
-          {adData.options.featured && (
-            <p>✓ Annonce en vedette</p>
-          )}
-          {adData.options.highlighted && (
-            <p>✓ Annonce surlignée</p>
-          )}
-          {adData.options.pushToTop && (
-            <p>✓ Remonter l&apos;annonce</p>
-          )}
-          {adData.options.autoRenew && (
-            <p>✓ Renouvellement automatique</p>
-          )}
+          {adData.options.featured && <p>✓ Annonce en vedette</p>}
+          {adData.options.highlighted && <p>✓ Annonce surlignée</p>}
+          {adData.options.pushToTop && <p>✓ Remonter l&apos;annonce</p>}
+          {adData.options.autoRenew && <p>✓ Renouvellement automatique</p>}
         </div>
       </div>
 
       {/* Payment Options */}
       <div className="border rounded-lg p-6 space-y-4">
-        <h3 className="text-lg font-medium text-gray-900">Options de paiement</h3>
+        <h3 className="text-lg font-medium text-gray-900">
+          Options de paiement
+        </h3>
         <div className="grid grid-cols-2 gap-4">
           <button
-            onClick={() => handlePaymentSelect('wave')}
-            className={`p-4 border rounded-lg flex items-center justify-center space-x-2 transition-colors ${selectedPayment === 'wave' ? 'border-[#E00201] bg-red-50' : 'border-gray-200 hover:border-gray-300'}`}
+            onClick={() => handlePaymentSelect("wave")}
+            className={`p-4 border rounded-lg flex items-center justify-center space-x-2 transition-colors ${
+              selectedPayment === "wave"
+                ? "border-[#E00201] bg-red-50"
+                : "border-gray-200 hover:border-gray-300"
+            }`}
           >
             <Image
               src="/wave.png"
@@ -378,8 +391,12 @@ export default function ReviewForm({ adData, onEdit, onSubmit }: ReviewFormProps
             <span className="font-medium">Wave</span>
           </button>
           <button
-            onClick={() => handlePaymentSelect('om')}
-            className={`p-4 border rounded-lg flex items-center justify-center space-x-2 transition-colors ${selectedPayment === 'om' ? 'border-[#E00201] bg-red-50' : 'border-gray-200 hover:border-gray-300'}`}
+            onClick={() => handlePaymentSelect("om")}
+            className={`p-4 border rounded-lg flex items-center justify-center space-x-2 transition-colors ${
+              selectedPayment === "om"
+                ? "border-[#E00201] bg-red-50"
+                : "border-gray-200 hover:border-gray-300"
+            }`}
           >
             <Image
               src="/om.png"
@@ -399,7 +416,8 @@ export default function ReviewForm({ adData, onEdit, onSubmit }: ReviewFormProps
           <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-medium text-gray-900">
-                Scanner le code QR {selectedPayment === 'wave' ? 'Wave' : 'Orange Money'}
+                Scanner le code QR{" "}
+                {selectedPayment === "wave" ? "Wave" : "Orange Money"}
               </h3>
               <button
                 onClick={handleCloseQRCode}
@@ -411,64 +429,28 @@ export default function ReviewForm({ adData, onEdit, onSubmit }: ReviewFormProps
             <div className="aspect-square w-full bg-gray-100 rounded-lg flex items-center justify-center">
               {/* Placeholder for QR Code - Replace with actual QR code implementation */}
               <div className="text-gray-400 text-center">
-                <p>Code QR {selectedPayment === 'wave' ? 'Wave' : 'Orange Money'}</p>
+                <p>
+                  Code QR {selectedPayment === "wave" ? "Wave" : "Orange Money"}
+                </p>
                 <p className="text-sm mt-2">Scannez pour effectuer le paiement</p>
               </div>
             </div>
           </div>
         </div>
       )}
-
-      {/* Success Modal */}
-      {showSuccess && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 relative overflow-hidden">
-            <div className="text-center">
-              <div className="mb-4 flex justify-center">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center animate-scale-check">
-                  <Check className="w-8 h-8 text-green-500" />
-                </div>
-              </div>
-              <h3 className="text-2xl font-semibold text-gray-900 mb-2">Annonce publiée avec succès!</h3>
-              <p className="text-gray-600 mb-6">Votre annonce est maintenant en ligne et visible par tous les utilisateurs.</p>
-              
-              <div className="space-y-4">
-                <p className="text-sm font-medium text-gray-700">Partagez votre annonce</p>
-                <div className="flex justify-center space-x-4">
-                  <button
-                    onClick={() => handleShare('facebook')}
-                    className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors"
-                  >
-                    <Facebook className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={() => handleShare('twitter')}
-                    className="p-2 bg-sky-500 text-white rounded-full hover:bg-sky-600 transition-colors"
-                  >
-                    <Twitter className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={() => handleShare('whatsapp')}
-                    className="p-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors"
-                  >
-                    <MessageSquare className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Submit Button */}
       <div className="pt-6">
         <button
           type="submit"
           onClick={handleSubmit}
           disabled={isSubmitting}
-          className={`w-full py-3 px-4 rounded-lg text-white font-medium ${isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#E00201] hover:bg-[#CB0201]'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E00201] transition-colors`}
+          className={`w-full py-3 px-4 rounded-lg text-white font-medium ${
+            isSubmitting
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-[#E00201] hover:bg-[#CB0201]"
+          } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E00201] transition-colors`}
         >
-          {isSubmitting ? 'Publication en cours...' : 'Publier l\'annonce'}
+          {isSubmitting ? "Publication en cours..." : "Publier l'annonce"}
         </button>
       </div>
     </div>

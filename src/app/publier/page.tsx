@@ -10,6 +10,7 @@ import ContactForm, { ContactFormData } from '@/components/forms/ContactForm';
 import OptionsForm from '@/components/forms/OptionsForm';
 import ReviewForm from '@/components/forms/ReviewForm';
 import Stepper from '@/components/ui/Stepper';
+import SuccessModal from '@/components/ui/SuccessModal'; // Import SuccessModal
 
 type FormStep = 'categorie' | 'details' | 'media' | 'contact' | 'options' | 'verification';
 
@@ -77,6 +78,8 @@ export default function AdPostingPage() {
     },
   });
 
+  const [showSuccess, setShowSuccess] = useState(false); // Add showSuccess state
+
   const handleCategorySelect = (category: string, subcategory: string) => {
     setSelectedCategory(category);
     setSelectedSubcategory(subcategory);
@@ -98,6 +101,33 @@ export default function AdPostingPage() {
 
   const handleStepClick = (step: string) => {
     setCurrentStep(step as FormStep);
+  };
+
+  const handleSubmit = () => {
+    // TODO: Implement final submission logic here
+    console.log('Final submission:', adData);
+    setShowSuccess(true); // Show the success modal after submission
+  };
+
+  const handleEdit = (step: string) => {
+    setCurrentStep(step as FormStep);
+  };
+
+  const handleShare = (platform: string) => {
+    const url = window.location.href;
+    const text = `Check out my ad: ${adData.title}`;
+
+    switch (platform) {
+      case 'facebook':
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+        break;
+      case 'twitter':
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        break;
+      case 'whatsapp':
+        window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+        break;
+    }
   };
 
   return (
@@ -168,11 +198,8 @@ export default function AdPostingPage() {
             {currentStep === 'verification' && (
               <ReviewForm
                 adData={adData}
-                onEdit={(step) => setCurrentStep(step as FormStep)}
-                onSubmit={() => {
-                  // TODO: Implement final submission
-                  console.log('Final submission:', adData);
-                }}
+                onEdit={handleEdit}
+                onSubmit={handleSubmit} // Call handleSubmit directly
               />
             )}
           </div>
@@ -180,6 +207,15 @@ export default function AdPostingPage() {
       </main>
 
       <Footer />
+
+      {/* Success Modal */}
+      <SuccessModal
+        show={showSuccess}
+        title="Annonce publiée avec succès!"
+        message="Votre annonce est maintenant en ligne et visible par tous les utilisateurs."
+        onShare={handleShare}
+        id={adData.title} // Add the required id prop
+      />
     </div>
   );
 }
