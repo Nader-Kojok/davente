@@ -80,14 +80,14 @@ export default function CareersPage() {
           <div className="text-center mb-16">
             <Image
               src="/logo.svg"
-              alt="Davente Logo"
+              alt="Grabi Logo"
               width={160}
               height={60}
               className="mx-auto mb-8"
               priority
             />
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Carrières chez davente
+              Carrières chez Grabi
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Rejoignez une équipe passionnée et contribuez à transformer le commerce en ligne au Sénégal.
@@ -101,7 +101,7 @@ export default function CareersPage() {
             </h2>
             <div className="prose max-w-none text-gray-600">
               <p className="mb-4">
-                Chez davente, nous cultivons un environnement de travail dynamique et inclusif où chaque membre de l&apos;équipe peut s&apos;épanouir et contribuer à notre mission commune.
+                Chez Grabi, nous cultivons un environnement de travail dynamique et inclusif où chaque membre de l&apos;équipe peut s&apos;épanouir et contribuer à notre mission commune.
               </p>
               <p>
                 Nous valorisons l&apos;innovation, la collaboration et l&apos;apprentissage continu. Notre culture est basée sur la confiance, le respect mutuel et la passion pour l&apos;excellence.

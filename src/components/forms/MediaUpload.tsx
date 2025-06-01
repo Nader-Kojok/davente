@@ -3,24 +3,60 @@
 import { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { useDropzone } from 'react-dropzone';
-import { X, RotateCw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, RotateCw, ChevronLeft, ChevronRight, Upload } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 type MediaUploadProps = {
-  onSubmit: (images: File[]) => void;
+  onSubmit: (imageUrls: string[]) => void;
 };
 
 type UploadedImage = {
-  file: File;
+  url: string;
   preview: string;
   rotation: number;
+  isUploading?: boolean;
 };
 
 export default function MediaUpload({ onSubmit }: MediaUploadProps) {
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const uploadFiles = async (files: File[]) => {
+    setIsUploading(true);
+    setUploadError(null);
+
+    try {
+      const formData = new FormData();
+      files.forEach(file => {
+        formData.append('files', file);
+      });
+
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const result = await response.json();
+      return result.files; // Array of uploaded file URLs
+    } catch (error) {
+      console.error('Upload error:', error);
+      throw error;
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
+    async (acceptedFiles: File[]) => {
       setUploadError(null);
 
       if (uploadedImages.length + acceptedFiles.length > 10) {
@@ -28,14 +64,47 @@ export default function MediaUpload({ onSubmit }: MediaUploadProps) {
         return;
       }
 
-      const newImages = acceptedFiles.map((file) => ({
-        file,
+      // Add temporary images with loading state
+      const tempImages = acceptedFiles.map((file) => ({
+        url: '',
         preview: URL.createObjectURL(file),
         rotation: 0,
+        isUploading: true,
       }));
 
-      setUploadedImages((prev) => [...prev, ...newImages]);
-      // Don't call onSubmit here, wait for the user to click the continue button
+      setUploadedImages((prev) => [...prev, ...tempImages]);
+
+      try {
+        // Upload files to server
+        const uploadedUrls = await uploadFiles(acceptedFiles);
+        
+        // Update images with actual URLs
+        setUploadedImages((prev) => {
+          const newImages = [...prev];
+          const startIndex = newImages.length - acceptedFiles.length;
+          
+          uploadedUrls.forEach((url: string, index: number) => {
+            if (newImages[startIndex + index]) {
+              newImages[startIndex + index] = {
+                ...newImages[startIndex + index],
+                url,
+                isUploading: false,
+              };
+            }
+          });
+          
+          return newImages;
+        });
+
+        toast.success(`${acceptedFiles.length} image(s) téléchargée(s) avec succès`);
+      } catch (error) {
+        // Remove failed uploads
+        setUploadedImages((prev) => 
+          prev.filter(img => !img.isUploading)
+        );
+        setUploadError('Erreur lors du téléchargement des images');
+        toast.error('Erreur lors du téléchargement');
+      }
     },
     [uploadedImages.length]
   );
@@ -46,6 +115,7 @@ export default function MediaUpload({ onSubmit }: MediaUploadProps) {
       'image/*': ['.jpeg', '.jpg', '.png', '.webp'],
     },
     maxSize: 5 * 1024 * 1024, // 5MB
+    disabled: isUploading,
   });
 
   const removeImage = (index: number) => {
@@ -87,29 +157,29 @@ export default function MediaUpload({ onSubmit }: MediaUploadProps) {
         className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors duration-200 ${
           isDragActive
             ? 'border-[#E00201] bg-red-50'
+            : isUploading
+            ? 'border-gray-200 bg-gray-50 cursor-not-allowed'
             : 'border-gray-300 hover:border-[#E00201]'
         }`}
       >
         <input {...getInputProps()} />
         <div className="space-y-4">
           <div className="flex justify-center">
-            <svg
-              className="w-12 h-12 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 48 48"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-              />
-            </svg>
+            {isUploading ? (
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E00201]"></div>
+            ) : (
+              <Upload className="w-12 h-12 text-gray-400" />
+            )}
           </div>
           <div className="text-gray-600">
-            <p className="text-lg font-medium">Glissez-déposez vos images ici</p>
-            <p className="text-sm">ou cliquez pour sélectionner des fichiers</p>
+            {isUploading ? (
+              <p className="text-lg font-medium">Téléchargement en cours...</p>
+            ) : (
+              <>
+                <p className="text-lg font-medium">Glissez-déposez vos images ici</p>
+                <p className="text-sm">ou cliquez pour sélectionner des fichiers</p>
+              </>
+            )}
           </div>
           <div className="text-xs text-gray-500">
             <p>Format acceptés: JPG, PNG, WebP</p>
@@ -133,41 +203,50 @@ export default function MediaUpload({ onSubmit }: MediaUploadProps) {
                   className="object-cover transition-transform duration-200 group-hover:scale-105"
                   style={{ transform: `rotate(${image.rotation}deg)` }}
                 />
+                
+                {/* Loading overlay */}
+                {image.isUploading && (
+                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                  </div>
+                )}
               </div>
 
               {/* Image Controls */}
-              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                <div className="flex space-x-2">
-                  {index > 0 && (
+              {!image.isUploading && (
+                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <div className="flex space-x-2">
+                    {index > 0 && (
+                      <button
+                        onClick={() => moveImage(index, 'left')}
+                        className="p-1.5 bg-white rounded-full text-gray-700 hover:text-[#E00201] transition-colors"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                    )}
                     <button
-                      onClick={() => moveImage(index, 'left')}
+                      onClick={() => rotateImage(index)}
                       className="p-1.5 bg-white rounded-full text-gray-700 hover:text-[#E00201] transition-colors"
                     >
-                      <ChevronLeft className="w-4 h-4" />
+                      <RotateCw className="w-4 h-4" />
                     </button>
-                  )}
-                  <button
-                    onClick={() => rotateImage(index)}
-                    className="p-1.5 bg-white rounded-full text-gray-700 hover:text-[#E00201] transition-colors"
-                  >
-                    <RotateCw className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => removeImage(index)}
-                    className="p-1.5 bg-white rounded-full text-gray-700 hover:text-[#E00201] transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                  {index < uploadedImages.length - 1 && (
                     <button
-                      onClick={() => moveImage(index, 'right')}
+                      onClick={() => removeImage(index)}
                       className="p-1.5 bg-white rounded-full text-gray-700 hover:text-[#E00201] transition-colors"
                     >
-                      <ChevronRight className="w-4 h-4" />
+                      <X className="w-4 h-4" />
                     </button>
-                  )}
+                    {index < uploadedImages.length - 1 && (
+                      <button
+                        onClick={() => moveImage(index, 'right')}
+                        className="p-1.5 bg-white rounded-full text-gray-700 hover:text-[#E00201] transition-colors"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Image Number Badge */}
               <div className="absolute top-2 left-2 bg-white bg-opacity-75 rounded-full w-6 h-6 flex items-center justify-center text-sm font-medium text-gray-700">
@@ -181,15 +260,17 @@ export default function MediaUpload({ onSubmit }: MediaUploadProps) {
       <div className="flex justify-end mt-6">
         <button
           onClick={() => {
-            if (uploadedImages.length === 0) {
-              setUploadError('Please upload at least one image');
+            const completedImages = uploadedImages.filter(img => !img.isUploading);
+            if (completedImages.length === 0) {
+              setUploadError('Veuillez télécharger au moins une image');
               return;
             }
-            onSubmit(uploadedImages.map((img) => img.file));
+            onSubmit(completedImages.map((img) => img.url));
           }}
-          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#E00201] hover:bg-[#CB0201] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E00201]"
+          disabled={isUploading || uploadedImages.some(img => img.isUploading)}
+          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#E00201] hover:bg-[#CB0201] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E00201] disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Continue
+          {isUploading || uploadedImages.some(img => img.isUploading) ? 'Téléchargement...' : 'Continuer'}
         </button>
       </div>
     </div>

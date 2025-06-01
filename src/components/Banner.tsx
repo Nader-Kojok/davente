@@ -1,6 +1,19 @@
+'use client';
+
 import PrimaryButton from './ui/PrimaryButton';
 import Image from 'next/image';
 import { SquarePlus } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+
+function AuthenticatedButton() {
+  const { isAuthenticated } = useAuth();
+  
+  return (
+    <PrimaryButton href={isAuthenticated ? "/publier" : "/login"} icon={SquarePlus}>
+      Déposer une annonce
+    </PrimaryButton>
+  );
+}
 
 export default function Banner() {
   return (
@@ -21,9 +34,7 @@ export default function Banner() {
             <h1 className="text-4xl sm:text-3xl font-bold mb-4 font-heading">
               C&apos;est le moment de vendre
             </h1>
-            <PrimaryButton href="/publier" icon={SquarePlus}>
-              Déposer une annonce
-            </PrimaryButton>
+            <AuthenticatedButton />
           </div>
         </div>
       </div>

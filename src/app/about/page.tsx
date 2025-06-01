@@ -47,14 +47,14 @@ export default function AboutPage() {
           <div className="text-center mb-16">
             <Image
               src="/logo.svg"
-              alt="Davente Logo"
+              alt="Grabi Logo"
               width={160}
               height={60}
               className="mx-auto mb-8"
               priority
             />
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              À propos de davente
+              À propos de Grabi
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               La première plateforme de commerce en ligne au Sénégal, connectant acheteurs et vendeurs dans un environnement sûr et convivial.

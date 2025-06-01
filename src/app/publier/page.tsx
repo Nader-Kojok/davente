@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CategorySelect from '@/components/forms/CategorySelect';
@@ -11,6 +13,7 @@ import OptionsForm from '@/components/forms/OptionsForm';
 import ReviewForm from '@/components/forms/ReviewForm';
 import Stepper from '@/components/ui/Stepper';
 import SuccessModal from '@/components/ui/SuccessModal'; // Import SuccessModal
+import toast from 'react-hot-toast';
 
 type FormStep = 'categorie' | 'details' | 'media' | 'contact' | 'options' | 'verification';
 
@@ -48,6 +51,8 @@ type AdData = {
 };
 
 export default function AdPostingPage() {
+  const { user, isAuthenticated, token } = useAuth();
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState<FormStep>('categorie');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedSubcategory, setSelectedSubcategory] = useState<string>('');
@@ -103,10 +108,75 @@ export default function AdPostingPage() {
     setCurrentStep(step as FormStep);
   };
 
-  const handleSubmit = () => {
-    // TODO: Implement final submission logic here
-    console.log('Final submission:', adData);
-    setShowSuccess(true); // Show the success modal after submission
+  const handleSubmit = async () => {
+    // Vérifier l'authentification
+    if (!isAuthenticated || !token) {
+      toast.error('Vous devez être connecté pour publier une annonce');
+      router.push('/login');
+      return;
+    }
+
+    try {
+      // Préparer les données pour l'API
+      const annonceData = {
+        title: adData.title,
+        description: adData.description,
+        price: adData.price,
+        location: `${adData.city}, ${adData.region}`,
+        picture: adData.images[0] || '/images/placeholder.svg',
+        gallery: adData.images,
+        category: adData.category,
+        subcategory: adData.subcategory,
+        condition: adData.condition,
+        additionalFields: adData.additionalFields
+      };
+
+      console.log('Envoi des données:', annonceData);
+      console.log('Token utilisé:', token?.substring(0, 20) + '...');
+
+      const response = await fetch('/api/annonces', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(annonceData)
+      });
+
+      console.log('Statut de la réponse:', response.status);
+      console.log('Headers de la réponse:', response.headers);
+
+      // Vérifier le type de contenu avant de parser
+      const contentType = response.headers.get('content-type');
+      let responseData;
+      
+      if (contentType && contentType.includes('application/json')) {
+        responseData = await response.json();
+      } else {
+        // Si ce n'est pas du JSON, lire en tant que texte
+        const textResponse = await response.text();
+        console.log('Réponse non-JSON:', textResponse);
+        responseData = { error: 'Réponse serveur invalide', details: textResponse };
+      }
+
+      if (response.ok) {
+        console.log('Annonce créée avec succès:', responseData);
+        toast.success('Annonce créée avec succès !');
+        setShowSuccess(true);
+      } else {
+        console.error('Erreur lors de la création:', responseData);
+        
+        if (response.status === 401) {
+          toast.error('Session expirée. Veuillez vous reconnecter.');
+          router.push('/login');
+        } else {
+          toast.error('Erreur lors de la création de l\'annonce: ' + (responseData.error || 'Erreur inconnue'));
+        }
+      }
+    } catch (error) {
+      console.error('Erreur de connexion:', error);
+      toast.error('Erreur de connexion au serveur');
+    }
   };
 
   const handleEdit = (step: string) => {
@@ -164,10 +234,10 @@ export default function AdPostingPage() {
             )}
             {currentStep === 'media' && (
               <MediaUpload
-                onSubmit={(files: File[]) => {
+                onSubmit={(imageUrls: string[]) => {
                   setAdData(prev => ({
                     ...prev,
-                    images: files.map(file => URL.createObjectURL(file))
+                    images: imageUrls
                   }));
                   setCurrentStep('contact');
                 }}

@@ -10,7 +10,7 @@ export default function HelpPage() {
   const sections = [
     {
       title: 'Comment ça marche',
-      content: `Découvrez comment utiliser davente :
+      content: `Découvrez comment utiliser Grabi :
 - Créez votre compte gratuitement
 - Publiez vos annonces en quelques clics
 - Gérez vos favoris et vos recherches
@@ -36,7 +36,7 @@ export default function HelpPage() {
     },
     {
       title: 'Mon compte',
-      content: `Gérez votre compte davente :
+      content: `Gérez votre compte Grabi :
 - Modifiez vos informations personnelles
 - Consultez vos annonces actives
 - Suivez vos conversations
@@ -55,7 +55,7 @@ export default function HelpPage() {
     {
       title: 'Nous contacter',
       content: `Besoin d'aide supplémentaire ? Contactez-nous :
-- Par email : support@davente.sn
+- Par email : support@Grabi.sn
 - Par téléphone : +221 XX XXX XX XX
 - Via notre formulaire de contact
 - Sur nos réseaux sociaux
@@ -83,7 +83,7 @@ Notre équipe est disponible du lundi au vendredi, de 9h à 18h.`
           <div className="text-center mb-16">
             <Image
               src="/logo.svg"
-              alt="Davente Logo"
+              alt="Grabi Logo"
               width={160}
               height={60}
               className="mx-auto mb-8"
@@ -93,7 +93,7 @@ Notre équipe est disponible du lundi au vendredi, de 9h à 18h.`
               Centre d&apos;aide
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Trouvez toutes les réponses à vos questions et apprenez à utiliser davente efficacement.
+              Trouvez toutes les réponses à vos questions et apprenez à utiliser Grabi efficacement.
             </p>
           </div>
 

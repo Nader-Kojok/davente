@@ -289,8 +289,8 @@ export default function SellerProfilePage() {
   const handleShare = async () => {
     try {
       await navigator.share({
-        title: `${seller?.name} sur davente`,
-        text: `Découvrez le profil de ${seller?.name} sur davente`,
+        title: `${seller?.name} sur Grabi`,
+        text: `Découvrez le profil de ${seller?.name} sur Grabi`,
         url: window.location.href,
       });
     } catch (error) {

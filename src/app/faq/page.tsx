@@ -12,7 +12,7 @@ export default function FAQPage() {
       title: 'Compte et Inscription',
       questions: [
         {
-          question: 'Comment créer un compte sur davente ?',
+          question: 'Comment créer un compte sur Grabi ?',
           answer: 'Pour créer un compte, cliquez sur "S\'inscrire" en haut de la page. Remplissez le formulaire avec vos informations personnelles, acceptez les conditions d\'utilisation, et validez votre inscription via le lien envoyé par email.'
         },
         {
@@ -26,7 +26,7 @@ export default function FAQPage() {
       ]
     },
     {
-      title: 'Acheter sur davente',
+      title: 'Acheter sur Grabi',
       questions: [
         {
           question: 'Comment contacter un vendeur ?',
@@ -43,7 +43,7 @@ export default function FAQPage() {
       ]
     },
     {
-      title: 'Vendre sur davente',
+      title: 'Vendre sur Grabi',
       questions: [
         {
           question: 'Comment publier une annonce ?',
@@ -114,7 +114,7 @@ export default function FAQPage() {
           <div className="text-center mb-16">
             <Image
               src="/logo.svg"
-              alt="Davente Logo"
+              alt="Grabi Logo"
               width={160}
               height={60}
               className="mx-auto mb-8"
@@ -124,7 +124,7 @@ export default function FAQPage() {
               Questions Fréquentes
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Trouvez rapidement des réponses aux questions les plus courantes sur davente.
+              Trouvez rapidement des réponses aux questions les plus courantes sur Grabi.
             </p>
           </div>
 

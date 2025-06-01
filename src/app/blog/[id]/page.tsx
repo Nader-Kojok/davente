@@ -134,7 +134,7 @@ export default function BlogArticlePage() {
   const blogPost: BlogPost = {
     id: params.id as string,
     title: "Comment bien photographier vos articles pour une meilleure vente",
-    content: `La qualité des photos de vos produits peut faire toute la différence dans votre succès de vente sur davente. Voici un guide complet pour vous aider à réaliser des photos professionnelles qui mettront en valeur vos articles.
+    content: `La qualité des photos de vos produits peut faire toute la différence dans votre succès de vente sur Grabi. Voici un guide complet pour vous aider à réaliser des photos professionnelles qui mettront en valeur vos articles.
 
 1. L'importance de la lumière La lumière naturelle est votre meilleure alliée. Photographiez vos produits près d'une fenêtre ou en extérieur par temps nuageux pour obtenir un éclairage doux et uniforme. Évitez la lumière directe du soleil qui peut créer des ombres trop marquées.
 

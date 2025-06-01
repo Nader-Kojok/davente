@@ -1,0 +1,336 @@
+
+> Grabi@0.1.0 build
+> next build
+
+   ▲ Next.js 15.1.7
+   - Environments: .env.local, .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+
+./src/app/api/annonces/route.ts
+16:36  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+59:24  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+210:57  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+211:47  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+218:81  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/api/auth/register/route.ts
+98:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/api/bookmarks/route.ts
+68:46  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+68:63  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/api/performance/route.ts
+25:56  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/api/search/advanced/route.ts
+18:46  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/api/user/profile/route.ts
+175:23  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/categories/[slug]/CategoryListingsContent.tsx
+6:30  Warning: 'Grid3X3' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+6:39  Warning: 'List' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+6:45  Warning: 'Filter' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+52:10  Warning: 'currentPage' is assigned a value but never used. Allowed unused elements of array destructuring must match /^_/u.  @typescript-eslint/no-unused-vars
+
+./src/app/categories/[slug]/page.tsx
+24:45  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+80:44  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/categories/page.tsx
+4:8  Warning: 'Image' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+7:8  Warning: 'Header' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+8:8  Warning: 'Footer' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+
+./src/app/mes-annonces/page.tsx
+88:14  Warning: 'error' is defined but never used. Allowed unused caught errors must match /^_/u.  @typescript-eslint/no-unused-vars
+114:14  Warning: 'error' is defined but never used. Allowed unused caught errors must match /^_/u.  @typescript-eslint/no-unused-vars
+141:14  Warning: 'error' is defined but never used. Allowed unused caught errors must match /^_/u.  @typescript-eslint/no-unused-vars
+
+./src/app/parametres/page.tsx
+6:3  Warning: 'User' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+9:3  Warning: 'Globe' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+25:8  Warning: 'TextInput' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+128:14  Warning: 'error' is defined but never used. Allowed unused caught errors must match /^_/u.  @typescript-eslint/no-unused-vars
+154:14  Warning: 'error' is defined but never used. Allowed unused caught errors must match /^_/u.  @typescript-eslint/no-unused-vars
+180:14  Warning: 'error' is defined but never used. Allowed unused caught errors must match /^_/u.  @typescript-eslint/no-unused-vars
+223:14  Warning: 'error' is defined but never used. Allowed unused caught errors must match /^_/u.  @typescript-eslint/no-unused-vars
+253:14  Warning: 'error' is defined but never used. Allowed unused caught errors must match /^_/u.  @typescript-eslint/no-unused-vars
+287:14  Warning: 'error' is defined but never used. Allowed unused caught errors must match /^_/u.  @typescript-eslint/no-unused-vars
+
+./src/app/profil/page.tsx
+19:3  Warning: 'Eye' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+20:3  Warning: 'EyeOff' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+466:57  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/publier/modifier/[id]/page.tsx
+229:6  Warning: React Hook useEffect has a missing dependency: 'router'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+301:14  Warning: 'error' is defined but never used. Allowed unused caught errors must match /^_/u.  @typescript-eslint/no-unused-vars
+
+./src/app/publier/page.tsx
+54:11  Warning: 'user' is assigned a value but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+
+./src/app/register/page.tsx
+15:3  Warning: 'Mail' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+16:3  Warning: 'MapPin' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+17:3  Warning: 'Briefcase' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+18:3  Warning: 'Globe' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+19:3  Warning: 'Calendar' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+105:25  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+249:14  Warning: 'error' is defined but never used. Allowed unused caught errors must match /^_/u.  @typescript-eslint/no-unused-vars
+
+./src/components/AdvancedSearchBar.tsx
+93:6  Warning: React Hook useEffect has missing dependencies: 'handleSearch' and 'handleSuggestionClick'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+236:19  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./src/components/CurrentListings.tsx
+4:8  Warning: 'Image' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+40:44  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/Header/MobileHeader.tsx
+17:3  Warning: 'isMobileSearchOpen' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+
+./src/components/Header/SearchBar.tsx
+130:40  Warning: 'e' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+265:13  Warning: Elements with the ARIA role "combobox" must have the following attributes defined: aria-controls,aria-expanded  jsx-a11y/role-has-required-aria-props
+
+./src/components/RecentSearches.tsx
+47:40  Warning: 'index' is defined but never used. Allowed unused args must match /^_/u.  @typescript-eslint/no-unused-vars
+
+./src/components/TrendingCategories.tsx
+30:42  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/forms/MediaUpload.tsx
+100:16  Warning: 'error' is defined but never used. Allowed unused caught errors must match /^_/u.  @typescript-eslint/no-unused-vars
+
+./src/components/search/AdvancedSearchBar.tsx
+33:10  Warning: 'searchSource' is assigned a value but never used. Allowed unused elements of array destructuring must match /^_/u.  @typescript-eslint/no-unused-vars
+102:6  Warning: React Hook useEffect has missing dependencies: 'handleSearch' and 'handleSuggestionClick'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+251:19  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./src/components/ui/BookmarkButton.tsx
+11:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/ui/Checkbox.tsx
+50:87  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/ui/FilterBar.tsx
+39:10  Warning: 'showFilters' is assigned a value but never used. Allowed unused elements of array destructuring must match /^_/u.  @typescript-eslint/no-unused-vars
+39:23  Warning: 'setShowFilters' is assigned a value but never used. Allowed unused elements of array destructuring must match /^_/u.  @typescript-eslint/no-unused-vars
+
+./src/components/ui/MegaMenu.tsx
+7:10  Warning: 'getAllCategories' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+
+./src/components/ui/ModernFilterBar.tsx
+7:3  Warning: 'DollarSign' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+
+./src/components/ui/UnifiedListingCard.tsx
+6:31  Warning: 'Eye' is defined but never used. Allowed unused vars must match /^_/u.  @typescript-eslint/no-unused-vars
+
+./src/hooks/useBookmarks.ts
+49:50  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+94:63  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/hooks/useRecentListings.ts
+48:6  Warning: React Hook useEffect has a missing dependency: 'fetchRecentListings'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/hooks/useRecentSearches.ts
+26:47  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/hooks/useTrendingData.ts
+50:6  Warning: React Hook useEffect has a missing dependency: 'initializeDefaultTrending'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+55:6  Warning: React Hook useEffect has a missing dependency: 'updateTrendingFromRecentSearches'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+112:6  Warning: React Hook useCallback has a missing dependency: 'saveTrendingData'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+
+./src/lib/performance.ts
+63:33  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+86:50  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+88:33  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+96:28  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+123:34  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+126:24  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+135:23  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+141:30  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/lib/search.ts
+21:13  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+208:24  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+344:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+405:41  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+405:49  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/types/listing.ts
+93:37  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+158:13  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+   Collecting page data ...
+(node:59935) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+   Generating static pages (0/44) ...
+ ⚠ Unsupported metadata viewport is configured in metadata export in /blog. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /blog. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /contact. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /contact. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /faq. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /faq. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin/annonces. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /admin/annonces. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /careers. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /careers. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+   Generating static pages (11/44) 
+ ⚠ Unsupported metadata viewport is configured in metadata export in /legal. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /legal. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /login. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /login. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /help. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /help. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /about. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /about. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+   Generating static pages (22/44) 
+ ⚠ Unsupported metadata viewport is configured in metadata export in /favoris. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /favoris. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /privacy. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /privacy. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /admin/categories. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /admin/categories. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /cookies. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /cookies. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /publier. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /publier. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /terms. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /terms. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+(node:59943) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+   Generating static pages (33/44) 
+ ⚠ Unsupported metadata viewport is configured in metadata export in /categories. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /categories. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /profil. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /profil. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /_not-found. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /register. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /register. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /annonces. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /annonces. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /parametres. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /parametres. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata viewport is configured in metadata export in /mes-annonces. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ⚠ Unsupported metadata themeColor is configured in metadata export in /mes-annonces. Please move it to viewport export instead.
+Read more: https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ ✓ Generating static pages (44/44)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    12.2 kB         154 kB
+├ ○ /_not-found                          213 B           105 kB
+├ ○ /about                               3.2 kB          128 kB
+├ ○ /admin/annonces                      2.26 kB         116 kB
+├ ○ /admin/categories                    1.58 kB         107 kB
+├ ƒ /annonce/[id]                        7.51 kB         146 kB
+├ ƒ /annonces                            2.87 kB         150 kB
+├ ƒ /api/annonces                        213 B           105 kB
+├ ƒ /api/annonces/[id]                   213 B           105 kB
+├ ƒ /api/annonces/[id]/status            213 B           105 kB
+├ ƒ /api/annonces/recent                 213 B           105 kB
+├ ƒ /api/annonces/user                   213 B           105 kB
+├ ƒ /api/auth/login                      213 B           105 kB
+├ ƒ /api/auth/register                   213 B           105 kB
+├ ƒ /api/bookmarks                       213 B           105 kB
+├ ƒ /api/bookmarks/[id]                  213 B           105 kB
+├ ƒ /api/bookmarks/check/[id]            213 B           105 kB
+├ ƒ /api/categories                      213 B           105 kB
+├ ƒ /api/categories/top                  213 B           105 kB
+├ ƒ /api/performance                     213 B           105 kB
+├ ƒ /api/search/advanced                 213 B           105 kB
+├ ƒ /api/search/suggestions              213 B           105 kB
+├ ƒ /api/test                            213 B           105 kB
+├ ƒ /api/test-simple                     213 B           105 kB
+├ ƒ /api/upload                          213 B           105 kB
+├ ƒ /api/upload/image                    213 B           105 kB
+├ ƒ /api/user/delete                     213 B           105 kB
+├ ƒ /api/user/password                   213 B           105 kB
+├ ƒ /api/user/profile                    213 B           105 kB
+├ ○ /blog                                3.41 kB         128 kB
+├ ƒ /blog/[id]                           5.34 kB         130 kB
+├ ○ /careers                             3.72 kB         129 kB
+├ ○ /categories                          4.62 kB         113 kB
+├ ƒ /categories/[slug]                   4.62 kB         141 kB
+├ ○ /contact                             3.07 kB         128 kB
+├ ○ /cookies                             3.34 kB         128 kB
+├ ○ /faq                                 4.32 kB         129 kB
+├ ○ /favoris                             5.28 kB         133 kB
+├ ○ /help                                3.32 kB         128 kB
+├ ○ /legal                               3.34 kB         128 kB
+├ ○ /login                               4.03 kB         123 kB
+├ ○ /mes-annonces                        4.53 kB         127 kB
+├ ○ /parametres                          6.47 kB         123 kB
+├ ○ /privacy                             3.39 kB         128 kB
+├ ○ /profil                              11.3 kB         130 kB
+├ ○ /publier                             16.4 kB         164 kB
+├ ƒ /publier/modifier/[id]               7.35 kB         144 kB
+├ ○ /register                            6.7 kB          126 kB
+├ ○ /terms                               3.51 kB         129 kB
+└ ƒ /vendeurs/[id]                       6.41 kB         149 kB
++ First Load JS shared by all            105 kB
+  ├ chunks/1517-0adf6f73129fe6df.js      50.3 kB
+  ├ chunks/4bd1b696-74615e59970e9c0a.js  52.9 kB
+  └ other shared chunks (total)          1.86 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

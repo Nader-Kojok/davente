@@ -14,7 +14,7 @@ export default function NotFoundPage() {
           <div className="space-y-8">
             <Image
               src="/logo.svg"
-              alt="Davente Logo"
+              alt="Grabi Logo"
               width={160}
               height={60}
               className="mx-auto mb-8"

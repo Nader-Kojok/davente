@@ -7,7 +7,7 @@ export default function LegalText() {
     <section className="py-8 px-4 sm:px-6 lg:px-8 bg-gray-50">
       <div className="max-w-6xl mx-auto">
         <p className="p text-sm text-gray-600 leading-relaxed">
-          Avec davente, trouvez la bonne affaire sur le site référent de petites annonces de particulier à particulier et de professionnels. Avec des millions de petites annonces, trouvez la bonne occasion dans nos catégories{" "}
+          Avec Grabi, trouvez la bonne affaire sur le site référent de petites annonces de particulier à particulier et de professionnels. Avec des millions de petites annonces, trouvez la bonne occasion dans nos catégories{" "}
           <BaseLink href="/categories/voitures">voitures</BaseLink>,{" "}
           <BaseLink href="/categories/immobilier">immobilier</BaseLink>,{" "}
           <BaseLink href="/categories/emploi">emploi</BaseLink>,{" "}

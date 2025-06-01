@@ -10,7 +10,7 @@ export default function CookiesPage() {
   const sections = [
     {
       title: 'Utilisation des Cookies',
-      content: `Les cookies sont de petits fichiers texte stockés sur votre appareil lorsque vous visitez davente. Ils nous aident à :
+      content: `Les cookies sont de petits fichiers texte stockés sur votre appareil lorsque vous visitez Grabi. Ils nous aident à :
 - Assurer le bon fonctionnement du site
 - Mémoriser vos préférences
 - Améliorer votre expérience de navigation
@@ -84,7 +84,7 @@ Notez que la désactivation de certains cookies peut affecter votre expérience 
           <div className="text-center mb-16">
             <Image
               src="/logo.svg"
-              alt="Davente Logo"
+              alt="Grabi Logo"
               width={160}
               height={60}
               className="mx-auto mb-8"
@@ -94,7 +94,7 @@ Notez que la désactivation de certains cookies peut affecter votre expérience 
               Politique des Cookies
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Découvrez comment nous utilisons les cookies pour améliorer votre expérience sur davente.
+              Découvrez comment nous utilisons les cookies pour améliorer votre expérience sur Grabi.
             </p>
           </div>
 

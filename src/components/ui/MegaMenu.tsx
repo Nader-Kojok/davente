@@ -3,19 +3,8 @@
 
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import BaseLink from "@/components/ui/BaseLink"; // Import BaseLink
-
-type SubCategory = {
-  name: string;
-  href: string;
-  description?: string;
-};
-
-type CategorySection = {
-  name: string;
-  href: string;
-  subcategories: SubCategory[];
-};
+import BaseLink from "@/components/ui/BaseLink";
+import { getAllCategories, getCategoryBySlug } from "@/lib/categories";
 
 type MegaMenuProps = {
   category: {
@@ -25,157 +14,109 @@ type MegaMenuProps = {
   isOpen: boolean;
 };
 
-// Helper function to normalize category names (remove accents, etc.)
-function normalizeCategoryName(name: string) {
-  return name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+// Helper function to extract category slug from href
+function extractCategorySlug(href: string): string {
+  const parts = href.split('/');
+  return parts[parts.length - 1] || '';
 }
 
-const categoryData: Record<string, CategorySection[]> = {
-  vehicules: [
-    {
-      name: "Voitures",
-      href: "/categories/vehicules/voitures",
-      subcategories: [
-        {
-          name: "Audi",
-          href: "/categories/vehicules/voitures/audi",
-          description: "Voitures de luxe allemandes",
-        },
-        {
-          name: "BMW",
-          href: "/categories/vehicules/voitures/bmw",
-          description: "Berlines et SUV premium",
-        },
-        {
-          name: "Mercedes",
-          href: "/categories/vehicules/voitures/mercedes",
-          description: "Véhicules haut de gamme",
-        },
-        {
-          name: "Peugeot",
-          href: "/categories/vehicules/voitures/peugeot",
-          description: "Voitures françaises populaires",
-        },
-      ],
-    },
-    {
-      name: "Motos",
-      href: "/categories/vehicules/motos",
-      subcategories: [
-        {
-          name: "Honda",
-          href: "/categories/vehicules/motos/honda",
-          description: "Motos japonaises fiables",
-        },
-        {
-          name: "Yamaha",
-          href: "/categories/vehicules/motos/yamaha",
-          description: "Motos sportives et routières",
-        },
-        {
-          name: "Kawasaki",
-          href: "/categories/vehicules/motos/kawasaki",
-          description: "Motos performantes",
-        },
-        {
-          name: "BMW",
-          href: "/categories/vehicules/motos/bmw",
-          description: "Motos touring haut de gamme",
-        },
-      ],
-    },
-  ],
-  immobilier: [
-    {
-      name: "Location",
-      href: "/categories/immobilier/location",
-      subcategories: [
-        {
-          name: "Appartements",
-          href: "/categories/immobilier/location/appartements",
-          description: "Studios aux penthouses",
-        },
-        {
-          name: "Maisons",
-          href: "/categories/immobilier/location/maisons",
-          description: "Villas et résidences",
-        },
-        {
-          name: "Bureaux",
-          href: "/categories/immobilier/location/bureaux",
-          description: "Espaces professionnels",
-        },
-      ],
-    },
-    {
-      name: "Vente",
-      href: "/categories/immobilier/vente",
-      subcategories: [
-        {
-          name: "Appartements",
-          href: "/categories/immobilier/vente/appartements",
-          description: "Du studio au duplex",
-        },
-        {
-          name: "Maisons",
-          href: "/categories/immobilier/vente/maisons",
-          description: "Propriétés résidentielles",
-        },
-        {
-          name: "Terrains",
-          href: "/categories/immobilier/vente/terrains",
-          description: "Parcelles constructibles",
-        },
-      ],
-    },
-  ],
-};
-
 export default function MegaMenu({ category, isOpen }: MegaMenuProps) {
-  // Use the normalization helper to get the key
-  const normalizedKey = normalizeCategoryName(category.name);
-  const sections = categoryData[normalizedKey] || [];
+  if (!isOpen) return null;
 
-  if (!isOpen || sections.length === 0) return null;
+  // Extract category slug from href
+  const categorySlug = extractCategorySlug(category.href);
+  
+  // Get category data from our centralized service
+  const categoryData = getCategoryBySlug(categorySlug);
+  
+  if (!categoryData || !categoryData.subcategories || categoryData.subcategories.length === 0) {
+    return null;
+  }
+
+  // Group subcategories into columns (max 2 columns)
+  const subcategoriesPerColumn = Math.ceil(categoryData.subcategories.length / 2);
+  const leftColumn = categoryData.subcategories.slice(0, subcategoriesPerColumn);
+  const rightColumn = categoryData.subcategories.slice(subcategoriesPerColumn);
 
   return (
     <div
-      className="absolute left-0 w-full bg-white shadow-lg border-t border-gray-200 transition-all duration-200 ease-in-out transform z-50"
+      className="absolute left-0 w-full bg-white shadow-lg border-t border-gray-200 transition-all duration-200 ease-in-out transform z-30"
       style={{ top: "100%" }}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-2 gap-x-8 gap-y-10">
-          {sections.map((section) => (
-            <div key={section.name} className="col-span-1">
-              <div className="flex items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  <BaseLink // Use BaseLink
-                    href={section.href}
-                    className="hover:text-[#E00201] transition-colors duration-200"
-                  >
-                    {section.name}
-                  </BaseLink>
-                </h3>
-                <ChevronRight className="ml-2 h-5 w-5 text-gray-400" />
+        {/* Category Header */}
+        <div className="flex items-center mb-6 pb-4 border-b border-gray-100">
+          <span className="text-2xl mr-3">{categoryData.icon}</span>
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">{categoryData.name}</h2>
+            {categoryData.description && (
+              <p className="text-sm text-gray-600 mt-1">{categoryData.description}</p>
+            )}
+          </div>
+        </div>
+
+        {/* Subcategories Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+          {/* Left Column */}
+          <div className="space-y-4">
+            {leftColumn.map((subcategory) => (
+              <div key={subcategory.id} className="group">
+                <Link 
+                  href={`/categories/${categoryData.slug}?subcategory=${subcategory.slug}`}
+                  className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                >
+                  <div>
+                    <span className="text-base font-medium text-gray-900 group-hover:text-[#E00201] transition-colors duration-200">
+                      {subcategory.name}
+                    </span>
+                    {subcategory.description && (
+                      <p className="text-sm text-gray-500 mt-1">
+                        {subcategory.description}
+                      </p>
+                    )}
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-[#E00201] transition-colors duration-200" />
+                </Link>
               </div>
-              <ul className="space-y-4">
-                {section.subcategories.map((item) => (
-                  <li key={item.name}>
-                    <Link href={item.href} className="group flex flex-col">
+            ))}
+          </div>
+
+          {/* Right Column */}
+          {rightColumn.length > 0 && (
+            <div className="space-y-4">
+              {rightColumn.map((subcategory) => (
+                <div key={subcategory.id} className="group">
+                  <Link 
+                    href={`/categories/${categoryData.slug}?subcategory=${subcategory.slug}`}
+                    className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                  >
+                    <div>
                       <span className="text-base font-medium text-gray-900 group-hover:text-[#E00201] transition-colors duration-200">
-                        {item.name}
+                        {subcategory.name}
                       </span>
-                      {item.description && (
-                        <p className="mt-1 text-sm text-gray-500 group-hover:text-gray-700 transition-colors duration-200">
-                          {item.description}
+                      {subcategory.description && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          {subcategory.description}
                         </p>
                       )}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-[#E00201] transition-colors duration-200" />
+                  </Link>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
+        </div>
+
+        {/* View All Link */}
+        <div className="mt-6 pt-4 border-t border-gray-100">
+          <BaseLink
+            href={`/categories/${categoryData.slug}`}
+            className="inline-flex items-center text-[#E00201] hover:text-[#B00201] font-medium transition-colors duration-200"
+          >
+            Voir toutes les annonces dans {categoryData.name}
+            <ChevronRight className="ml-1 h-4 w-4" />
+          </BaseLink>
         </div>
       </div>
     </div>

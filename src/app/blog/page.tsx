@@ -25,7 +25,7 @@ export default function BlogPage() {
     {
       id: '1',
       title: 'Comment bien photographier vos articles pour une meilleure vente',
-      excerpt: 'Découvrez nos conseils pour réaliser des photos attrayantes de vos produits et augmenter vos chances de vente sur davente.',
+      excerpt: 'Découvrez nos conseils pour réaliser des photos attrayantes de vos produits et augmenter vos chances de vente sur Grabi.',
       imageUrl: 'https://picsum.photos/800/400?random=1',
       date: '15 Mars 2025',
       author: {
@@ -64,7 +64,7 @@ export default function BlogPage() {
     {
       id: '4',
       title: 'Optimiser votre boutique en ligne pour plus de ventes',
-      excerpt: 'Les stratégies essentielles pour améliorer la visibilité de votre boutique et augmenter vos conversions sur davente.',
+      excerpt: 'Les stratégies essentielles pour améliorer la visibilité de votre boutique et augmenter vos conversions sur Grabi.',
       imageUrl: 'https://picsum.photos/800/400?random=4',
       date: '1 Mars 2025',
       author: {
@@ -121,14 +121,14 @@ export default function BlogPage() {
           <div className="text-center mb-16">
             <Image
               src="/logo.svg"
-              alt="Davente Logo"
+              alt="Grabi Logo"
               width={160}
               height={60}
               className="mx-auto mb-8"
               priority
             />
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Le Blog davente
+              Le Blog Grabi
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Découvrez nos articles, conseils et actualités sur le commerce en ligne au Sénégal.

@@ -2,49 +2,12 @@
 
 import { useRef } from 'react';
 import Image from 'next/image';
-import BaseLink from '@/components/ui/BaseLink'; // Import BaseLink
-
-type Category = {
-  title: string;
-  image: string;
-  href: string;
-};
-
-const categories: Category[] = [
-  {
-    title: 'Vêtements',
-    image: 'https://picsum.photos/800/600?category=fashion',
-    href: '/categories/vetements',
-  },
-  {
-    title: 'Vacances',
-    image: 'https://picsum.photos/800/600?category=travel',
-    href: '/categories/vacances',
-  },
-  {
-    title: 'Astuces Maison',
-    image: 'https://picsum.photos/800/600?category=home',
-    href: '/categories/maison',
-  },
-  {
-    title: "Offres d'emploi",
-    image: 'https://picsum.photos/800/600?category=business',
-    href: '/categories/emploi',
-  },
-  {
-    title: 'Ventes immo',
-    image: 'https://picsum.photos/800/600?category=architecture',
-    href: '/categories/immobilier',
-  },
-  {
-    title: 'Loisirs',
-    image: 'https://picsum.photos/800/600?category=leisure',
-    href: '/categories/loisirs',
-  },
-];
+import BaseLink from '@/components/ui/BaseLink';
+import { useTopCategories } from '@/hooks/useTopCategories';
 
 export default function TopCategories() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const { categories, isLoading, error } = useTopCategories();
 
   const scroll = (direction: 'left' | 'right') => {
     const container = scrollContainerRef.current;
@@ -63,10 +26,23 @@ export default function TopCategories() {
     });
   };
 
+  if (error) {
+    return (
+      <section className="py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="h2 mb-6">Top catégories</h2>
+          <div className="text-center py-8">
+            <p className="text-gray-500">Erreur lors du chargement des catégories</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
-        <h2 className="h2 mb-6">Top catégories</h2> {/* Added mb-6 */}
+        <h2 className="h2 mb-6">Top catégories</h2>
 
         <div className="relative">
           {/* Left Arrow */}
@@ -77,6 +53,7 @@ export default function TopCategories() {
                        hover:bg-white transition-colors duration-200
                        focus:outline-none focus:ring-2 focus:ring-[#E00201]"
             aria-label="Scroll left"
+            disabled={isLoading}
           >
             <svg
               className="w-6 h-6 text-gray-600"
@@ -104,32 +81,52 @@ export default function TopCategories() {
             }}
           >
             <div className="flex space-x-4 pb-4">
-              {categories.map((category) => (
-                <BaseLink // Use BaseLink
-                  key={category.title}
-                  href={category.href}
-                  className="flex-none w-64 relative overflow-hidden
-                             rounded-xl shadow-sm group"
-                >
-                  <div className="aspect-[4/3] relative">
-                    <Image
-                      src={category.image}
-                      alt={category.title}
-                      fill
-                      className="object-cover transition-transform
-                                 duration-300 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t
-                                   from-black/60 to-transparent">
-                      <div className="absolute bottom-0 left-0 right-0 p-4">
-                        <h3 className="text-lg font-medium text-white">
-                          {category.title}
-                        </h3>
+              {isLoading ? (
+                // Skeleton loading
+                Array.from({ length: 6 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="flex-none w-64 relative overflow-hidden rounded-xl shadow-sm animate-pulse"
+                  >
+                    <div className="aspect-[4/3] bg-gray-200"></div>
+                  </div>
+                ))
+              ) : (
+                categories.map((category) => (
+                  <BaseLink
+                    key={category.id}
+                    href={category.href}
+                    className="flex-none w-64 relative overflow-hidden
+                               rounded-xl shadow-sm group"
+                  >
+                    <div className="aspect-[4/3] relative">
+                      <Image
+                        src={`https://picsum.photos/800/600?category=${category.name.toLowerCase()}`}
+                        alt={category.name}
+                        fill
+                        className="object-cover transition-transform
+                                   duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t
+                                     from-black/60 to-transparent">
+                        <div className="absolute bottom-0 left-0 right-0 p-4">
+                          <div className="flex items-center mb-2">
+                            <span className="text-2xl mr-2">{category.icon}</span>
+                            <h3 className="text-lg font-medium text-white">
+                              {category.name}
+                            </h3>
+                          </div>
+                          {category.annonceCount > 0 && (
+                            <p className="text-sm text-white/80">
+                              {category.annonceCount} annonce{category.annonceCount > 1 ? 's' : ''}
+                            </p>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </BaseLink>
-              ))}
+                  </BaseLink>
+                ))
+              )}
             </div>
           </div>
 
@@ -141,6 +138,7 @@ export default function TopCategories() {
                        hover:bg-white transition-colors duration-200
                        focus:outline-none focus:ring-2 focus:ring-[#E00201]"
             aria-label="Scroll right"
+            disabled={isLoading}
           >
             <svg
               className="w-6 h-6 text-gray-600"

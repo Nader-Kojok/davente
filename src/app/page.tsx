@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import Hero from '@/components/Banner';
 import RecentSearches from '@/components/RecentSearches';
+import TrendingSearches from '@/components/TrendingSearches';
 import TrendingCategories from '@/components/TrendingCategories';
 import TopCategories from '@/components/TopCategories';
 import CurrentListings from '@/components/CurrentListings';
@@ -16,6 +17,7 @@ export default function Home() {
       <main>
         <Hero />
         <RecentSearches />
+        <TrendingSearches />
         <TrendingCategories />
         <TopCategories />
         <CurrentListings />

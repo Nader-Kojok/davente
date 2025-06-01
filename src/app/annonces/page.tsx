@@ -1,352 +1,239 @@
 // src/app/annonces/page.tsx
 // ListingsPage.tsx
-'use client';
-
-import React, { useState, useMemo, useCallback } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { Suspense } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import FilterBar, { FilterOptions } from '@/components/ui/FilterBar'; //Import the type
 import { ListingBadge } from '@/components/ui/ListingCard';
-import ListingCard from '@/components/ui/ListingCard';
+import ListingsContent from './ListingsContent';
+import { Listing } from '@/types/listing';
+import { searchListings } from '@/lib/search';
+import { Metadata } from 'next';
 
-interface Listing {
-  id: string;
+export const metadata: Metadata = {
+  title: 'Toutes les annonces - Grabi',
+  description: 'Découvrez toutes les annonces disponibles sur Grabi, la plateforme de petites annonces du Sénégal.',
+};
+
+type SortBy = 'relevance' | 'price_asc' | 'price_desc' | 'date_desc' | 'date_asc';
+
+interface AnnonceFromDB {
+  id: number;
   title: string;
   description: string;
-  price: number | 'Gratuit';
+  price: number;
   location: string;
-  postedAt: string;
-  imageUrl: string;
-  badges: ListingBadge[];
-  isSponsored?: boolean;
-  seller: {
+  picture: string;
+  gallery: string[];
+  createdAt: Date;
+  updatedAt: Date;
+  status: string;
+  category: string | null;
+  subcategory: string | null;
+  condition: string | null;
+  user?: {
+    id: number;
     name: string;
-    rating: number;
-    reviewCount: number;
-    avatarUrl: string;
+    picture: string;
+    mobile: string;
+    accountType: string;
   };
-  condition: string;
-  deliveryAvailable: boolean;
 }
 
-// Example data (in a real app, this would come from an API)
-const initialListings: Listing[] = [
-  {
-    id: '1',
-    title: 'Video projecteur EPSON NEUF H692B LCD projector',
-    description:
-      'Mini pelle disponible pour location. Idéale pour travaux de jardinage et petits chantiers. This is a longer description to test the increased length.',
-    price: 520,
-    location: 'Paris 75001 1er Arrondissement',
-    postedAt: 'il y a 2 jours',
-    imageUrl: 'https://picsum.photos/400/300?random=1',
-    badges: ['pro'],
-    isSponsored: true,
-    seller: {
-      name: 'Sissibou',
-      rating: 5,
-      reviewCount: 5,
-      avatarUrl: 'https://i.pravatar.cc/30?img=1',
-    },
-    condition: 'État neuf',
-    deliveryAvailable: true,
-  },
-  {
-    id: '2',
-    title: 'Vends vidéo projecteur laser UHD 4K',
-    description:
-      "Jeu d'échecs de voyage compact avec pièces magnétiques. Parfait état. This is a longer description to test the increased length. It should now wrap to multiple lines.",
-    price: 1690,
-    location: 'Schoelcher 97233',
-    postedAt: 'il y a 3 heures',
-    imageUrl: 'https://picsum.photos/400/300?random=2',
-    badges: ['pro'],
-    isSponsored: false,
-    seller: {
-      name: 'louloune',
-      rating: 5,
-      reviewCount: 4,
-      avatarUrl: 'https://i.pravatar.cc/30?img=2',
-    },
-    condition: 'Très bon état',
-    deliveryAvailable: false,
-  },
-  {
-    id: '3',
-    title: 'Ravalement Façade - Artisan Qualifié',
-    description:
-      'Service professionnel de ravalement de façade. Devis gratuit. This is a longer description to test the increased length.  We want to see how it looks with more text.',
-    price: 'Gratuit',
-    location: 'Thiès',
-    postedAt: 'il y a 1 jour',
-    imageUrl: 'https://picsum.photos/400/300?random=3',
-    badges: ['pro', 'urgent'],
-    isSponsored: false,
-    seller: {
-      name: 'John Doe',
-      rating: 4,
-      reviewCount: 10,
-      avatarUrl: 'https://i.pravatar.cc/30?img=3',
-    },
-    condition: 'Neuf',
-    deliveryAvailable: true,
-  },
-  {
-    id: '4',
-    title: 'Vélo électrique Citadin',
-    description:
-      'Vélo électrique urbain, autonomie 60km, excellent état, peu utilisé. This is a longer description to test the increased length.  More details about the bike here.',
-    price: 800,
-    location: 'Dakar',
-    postedAt: 'il y a 5 heures',
-    imageUrl: 'https://picsum.photos/400/300?random=4',
-    badges: ['delivery'],
-    isSponsored: false,
-    seller: {
-      name: 'Jane Smith',
-      rating: 4.5,
-      reviewCount: 25,
-      avatarUrl: 'https://i.pravatar.cc/30?img=4',
-    },
-    condition: 'Occasion',
-    deliveryAvailable: false,
-  },
-  {
-    id: '5',
-    title: 'Cours de cuisine traditionnelle',
-    description:
-      'Chef expérimenté propose des cours de cuisine sénégalaise traditionnelle. This is a longer description to test the increased length. Learn to cook delicious meals!',
-    price: 50,
-    location: 'Saint-Louis',
-    postedAt: 'il y a 1 jour',
-    imageUrl: 'https://picsum.photos/400/300?random=5',
-    badges: ['pro'],
-    isSponsored: false,
-    seller: {
-      name: 'Fatou Diop',
-      rating: 5,
-      reviewCount: 15,
-      avatarUrl: 'https://i.pravatar.cc/30?img=5',
-    },
-    condition: 'Neuf',
-    deliveryAvailable: true,
-  },
-  {
-    id: '6',
-    title: 'iPhone 13 Pro - 256GB',
-    description:
-      'iPhone 13 Pro en parfait état, débloqué tout opérateur, avec facture et accessoires. This is a longer description to test the increased length. Includes charger and box.',
-    price: 600,
-    location: 'Dakar',
-    postedAt: 'il y a 4 heures',
-    imageUrl: 'https://picsum.photos/400/300?random=6',
-    badges: ['urgent'],
-    isSponsored: true,
-    seller: {
-      name: 'Moussa Ndiaye',
-      rating: 4.8,
-      reviewCount: 30,
-      avatarUrl: 'https://i.pravatar.cc/30?img=6',
-    },
-    condition: 'Occasion',
-    deliveryAvailable: false,
-  },
-  {
-    id: '7',
-    title: 'Table de massage pliable',
-    description:
-      'Table de massage professionnelle pliable, avec housse de transport. This is a longer description to test the increased length.  Perfect for mobile massage therapists.',
-    price: 150,
-    location: 'Thiès',
-    postedAt: 'il y a 3 jours',
-    imageUrl: 'https://picsum.photos/400/300?random=7',
-    badges: ['pro', 'delivery'],
-    isSponsored: false,
-    seller: {
-      name: 'Awa Mbaye',
-      rating: 4.2,
-      reviewCount: 8,
-      avatarUrl: 'https://i.pravatar.cc/30?img=7',
-    },
-    condition: 'Neuf',
-    deliveryAvailable: true,
-  },
-  {
-    id: '8',
-    title: 'Consultation juridique',
-    description:
-      'Avocat propose consultation juridique en droit des affaires et droit immobilier. This is a longer description to test the increased length. Get expert legal advice.',
-    price: 'Gratuit',
-    location: 'Dakar',
-    postedAt: 'il y a 6 heures',
-    imageUrl: 'https://picsum.photos/400/300?random=8',
-    badges: ['pro'],
-    isSponsored: false,
-    seller: {
-      name: 'Omar Sow',
-      rating: 4.9,
-      reviewCount: 40,
-      avatarUrl: 'https://i.pravatar.cc/30?img=8',
-    },
-    condition: 'Neuf',
-    deliveryAvailable: false,
-  },
-  {
-    id: '9',
-    title: 'Drone DJI Mini 2',
-    description:
-      'Drone DJI Mini 2 avec 2 batteries et accessoires, parfait état. This is a longer description to test the increased length. Capture stunning aerial footage.',
-    price: 400,
-    location: 'Saint-Louis',
-    postedAt: 'il y a 2 jours',
-    imageUrl: 'https://picsum.photos/400/300?random=9',
-    badges: ['delivery'],
-    isSponsored: false,
-    seller: {
-      name: 'Aminata Fall',
-      rating: 4.7,
-      reviewCount: 22,
-      avatarUrl: 'https://i.pravatar.cc/30?img=9',
-    },
-    condition: 'Occasion',
-    deliveryAvailable: true,
-  },
-];
+interface SearchParams {
+  q?: string;
+  category?: string;
+  subcategory?: string;
+  location?: string;
+  minPrice?: string;
+  maxPrice?: string;
+  condition?: string;
+  userType?: string;
+  sortBy?: string;
+  page?: string;
+}
 
-// Pagination component
-function Pagination({
-  currentPage,
-  totalPages,
-  onPageChange,
-}: {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
+// Fonction pour transformer une annonce de la DB en Listing
+function transformAnnonceToListing(annonce: AnnonceFromDB): Listing {
+  const badges = getBadgesFromAnnonce(annonce);
+  
+  return {
+    id: annonce.id.toString(),
+    title: annonce.title,
+    description: annonce.description,
+    price: annonce.price === 0 ? 'Gratuit' : annonce.price,
+    location: annonce.location,
+    postedAt: getRelativeTime(annonce.createdAt),
+    imageUrl: annonce.picture || '/images/placeholder.jpg',
+    badges,
+    isSponsored: Math.random() > 0.8, // Simulation pour la démo
+    seller: {
+      name: annonce.user?.name || 'Utilisateur',
+      rating: Math.round((4.2 + Math.random() * 0.8) * 10) / 10,
+      reviewCount: Math.floor(Math.random() * 200) + 10,
+      avatarUrl: annonce.user?.picture || `https://i.pravatar.cc/150?u=${annonce.user?.id || 'default'}`
+    },
+    condition: annonce.condition || 'Bon état',
+    deliveryAvailable: Math.random() > 0.6 // Simulation pour la démo
+  };
+}
+
+// Fonction pour déterminer les badges d'une annonce
+function getBadgesFromAnnonce(annonce: AnnonceFromDB): ListingBadge[] {
+  const badges: ListingBadge[] = [];
+  
+  // Badge pro si l'utilisateur a un type de compte business
+  if (annonce.user?.accountType === 'business') {
+    badges.push('pro');
+  }
+  
+  // Badge urgent si l'annonce a été créée récemment (moins de 24h)
+  const isRecent = new Date().getTime() - new Date(annonce.createdAt).getTime() < 24 * 60 * 60 * 1000;
+  if (isRecent && annonce.price > 0) {
+    badges.push('urgent');
+  }
+  
+  // Badge new si l'annonce a été créée récemment (moins de 48h)
+  const isNew = new Date().getTime() - new Date(annonce.createdAt).getTime() < 48 * 60 * 60 * 1000;
+  if (isNew) {
+    badges.push('new');
+  }
+  
+  // Badge delivery si disponible (aléatoire pour la démo)
+  if (Math.random() > 0.7) {
+    badges.push('delivery');
+  }
+  
+  return badges;
+}
+
+// Fonction pour calculer le temps relatif
+function getRelativeTime(date: Date): string {
+  const now = new Date();
+  const diffInMs = now.getTime() - date.getTime();
+  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+  const diffInDays = Math.floor(diffInHours / 24);
+  
+  if (diffInHours < 1) {
+    return 'il y a moins d\'1 heure';
+  } else if (diffInHours < 24) {
+    return `il y a ${diffInHours} heure${diffInHours > 1 ? 's' : ''}`;
+  } else if (diffInDays < 7) {
+    return `il y a ${diffInDays} jour${diffInDays > 1 ? 's' : ''}`;
+  } else {
+    return date.toLocaleDateString('fr-FR');
+  }
+}
+
+// Récupération des annonces avec recherche avancée
+async function getFilteredAnnonces(searchParams: SearchParams): Promise<Listing[]> {
+  try {
+    console.log('🔍 Utilisation de Prisma pour la recherche');
+    console.log('📋 Paramètres de recherche:', searchParams);
+    return await getPrismaResults(searchParams);
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des annonces:', error);
+    return getFallbackData();
+  }
+}
+
+// Recherche avec Prisma
+async function getPrismaResults(searchParams: SearchParams): Promise<Listing[]> {
+  const searchResults = await searchListings({
+    query: searchParams.q,
+    category: searchParams.category,
+    subcategory: searchParams.subcategory,
+    location: searchParams.location,
+    minPrice: searchParams.minPrice ? parseFloat(searchParams.minPrice) : undefined,
+    maxPrice: searchParams.maxPrice ? parseFloat(searchParams.maxPrice) : undefined,
+    condition: searchParams.condition,
+    userType: searchParams.userType as 'individual' | 'business',
+    sortBy: searchParams.sortBy as SortBy,
+    page: searchParams.page ? parseInt(searchParams.page) : 1,
+    limit: 20
+  });
+
+  console.log('📊 Résultats de la recherche:', {
+    total: searchResults.total,
+    listings: searchResults.listings.length,
+    query: searchParams.q
+  });
+
+  return searchResults.listings.map(transformAnnonceToListing);
+}
+
+// Données de fallback en cas d'erreur
+function getFallbackData(): Listing[] {
+  return [
+    {
+      id: '1',
+      title: "Samsung Galaxy S23 Ultra 256GB",
+      description: "Smartphone Samsung Galaxy S23 Ultra en excellent état, 256GB de stockage, couleur lavande.",
+      price: 850000,
+      location: "Dakar",
+      postedAt: "il y a 2 heures",
+      imageUrl: "https://picsum.photos/400/300?random=1",
+      badges: ['pro', 'urgent'],
+      isSponsored: true,
+      seller: {
+        name: "TechStore Dakar",
+        rating: 4.8,
+        reviewCount: 127,
+        avatarUrl: "https://i.pravatar.cc/150?u=techstore"
+      },
+      condition: "Comme neuf",
+      deliveryAvailable: true
+    },
+    {
+      id: '2',
+      title: "iPhone 14 Pro Max 128GB",
+      description: "iPhone 14 Pro Max en parfait état, acheté il y a 6 mois.",
+      price: 1200000,
+      location: "Thiès",
+      postedAt: "il y a 5 heures",
+      imageUrl: "https://picsum.photos/400/300?random=2",
+      badges: ['delivery'],
+      seller: {
+        name: "Amadou Diallo",
+        rating: 4.5,
+        reviewCount: 23,
+        avatarUrl: "https://i.pravatar.cc/150?u=amadou"
+      },
+      condition: "Excellent",
+      deliveryAvailable: true
+    }
+  ];
+}
+
+// Export du type pour le composant client
+export type { Listing };
+
+// Main Listings Page component (Server Component)
+export default async function ListingsPage(props: {
+  searchParams: Promise<SearchParams>;
 }) {
-  return (
-    <div className="flex justify-center items-center space-x-2 mt-8">
-      <button
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-        className="p-2 rounded-lg border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed
-                 hover:bg-gray-50 transition-colors duration-200"
-      >
-        <ChevronLeft className="w-5 h-5 text-gray-600" />
-      </button>
-
-      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-        <button
-          key={page}
-          onClick={() => onPageChange(page)}
-          className={`px-4 py-2 rounded-lg border ${
-            currentPage === page
-              ? 'bg-[#E00201] text-white border-[#E00201]'
-              : 'border-gray-300 hover:bg-gray-50 text-gray-700'
-          } 
-            transition-colors duration-200`}
-        >
-          {page}
-        </button>
-      ))}
-
-      <button
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-        className="p-2 rounded-lg border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed
-                 hover:bg-gray-50 transition-colors duration-200"
-      >
-        <ChevronRight className="w-5 h-5 text-gray-600" />
-      </button>
-    </div>
-  );
-}
-
-// Main Listings Page component
-export default function ListingsPage() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [filterOptions, setFilterOptions] = useState<FilterOptions>({}); // State for filters
-  const listingsPerPage = 5;
-
-  // Function to update filter options
-  const updateFilterOptions = useCallback(
-    (newOptions: FilterOptions) => {
-      setCurrentPage(1); // Reset to first page on filter change
-      setFilterOptions(newOptions);
-    },
-    [setFilterOptions],
-  );
-
-  // Memoize the filtered listings
-  const filteredListings = useMemo(() => {
-    return initialListings.filter((listing) => {
-      // Example filters (expand as needed)
-      if (
-        filterOptions.location &&
-        !listing.location
-          .toLowerCase()
-          .includes(filterOptions.location.toLowerCase())
-      ) {
-        return false;
-      }
-      if (
-        filterOptions.priceMin &&
-        typeof listing.price === 'number' &&
-        listing.price < filterOptions.priceMin
-      ) {
-        return false;
-      }
-      if (
-        filterOptions.priceMax &&
-        typeof listing.price === 'number' &&
-        listing.price > filterOptions.priceMax
-      ) {
-        return false;
-      }
-
-      return true;
-    });
-  }, [filterOptions]);
-
-  // Calculate pagination values based on filtered listings
-  const indexOfLastListing = currentPage * listingsPerPage;
-  const indexOfFirstListing: number = indexOfLastListing - listingsPerPage;
-  const currentListings = useMemo(
-    () => filteredListings.slice(indexOfFirstListing, indexOfLastListing),
-    [filteredListings, indexOfFirstListing, indexOfLastListing],
-  );
-  const totalPages = Math.ceil(filteredListings.length / listingsPerPage);
-
-  const handlePageChange = useCallback((pageNumber: number) => {
-    setCurrentPage(pageNumber);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
+  // Await searchParams pour Next.js 15
+  const searchParams = await props.searchParams;
+  
+  console.log('🔍 Paramètres de recherche reçus:', searchParams);
+  
+  const listings = await getFilteredAnnonces(searchParams);
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <FilterBar updateFilterOptions={updateFilterOptions} />{' '}
-          {/* Pass the update function */}
-          <h1 className="h1">Annonces</h1>
-          <div className="flex flex-col items-start">
-            {currentListings.map((listing, index) => (
-              <React.Fragment key={listing.id}>
-                <div className="w-full mt-2">
-                  <ListingCard listing={listing} />
-                  {index < currentListings.length - 1 && (
-                    <div className="border-b border-gray-300 my-4 w-full mt-6" />
-                  )}
-                </div>
-              </React.Fragment>
-            ))}
-          </div>
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Suspense fallback={
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
+              <p className="text-gray-600">Chargement des annonces...</p>
+            </div>
+          }>
+            <ListingsContent 
+              listings={listings} 
+              searchParams={searchParams}
+            />
+          </Suspense>
         </div>
       </main>
       <Footer />

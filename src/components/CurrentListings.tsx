@@ -2,106 +2,26 @@
 
 import { useRef } from "react";
 import Image from "next/image";
-import BaseLink from "@/components/ui/BaseLink"; // Import BaseLink
+import BaseLink from "@/components/ui/BaseLink";
 import { Plus } from "lucide-react";
-
-type Listing = {
-  id: string;
-  user: {
-    name: string;
-    avatar: string;
-  };
-  title: string;
-  price: number;
-  image: string;
-  location: string;
-  features: string[];
-};
-
-const currentListings: Listing[] = [
-  {
-    id: "1",
-    user: { name: "Dimi", avatar: "https://i.pravatar.cc/150?u=dimi" },
-    title: "Samsung galaxy s23 lavande",
-    price: 280000,
-    image: "https://picsum.photos/400?random=1",
-    location: "Dakar",
-    features: ["Livraison possible"],
-  },
-  {
-    id: "2",
-    user: { name: "TechPro", avatar: "https://i.pravatar.cc/150?u=techpro" },
-    title: "iPhone 14 Pro Max",
-    price: 899000,
-    image: "https://picsum.photos/400?random=2",
-    location: "Thiès",
-    features: ["Pro", "Livraison possible"],
-  },
-  {
-    id: "3",
-    user: { name: "MobileShop", avatar: "https://i.pravatar.cc/150?u=mobileshop" },
-    title: "AirPods Pro 2ème gen",
-    price: 199000,
-    image: "https://picsum.photos/400?random=3",
-    location: "Saint-Louis",
-    features: ["Pro"],
-  },
-  {
-    id: "4",
-    user: { name: "SmartGear", avatar: "https://i.pravatar.cc/150?u=smartgear" },
-    title: "Apple Watch Series 8",
-    price: 450000,
-    image: "https://picsum.photos/400?random=4",
-    location: "Dakar",
-    features: ["Livraison possible"],
-  },
-  {
-    id: "5",
-    user: { name: "GadgetHub", avatar: "https://i.pravatar.cc/150?u=gadgethub" },
-    title: 'MacBook Pro M2 13"',
-    price: 1299000,
-    image: "https://picsum.photos/400?random=5",
-    location: "Dakar",
-    features: ["Pro", "Livraison possible"],
-  },
-  {
-    id: "6",
-    user: { name: "ElectroShop", avatar: "https://i.pravatar.cc/150?u=electroshop" },
-    title: "iPad Air 5ème gen",
-    price: 599000,
-    image: "https://picsum.photos/400?random=6",
-    location: "Thiès",
-    features: ["Livraison possible"],
-  },
-  {
-    id: "7",
-    user: { name: "TechZone", avatar: "https://i.pravatar.cc/150?u=techzone" },
-    title: "Samsung Galaxy Tab S9",
-    price: 749000,
-    image: "https://picsum.photos/400?random=7",
-    location: "Dakar",
-    features: ["Pro", "Livraison possible"],
-  },
-  {
-    id: "8",
-    user: { name: "DigitalStore", avatar: "https://i.pravatar.cc/150?u=digitalstore" },
-    title: "Google Pixel 7 Pro",
-    price: 699000,
-    image: "https://picsum.photos/400?random=8",
-    location: "Saint-Louis",
-    features: ["Pro"],
-  },
-];
+import { useRecentListings } from "@/hooks/useRecentListings";
+import UnifiedListingCard, { UnifiedListing } from '@/components/ui/UnifiedListingCard';
 
 export default function CurrentListings() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Récupérer les annonces récentes de la catégorie Électronique (ID 4)
+  const { listings, isLoading, error } = useRecentListings({ 
+    limit: 8, 
+    categoryId: 4 // Électronique
+  });
 
   const scroll = (direction: "left" | "right") => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    // Each card is w-72 (288px) plus space-x-4 (16px) => 304px total
-    const cardWidth = 288;
+    // Each card is w-80 (320px) plus space-x-4 (16px) => 336px total
+    const cardWidth = 320;
     const cardSpacing = 16;
     const scrollAmount = cardWidth + cardSpacing;
     const currentScroll = container.scrollLeft;
@@ -116,18 +36,59 @@ export default function CurrentListings() {
     });
   };
 
+  // Convertir les données pour correspondre au format attendu par UnifiedListingCard
+  const convertToUnifiedFormat = (listing: any): UnifiedListing => ({
+    id: listing.id.toString(),
+    title: listing.title,
+    description: listing.description || listing.title,
+    price: listing.price,
+    location: listing.location,
+    imageUrl: listing.picture || `https://picsum.photos/400?random=${listing.id}`,
+    postedAt: listing.createdAt,
+    condition: listing.condition || 'Bon état',
+    seller: {
+      name: listing.user.name,
+      avatarUrl: listing.user.picture || `https://i.pravatar.cc/150?u=${listing.user.name}`,
+      rating: 4.5, // Valeur par défaut
+      reviewCount: 12 // Valeur par défaut
+    },
+    badges: listing.subcategory ? [] : [], // Pas de badges pour l'instant
+    isSponsored: false,
+    deliveryAvailable: false
+  });
+
+  if (error) {
+    return (
+      <section className="py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h2 className="h2">En ce moment sur Grabi</h2>
+              <p className="text-gray-600 mt-1">Téléphones & Objets connectés</p>
+            </div>
+          </div>
+          <div className="text-center py-8">
+            <p className="text-gray-500">Erreur lors du chargement des annonces</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="h2">En ce moment sur davente</h2> {/* Use base heading style */}
-            <p className="text-gray-600 mt-1">Téléphones & Objets connectés</p>
+            <h2 className="h2">En ce moment sur Grabi</h2>
+            <p className="text-gray-600 mt-1">
+              {listings.length > 0 && listings[0].subcategory 
+                ? listings[0].subcategory.name 
+                : "Téléphones & Objets connectés"}
+            </p>
           </div>
-          <BaseLink // Use BaseLink
-            href="/categories/electronique"
-          >
+          <BaseLink href="/categories/electronique">
             Voir plus d&apos;annonces
           </BaseLink>
         </div>
@@ -142,6 +103,7 @@ export default function CurrentListings() {
                        hover:bg-white transition-colors duration-200
                        focus:outline-none focus:ring-2 focus:ring-[#E00201]"
             aria-label="Scroll left"
+            disabled={isLoading}
           >
             <svg
               className="w-6 h-6 text-gray-600"
@@ -167,73 +129,57 @@ export default function CurrentListings() {
               scrollbarWidth: "none",
             }}
           >
-            {currentListings.map((listing) => (
-              <div
-                key={listing.id}
-                className="flex-none w-72 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
-              >
-                {/* User Info */}
-                <div className="p-3 flex items-center space-x-2 border-b border-gray-100">
-                  <div className="relative w-8 h-8 rounded-full overflow-hidden bg-gray-200">
-                    <Image
-                      src={listing.user.avatar}
-                      alt={listing.user.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <span className="font-medium text-sm text-gray-900">
-                    {listing.user.name}
-                  </span>
-                </div>
-
-                {/* Product Image */}
-                <div className="relative aspect-square">
-                  <Image
-                    src={listing.image}
-                    alt={listing.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-
-                {/* Product Info */}
-                <div className="p-3">
-                  <h3 className="font-medium text-gray-900 mb-1">
-                    {listing.title}
-                  </h3>
-                  <p className="text-lg font-semibold text-gray-900 mb-2">
-                    {listing.price.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} F
-                  </p>
-                  <div className="flex items-center justify-between text-sm text-gray-500">
-                    <span>{listing.location}</span>
-                    <div className="flex gap-2">
-                      {listing.features.map((feature, index) => (
-                        <span
-                          key={index}
-                          className="px-2 py-1 bg-gray-100 rounded-full text-xs"
-                        >
-                          {feature}
-                        </span>
-                      ))}
+            {isLoading ? (
+              // Skeleton loading
+              Array.from({ length: 8 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="flex-none w-80 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden animate-pulse p-4"
+                >
+                  <div className="aspect-[4/3] bg-gray-200 rounded-xl mb-4"></div>
+                  <div className="space-y-3 px-2">
+                    <div className="h-5 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                    <div className="flex justify-between">
+                      <div className="h-3 bg-gray-200 rounded w-16"></div>
+                      <div className="h-3 bg-gray-200 rounded w-20"></div>
+                    </div>
+                    <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
+                      <div className="w-8 h-8 rounded-full bg-gray-200"></div>
+                      <div className="h-4 bg-gray-200 rounded w-20"></div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <>
+                {listings.map((listing) => (
+                  <div
+                    key={listing.id}
+                    className="flex-none w-80 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow duration-200 p-4"
+                  >
+                    <UnifiedListingCard 
+                      listing={convertToUnifiedFormat(listing)} 
+                      variant="compact"
+                      showSeller={true}
+                    />
+                  </div>
+                ))}
 
-            {/* 'Voir plus d'annonces' Card */}
-            <BaseLink // Use BaseLink
-              href="/categories/electronique"
-              className="flex-none w-36 bg-gray-50 rounded-lg shadow-sm border border-gray-200
-                         overflow-hidden flex flex-col items-center justify-center
-                         p-6 text-center"
-            >
-              <Plus className="w-10 h-10 text-[#E00201] mb-2" />
-              <span className="text-gray-900 font-medium">
-                Voir plus d&apos;annonces
-              </span>
-            </BaseLink>
+                {/* 'Voir plus d'annonces' Card */}
+                <BaseLink
+                  href="/categories/electronique"
+                  className="flex-none w-36 bg-gray-50 rounded-lg shadow-sm border border-gray-200
+                             overflow-hidden flex flex-col items-center justify-center
+                             p-6 text-center hover:bg-gray-100 transition-colors"
+                >
+                  <Plus className="w-10 h-10 text-[#E00201] mb-2" />
+                  <span className="text-gray-900 font-medium">
+                    Voir plus d&apos;annonces
+                  </span>
+                </BaseLink>
+              </>
+            )}
           </div>
 
           {/* Right Arrow */}
@@ -244,6 +190,7 @@ export default function CurrentListings() {
                        hover:bg-white transition-colors duration-200
                        focus:outline-none focus:ring-2 focus:ring-[#E00201]"
             aria-label="Scroll right"
+            disabled={isLoading}
           >
             <svg
               className="w-6 h-6 text-gray-600"

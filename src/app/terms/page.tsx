@@ -10,13 +10,13 @@ export default function TermsPage() {
   const sections = [
     {
       title: 'Conditions Générales d&apos;Utilisation',
-      content: `En accédant à davente, vous acceptez d&apos;être lié par ces conditions d&apos;utilisation, toutes les lois et réglementations applicables, et acceptez que vous êtes responsable du respect des lois locales applicables. Si vous n&apos;acceptez pas ces conditions, vous ne devez pas utiliser ou accéder à ce site.
+      content: `En accédant à Grabi, vous acceptez d&apos;être lié par ces conditions d&apos;utilisation, toutes les lois et réglementations applicables, et acceptez que vous êtes responsable du respect des lois locales applicables. Si vous n&apos;acceptez pas ces conditions, vous ne devez pas utiliser ou accéder à ce site.
 
 Les documents contenus dans ce site Web sont protégés par les lois applicables sur la propriété intellectuelle.`
     },
     {
       title: 'Inscription et Compte Utilisateur',
-      content: `Pour utiliser certaines fonctionnalités de davente, vous devez créer un compte. Vous acceptez de :
+      content: `Pour utiliser certaines fonctionnalités de Grabi, vous devez créer un compte. Vous acceptez de :
 - Fournir des informations exactes, actuelles et complètes
 - Maintenir et mettre à jour vos informations
 - Protéger la sécurité de votre compte
@@ -25,7 +25,7 @@ Les documents contenus dans ce site Web sont protégés par les lois applicables
     },
     {
       title: 'Règles de Publication',
-      content: `En publiant du contenu sur davente, vous acceptez de :
+      content: `En publiant du contenu sur Grabi, vous acceptez de :
 - Ne pas publier de contenu illégal ou frauduleux
 - Ne pas violer les droits de propriété intellectuelle
 - Ne pas publier de contenu offensant ou inapproprié
@@ -34,8 +34,8 @@ Les documents contenus dans ce site Web sont protégés par les lois applicables
     },
     {
       title: 'Transactions',
-      content: `davente facilite les transactions entre acheteurs et vendeurs mais n'est pas partie aux transactions. Les utilisateurs acceptent que :
-- davente n'est pas responsable des transactions
+      content: `Grabi facilite les transactions entre acheteurs et vendeurs mais n'est pas partie aux transactions. Les utilisateurs acceptent que :
+- Grabi n'est pas responsable des transactions
 - Les vendeurs sont responsables de leurs annonces
 - Les acheteurs doivent vérifier les articles avant l'achat
 - Les transactions se font à leurs propres risques`
@@ -75,7 +75,7 @@ Vos données sont traitées conformément aux lois sur la protection des donnée
           <div className="text-center mb-16">
             <Image
               src="/logo.svg"
-              alt="Davente Logo"
+              alt="Grabi Logo"
               width={160}
               height={60}
               className="mx-auto mb-8"

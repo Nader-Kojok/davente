@@ -2,6 +2,7 @@
 
 import { Check, Facebook, Twitter, MessageSquare, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useAuth } from '@/contexts/AuthContext';
 
 type SuccessModalProps = {
   show: boolean;
@@ -20,6 +21,7 @@ export default function SuccessModal({
   onShare,
   onClose,
 }: SuccessModalProps) {
+  const { isAuthenticated } = useAuth();
   const [isVisible, setIsVisible] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -125,7 +127,7 @@ export default function SuccessModal({
           </button>
 
           <button 
-            onClick={() => window.location.href = '/publier'}
+            onClick={() => window.location.href = isAuthenticated ? '/publier' : '/login'}
             className="mt-3 w-full py-3 px-4 bg-[#E00201] text-white rounded-lg hover:bg-[#CB0201] transition-colors focus:outline-none focus:ring-2 focus:ring-[#E00201] focus:ring-offset-2"
           >
             Créer une nouvelle annonce

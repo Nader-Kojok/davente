@@ -10,7 +10,7 @@ export default function PrivacyPage() {
   const sections = [
     {
       title: 'Collecte des Données',
-      content: `Nous collectons les informations suivantes lorsque vous utilisez davente :
+      content: `Nous collectons les informations suivantes lorsque vous utilisez Grabi :
 - Informations de profil (nom, numéro de téléphone)
 - Données de connexion et d'utilisation
 - Informations sur les annonces publiées
@@ -86,7 +86,7 @@ Nous ne vendons jamais vos données personnelles à des tiers.`
           <div className="text-center mb-16">
             <Image
               src="/logo.svg"
-              alt="Davente Logo"
+              alt="Grabi Logo"
               width={160}
               height={60}
               className="mx-auto mb-8"

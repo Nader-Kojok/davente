@@ -10,8 +10,8 @@ export default function LegalPage() {
   const sections = [
     {
       title: 'Informations Légales',
-      content: `davente est une plateforme de commerce en ligne opérée par :
-- Raison sociale : davente SARL
+      content: `Grabi est une plateforme de commerce en ligne opérée par :
+- Raison sociale : Grabi SARL
 - Siège social : Dakar, Sénégal
 - Capital social : 10.000.000 FCFA
 - RCCM : SN-DKR-2025-B-1234
@@ -19,27 +19,27 @@ export default function LegalPage() {
     },
     {
       title: 'Hébergement',
-      content: `Le site davente.sn est hébergé par :
+      content: `Le site Grabi.sn est hébergé par :
 - Nom de l'hébergeur : Cloud Services SARL
 - Adresse : Dakar, Sénégal
 - Contact : support@cloudservices.sn`
     },
     {
       title: 'Propriété Intellectuelle',
-      content: `Tous les éléments du site davente sont protégés par le droit de la propriété intellectuelle :
-- La marque davente est une marque déposée
+      content: `Tous les éléments du site Grabi sont protégés par le droit de la propriété intellectuelle :
+- La marque Grabi est une marque déposée
 - Les logos, graphismes et charte graphique sont protégés
 - Le contenu éditorial est protégé par le droit d'auteur
 - Toute reproduction non autorisée est interdite`
     },
     {
       title: 'Responsabilité',
-      content: `davente s'efforce d'assurer au mieux de ses possibilités :
+      content: `Grabi s'efforce d'assurer au mieux de ses possibilités :
 - L'exactitude et la mise à jour des informations diffusées
 - L'accessibilité du site web
 - La sécurité de la plateforme
 
-Toutefois, davente ne peut garantir la continuité absolue de ses services.`
+Toutefois, Grabi ne peut garantir la continuité absolue de ses services.`
     },
     {
       title: 'Litiges et Juridiction Compétente',
@@ -52,8 +52,8 @@ Toutefois, davente ne peut garantir la continuité absolue de ses services.`
     {
       title: 'Contact Juridique',
       content: `Pour toute question d'ordre juridique :
-- Email : juridique@davente.sn
-- Adresse : Service Juridique, davente SARL, Dakar
+- Email : juridique@Grabi.sn
+- Adresse : Service Juridique, Grabi SARL, Dakar
 - Téléphone : +221 XX XXX XX XX
 
 Nous nous efforçons de répondre dans les meilleurs délais.`
@@ -79,7 +79,7 @@ Nous nous efforçons de répondre dans les meilleurs délais.`
           <div className="text-center mb-16">
             <Image
               src="/logo.svg"
-              alt="Davente Logo"
+              alt="Grabi Logo"
               width={160}
               height={60}
               className="mx-auto mb-8"
@@ -89,7 +89,7 @@ Nous nous efforçons de répondre dans les meilleurs délais.`
               Mentions Légales
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Informations légales et réglementaires concernant davente et ses services.
+              Informations légales et réglementaires concernant Grabi et ses services.
             </p>
           </div>
 

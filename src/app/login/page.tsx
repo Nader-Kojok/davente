@@ -2,17 +2,26 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Phone, ChevronLeft } from 'lucide-react';
-import TextInput from '@/components/ui/TextInput'; // Import TextInput
-import Checkbox from '@/components/ui/Checkbox'; // Import Checkbox
+import { useAuth } from '@/contexts/AuthContext';
+import TextInput from '@/components/ui/TextInput';
+import PasswordInput from '@/components/ui/PasswordInput';
+import Checkbox from '@/components/ui/Checkbox';
+import toast from 'react-hot-toast';
 
 export default function LoginPage() {
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [password, setPassword] = useState('');
   const [isValid, setIsValid] = useState(true);
-  const [rememberMe, setRememberMe] = useState(false); // Add rememberMe state
+  const [rememberMe, setRememberMe] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const countryCode = '+221';
+  
+  const { login } = useAuth();
+  const router = useRouter();
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, '');
@@ -20,17 +29,40 @@ export default function LoginPage() {
     setIsValid(value.length === 9);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (phoneNumber.length === 9) {
-      // Handle phone number submission with country code
-      console.log('Phone number submitted:', `${countryCode}${phoneNumber}`, rememberMe); // Include rememberMe
+    
+    if (phoneNumber.length !== 9) {
+      toast.error('Le numéro doit contenir 9 chiffres');
+      return;
+    }
+    
+    if (!password) {
+      toast.error('Le mot de passe est requis');
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      const fullPhoneNumber = `${countryCode}${phoneNumber}`;
+      const result = await login(fullPhoneNumber, password);
+      
+      if (result.success) {
+        toast.success('Connexion réussie !');
+        router.push('/'); // Redirect to homepage
+      } else {
+        toast.error(result.error || 'Erreur de connexion');
+      }
+    } catch (_error) {
+      setIsLoading(false);
+      toast.error('Erreur de connexion au serveur');
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-md mx-auto p-6">
+      <div className="max-w-md md:max-w-lg lg:max-w-xl mx-auto p-6">
         {/* Back Button */}
         <Link
           href="/"
@@ -45,7 +77,7 @@ export default function LoginPage() {
           <Link href="/">
             <Image
               src="/logo.svg"
-              alt="Davente Logo"
+              alt="Grabi Logo"
               width={120}
               height={40}
               className="mx-auto"
@@ -82,6 +114,7 @@ export default function LoginPage() {
                   className={`form-input pl-24 ${isValid ? '' : 'border-red-500'}`}
                   placeholder="77 123 45 67"
                   maxLength={9}
+                  disabled={isLoading}
                 />
               </div>
               {!isValid && phoneNumber.length > 0 && (
@@ -91,12 +124,30 @@ export default function LoginPage() {
               )}
             </div>
 
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Mot de passe
+              </label>
+              <PasswordInput
+                id="password"
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Entrez votre mot de passe"
+                disabled={isLoading}
+              />
+            </div>
+
             <div className="flex items-center justify-between">
               <Checkbox
                 id="remember-me"
                 label="Se souvenir de moi"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
+                disabled={isLoading}
               />
               <Link href="/forgot-password" className="text-sm text-primary-500 hover:text-primary-600">
                 Mot de passe oublié ?
@@ -105,10 +156,10 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              className={`btn-primary w-full flex justify-center items-center ${!isValid ? 'opacity-50 cursor-not-allowed' : ''}`}
-              disabled={!isValid}
+              className={`btn-primary w-full flex justify-center items-center ${(!isValid || !password || isLoading) ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={!isValid || !password || isLoading}
             >
-              Continuer
+              {isLoading ? 'Connexion...' : 'Se connecter'}
             </button>
           </form>
 
@@ -129,6 +180,7 @@ export default function LoginPage() {
             <button
               type="button"
               className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+              disabled={isLoading}
             >
               <Image
                 src="/google.svg"
@@ -143,6 +195,7 @@ export default function LoginPage() {
             <button
               type="button"
               className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+              disabled={isLoading}
             >
               <Image
                 src="/facebook.svg"
@@ -162,7 +215,7 @@ export default function LoginPage() {
               href="/register"
               className="text-primary-500 hover:text-primary-600 transition-colors"
             >
-              Se connecter
+              S'inscrire
             </Link>
           </p>
         </div>

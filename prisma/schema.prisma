@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,24 +8,118 @@ datasource db {
 }
 
 model User {
-  id         Int       @id @default(autoincrement())
-  mobile     String    @unique
-  password   String
-  name       String
-  picture    String
-  createdAt  DateTime  @default(now())
-  annonces   Annonce[]
+  id                 Int       @id @default(autoincrement())
+  mobile             String    @unique
+  password           String
+  name               String
+  picture            String
+  createdAt          DateTime  @default(now())
+  address            String?
+  allowCalls         Boolean   @default(true)
+  allowSms           Boolean   @default(true)
+  bio                String?
+  company            String?
+  dateOfBirth        DateTime?
+  email              String?   @unique
+  emailNotifications Boolean   @default(true)
+  gender             String?
+  isActive           Boolean   @default(true)
+  isEmailVerified    Boolean   @default(false)
+  isPhoneVerified    Boolean   @default(false)
+  isVerified         Boolean   @default(false)
+  language           String    @default("fr")
+  lastLoginAt        DateTime?
+  location           String?
+  marketingEmails    Boolean   @default(false)
+  profession         String?
+  pushNotifications  Boolean   @default(true)
+  showEmail          Boolean   @default(false)
+  showPhone          Boolean   @default(true)
+  smsNotifications   Boolean   @default(true)
+  successfulSales    Int       @default(0)
+  timezone           String    @default("Africa/Dakar")
+  totalListings      Int       @default(0)
+  totalViews         Int       @default(0)
+  updatedAt          DateTime  @default(now()) @updatedAt
+  website            String?
+  accountType        String    @default("individual")
+  annonces           Annonce[]
+  bookmarks          Bookmark[]
 }
 
 model Annonce {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  price       Float
-  location    String
-  picture     String
-  gallery     String[]
-  createdAt   DateTime @default(now())
-  userId      Int
-  user        User     @relation(fields: [userId], references: [id])
+  id               Int          @id @default(autoincrement())
+  title            String
+  description      String
+  price            Float
+  location         String
+  picture          String
+  gallery          String[]
+  createdAt        DateTime     @default(now())
+  userId           Int
+  additionalFields Json?
+  category         String?
+  condition        String?
+  status           String       @default("active")
+  subcategory      String?
+  updatedAt        DateTime     @updatedAt
+  categoryId       Int?
+  subcategoryId    Int?
+  oldCategory      String?
+  oldSubcategory   String?
+  Category         Category?    @relation(fields: [categoryId], references: [id])
+  Subcategory      Subcategory? @relation(fields: [subcategoryId], references: [id])
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookmarks        Bookmark[]
+
+  // Performance indexes
+  @@index([status, createdAt(sort: Desc)]) // Most common query pattern
+  @@index([status, categoryId, createdAt(sort: Desc)]) // Category filtering
+  @@index([status, price]) // Price filtering
+  @@index([status, location]) // Location filtering
+  @@index([status, condition]) // Condition filtering
+  @@index([userId, status]) // User's listings
+  @@index([title]) // Text search on title
+  @@index([status, categoryId, subcategoryId, createdAt(sort: Desc)]) // Complex filtering
+}
+
+model Bookmark {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  annonceId Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  annonce   Annonce  @relation(fields: [annonceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, annonceId])
+}
+
+model Category {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  slug        String        @unique
+  icon        String
+  description String?
+  isActive    Boolean       @default(true)
+  sortOrder   Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now())
+  Annonce     Annonce[]
+  Subcategory Subcategory[]
+}
+
+model Subcategory {
+  id          Int       @id @default(autoincrement())
+  name        String
+  slug        String
+  description String?
+  isActive    Boolean   @default(true)
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now())
+  categoryId  Int
+  Annonce     Annonce[]
+  Category    Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, slug])
 }

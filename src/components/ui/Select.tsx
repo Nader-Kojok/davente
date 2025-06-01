@@ -1,50 +1,73 @@
 // src/components/ui/Select.tsx
 import React from 'react';
-import { ChevronDown } from 'lucide-react';
 
-interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+interface SelectOption {
+  value: string | undefined;
+  label: string;
+}
+
+interface SelectProps {
+  id?: string;
+  name?: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  options: SelectOption[];
+  placeholder?: string;
+  disabled?: boolean;
+  required?: boolean;
+  className?: string;
   label?: string;
   error?: string;
-  options: { value: string | undefined; label: string }[];
 }
 
 const Select: React.FC<SelectProps> = ({
-  label,
-  error,
-  className,
+  id,
+  name,
+  value,
+  onChange,
   options,
-  ...props
+  placeholder = "Sélectionner une option",
+  disabled = false,
+  required = false,
+  className = '',
+  label,
+  error
 }) => {
   return (
     <div>
       {label && (
         <label
-          htmlFor={props.id}
+          htmlFor={id}
           className="block text-sm font-medium text-gray-700 mb-2"
         >
           {label}
         </label>
       )}
-      <div className="relative">
-        <select
-          id={props.id}
-          className={`form-input appearance-none pr-8 ${className} ${
-            error ? 'border-red-500' : ''
-          } w-full px-4 py-3 text-left bg-white border border-gray-300 rounded-lg
-                         hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-[#E00201]
-                         focus:border-transparent`}
-          {...props}
-        >
-          {options.map((option) => (
-            <option key={`${option.value || ''}-${option.label}`} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-          </select>
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-          <ChevronDown className="w-4 h-4" />
-        </div>
-      </div>
+      <select
+        id={id}
+        name={name}
+        value={value || ''}
+        onChange={onChange}
+        disabled={disabled}
+        required={required}
+        className={`
+          w-full px-3 py-2 border border-gray-300 rounded-lg
+          focus:outline-none focus:ring-2 focus:ring-[#E00201] focus:border-transparent
+          disabled:bg-gray-100 disabled:cursor-not-allowed
+          text-gray-900 bg-white
+          ${error ? 'border-red-500' : ''}
+          ${className}
+        `}
+      >
+        <option value="" disabled>
+          {placeholder}
+        </option>
+        {options.map((option, index) => (
+          <option key={`${option.value || ''}-${index}`} value={option.value || ''}>
+            {option.label}
+          </option>
+        ))}
+      </select>
       {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
     </div>
   );

@@ -13,7 +13,7 @@ type FooterSection = {
 
 const footerSections: FooterSection[] = [
   {
-    title: 'À propos de davente',
+    title: 'À propos de Grabi',
     links: [
       { label: 'Qui sommes-nous ?', href: '/about' },
       { label: 'Recrutement', href: '/careers' },
@@ -71,7 +71,7 @@ export default function Footer() {
           <div className="flex items-center">
               <Image
                 src="/logo_white.svg"
-                alt="Davente Logo"
+                alt="Grabi Logo"
                 width={80}
                 height={30}
                 className="h-10 w-auto"
@@ -79,7 +79,7 @@ export default function Footer() {
             </div>
 
             <div className="text-sm text-gray-400">
-              © 2025 davente. Tous droits réservés.
+              © 2025 Grabi. Tous droits réservés.
             </div>
             
             <div className="flex items-center space-x-4">
