@@ -1,18 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
-import jwt from 'jsonwebtoken';
-import { prisma } from '@/lib/prisma';
+import { put } from '@vercel/blob';
+import { verifyToken, extractTokenFromHeader } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
     console.log('📤 Upload API called');
     
-    // Check authentication
-    const user = await getCurrentUser(request);
-    if (!user) {
+    // Extract token from Authorization header
+    const authHeader = request.headers.get('authorization');
+    const token = extractTokenFromHeader(authHeader);
+
+    if (!token) {
       return NextResponse.json(
-        { error: 'Authentication required' },
+        { error: 'Token d\'authentification requis' },
+        { status: 401 }
+      );
+    }
+
+    // Verify token
+    const payload = verifyToken(token);
+    if (!payload) {
+      return NextResponse.json(
+        { error: 'Token invalide ou expiré' },
         { status: 401 }
       );
     }
@@ -29,14 +38,6 @@ export async function POST(request: NextRequest) {
 
     console.log(`📁 Processing ${files.length} files`);
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = join(process.cwd(), 'public', 'uploads');
-    try {
-      await mkdir(uploadsDir, { recursive: true });
-    } catch (_error) {
-      // Directory might already exist
-    }
-
     const uploadedFiles = [];
 
     for (const file of files) {
@@ -44,25 +45,35 @@ export async function POST(request: NextRequest) {
         continue; // Skip non-image files
       }
 
-      // Generate unique filename
-      const timestamp = Date.now();
-      const randomString = Math.random().toString(36).substring(2, 15);
-      const extension = file.name.split('.').pop() || 'jpg';
-      const filename = `${timestamp}_${randomString}.${extension}`;
-      
-      // Convert file to buffer
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
+      // Validate file size (4MB limit for server upload)
+      if (file.size > 4 * 1024 * 1024) {
+        return NextResponse.json(
+          { error: `Fichier ${file.name} trop volumineux. Maximum 4MB.` },
+          { status: 400 }
+        );
+      }
 
-      // Write file to uploads directory
-      const filepath = join(uploadsDir, filename);
-      await writeFile(filepath, buffer);
-      
-      // Store the public URL
-      const publicUrl = `/uploads/${filename}`;
-      uploadedFiles.push(publicUrl);
-      
-      console.log(`✅ Uploaded: ${filename}`);
+      try {
+        // Generate unique filename
+        const timestamp = Date.now();
+        const randomString = Math.random().toString(36).substring(2, 15);
+        const extension = file.name.split('.').pop() || 'jpg';
+        const filename = `annonces/${timestamp}_${randomString}.${extension}`;
+
+        // Upload to Vercel Blob
+        const blob = await put(filename, file, {
+          access: 'public',
+        });
+
+        uploadedFiles.push(blob.url);
+        console.log(`✅ Uploaded to Blob: ${filename} -> ${blob.url}`);
+      } catch (uploadError) {
+        console.error(`❌ Error uploading ${file.name}:`, uploadError);
+        return NextResponse.json(
+          { error: `Erreur lors du téléchargement de ${file.name}` },
+          { status: 500 }
+        );
+      }
     }
 
     return NextResponse.json({
@@ -70,33 +81,11 @@ export async function POST(request: NextRequest) {
       files: uploadedFiles
     });
 
-  } catch (_error) {
-    console.error('Error in upload:', _error);
+  } catch (error) {
+    console.error('Error in upload:', error);
     return NextResponse.json(
-      { error: 'Erreur serveur' },
+      { error: 'Erreur serveur lors du téléchargement' },
       { status: 500 }
     );
-  }
-}
-
-// Helper function to get current user (same as in other API routes)
-async function getCurrentUser(request: NextRequest) {
-  try {
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return null;
-    }
-
-    const token = authHeader.substring(7);
-    
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: number };
-    
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.userId }
-    });
-    
-    return user;
-  } catch (_error) {
-    return null;
   }
 } 

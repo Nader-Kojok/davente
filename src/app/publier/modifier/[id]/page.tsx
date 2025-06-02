@@ -237,7 +237,11 @@ export default function ModifierAnnoncePage() {
         formDataUpload.append('files', file);
       });
 
+      console.log('📤 [Edit] Uploading files:', files.map(f => ({ name: f.name, size: f.size, type: f.type })));
+
       const token = localStorage.getItem('auth_token');
+      console.log('🔑 [Edit] Auth token present:', !!token);
+
       const response = await fetch('/api/upload', {
         method: 'POST',
         headers: {
@@ -246,14 +250,19 @@ export default function ModifierAnnoncePage() {
         body: formDataUpload
       });
 
+      console.log('📡 [Edit] Upload response status:', response.status);
+
       if (!response.ok) {
-        throw new Error('Upload failed');
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('❌ [Edit] Upload failed:', errorData);
+        throw new Error(errorData.error || 'Upload failed');
       }
 
       const result = await response.json();
+      console.log('✅ [Edit] Upload successful:', result);
       return result.files;
     } catch (error) {
-      console.error('Upload error:', error);
+      console.error('💥 [Edit] Upload error:', error);
       throw error;
     } finally {
       setIsUploading(false);

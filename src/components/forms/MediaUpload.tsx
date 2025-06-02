@@ -32,7 +32,11 @@ export default function MediaUpload({ onSubmit }: MediaUploadProps) {
         formData.append('files', file);
       });
 
+      console.log('📤 Uploading files:', files.map(f => ({ name: f.name, size: f.size, type: f.type })));
+
       const token = localStorage.getItem('auth_token');
+      console.log('🔑 Auth token present:', !!token);
+
       const response = await fetch('/api/upload', {
         method: 'POST',
         headers: {
@@ -41,14 +45,20 @@ export default function MediaUpload({ onSubmit }: MediaUploadProps) {
         body: formData
       });
 
+      console.log('📡 Upload response status:', response.status);
+      console.log('📡 Upload response headers:', Object.fromEntries(response.headers.entries()));
+
       if (!response.ok) {
-        throw new Error('Upload failed');
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('❌ Upload failed:', errorData);
+        throw new Error(errorData.error || 'Upload failed');
       }
 
       const result = await response.json();
+      console.log('✅ Upload successful:', result);
       return result.files; // Array of uploaded file URLs
     } catch (error) {
-      console.error('Upload error:', error);
+      console.error('💥 Upload error:', error);
       throw error;
     } finally {
       setIsUploading(false);
