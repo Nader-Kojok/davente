@@ -185,6 +185,7 @@ function ProfilContent() {
       }
 
       console.log('Sending data:', dataToSend);
+      console.log('Picture URL being sent:', dataToSend.picture);
       console.log('Token:', localStorage.getItem('auth_token'));
 
       const response = await fetch('/api/user/profile', {
@@ -202,6 +203,7 @@ function ProfilContent() {
       if (response.ok) {
         const responseData = await response.json();
         console.log('Success response:', responseData);
+        console.log('Updated user picture:', responseData.user.picture);
         toast.success('Profil mis à jour avec succès');
         setIsEditing(false);
         await refreshUser();

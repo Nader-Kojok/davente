@@ -69,6 +69,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       formData.append('image', file);
       formData.append('type', 'avatar');
 
+      console.log('Uploading file:', file.name, 'Size:', file.size);
+
       const response = await fetch('/api/upload/image', {
         method: 'POST',
         headers: {
@@ -82,6 +84,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       }
 
       const data = await response.json();
+      console.log('Upload successful, response:', data);
+      console.log('New image URL:', data.url);
+      
       onImageChange(data.url);
       toast.success('Image téléchargée avec succès');
     } catch (error) {
