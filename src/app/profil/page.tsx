@@ -288,7 +288,7 @@ function ProfilContent() {
               Bienvenue sur Grabi ! 🎉
             </h2>
             <p className="text-gray-600">
-              Votre compte {user?.accountType === 'business' ? 'professionnel' : 'particulier'} a été créé avec succès
+              Votre compte {profile?.account_type === 'business' ? 'professionnel' : 'particulier'} a été créé avec succès
             </p>
           </div>
 
@@ -412,9 +412,9 @@ function ProfilContent() {
             <div className="text-gray-800 flex-1 min-w-0">
               <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-2 sm:space-y-0 sm:space-x-3 mb-2">
                 <h2 className="text-2xl sm:text-3xl font-bold truncate text-slate-800">{formData.name}</h2>
-                {user?.accountType && (
+                {profile?.account_type && (
                   <AccountTypeBadge 
-                    accountType={user.accountType} 
+                    accountType={profile.account_type} 
                     size="md"
                   />
                 )}
@@ -904,11 +904,11 @@ function ProfilContent() {
                         <span className="text-sm font-medium">Téléphone vérifié</span>
                       </div>
                       <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        user.isPhoneVerified 
+                        profile?.is_phone_verified 
                           ? 'bg-green-100 text-green-800' 
                           : 'bg-yellow-100 text-yellow-800'
                       }`}>
-                        {user.isPhoneVerified ? 'Vérifié' : 'En attente'}
+                        {profile?.is_phone_verified ? 'Vérifié' : 'En attente'}
                       </div>
                     </div>
                     
@@ -918,11 +918,11 @@ function ProfilContent() {
                         <span className="text-sm font-medium">Email vérifié</span>
                       </div>
                       <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        user.isEmailVerified 
+                        profile?.is_email_verified 
                           ? 'bg-green-100 text-green-800' 
                           : 'bg-yellow-100 text-yellow-800'
                       }`}>
-                        {user.isEmailVerified ? 'Vérifié' : 'En attente'}
+                        {profile?.is_email_verified ? 'Vérifié' : 'En attente'}
                       </div>
                     </div>
                   </div>
@@ -937,7 +937,7 @@ function ProfilContent() {
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">Membre depuis</span>
                       <span className="text-sm text-gray-600">
-                        {user.createdAt ? new Date(user.createdAt).toLocaleDateString('fr-FR', {
+                        {profile?.created_at ? new Date(profile.created_at).toLocaleDateString('fr-FR', {
                           year: 'numeric',
                           month: 'long',
                           day: 'numeric'

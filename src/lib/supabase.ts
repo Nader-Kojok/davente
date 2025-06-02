@@ -219,6 +219,7 @@ export interface UserProfile {
   website?: string;
   date_of_birth?: string;
   gender?: string;
+  account_type?: string;
   
   // Préférences de contact
   show_phone?: boolean;

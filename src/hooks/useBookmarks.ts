@@ -58,10 +58,10 @@ export function useBookmarks(): UseBookmarksReturn {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { token, isAuthenticated } = useAuth();
+  const { session, isAuthenticated } = useAuth();
 
   const fetchBookmarks = useCallback(async () => {
-    if (!isAuthenticated || !token) {
+    if (!isAuthenticated || !session?.access_token) {
       setBookmarks([]);
       return;
     }
@@ -72,7 +72,7 @@ export function useBookmarks(): UseBookmarksReturn {
     try {
       const response = await fetch('/api/bookmarks', {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${session.access_token}`
         }
       });
 
@@ -89,10 +89,10 @@ export function useBookmarks(): UseBookmarksReturn {
     } finally {
       setIsLoading(false);
     }
-  }, [isAuthenticated, token]);
+  }, [isAuthenticated, session?.access_token]);
 
   const addBookmark = async (annonceId: number, annonceData?: any): Promise<boolean> => {
-    if (!isAuthenticated || !token) {
+    if (!isAuthenticated || !session?.access_token) {
       toast.error('Vous devez être connecté pour ajouter aux favoris');
       return false;
     }
@@ -116,7 +116,7 @@ export function useBookmarks(): UseBookmarksReturn {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${session.access_token}`
         },
         body: JSON.stringify({ annonceId })
       });
@@ -149,7 +149,7 @@ export function useBookmarks(): UseBookmarksReturn {
   };
 
   const removeBookmark = async (annonceId: number): Promise<boolean> => {
-    if (!isAuthenticated || !token) {
+    if (!isAuthenticated || !session?.access_token) {
       return false;
     }
 
@@ -162,7 +162,7 @@ export function useBookmarks(): UseBookmarksReturn {
       const response = await fetch(`/api/bookmarks/${annonceId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${session.access_token}`
         }
       });
 
@@ -189,14 +189,14 @@ export function useBookmarks(): UseBookmarksReturn {
   };
 
   const checkBookmarkStatus = async (annonceId: number): Promise<boolean> => {
-    if (!isAuthenticated || !token) {
+    if (!isAuthenticated || !session?.access_token) {
       return false;
     }
 
     try {
       const response = await fetch(`/api/bookmarks/check/${annonceId}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${session.access_token}`
         }
       });
 

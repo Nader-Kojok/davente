@@ -51,7 +51,7 @@ type AdData = {
 };
 
 export default function AdPostingPage() {
-  const { user, isAuthenticated, token } = useAuth();
+  const { user, isAuthenticated, session } = useAuth();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState<FormStep>('categorie');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
@@ -110,7 +110,7 @@ export default function AdPostingPage() {
 
   const handleSubmit = async () => {
     // Vérifier l'authentification
-    if (!isAuthenticated || !token) {
+    if (!isAuthenticated || !session?.access_token) {
       toast.error('Vous devez être connecté pour publier une annonce');
       router.push('/login');
       return;
@@ -132,13 +132,13 @@ export default function AdPostingPage() {
       };
 
       console.log('Envoi des données:', annonceData);
-      console.log('Token utilisé:', token?.substring(0, 20) + '...');
+      console.log('Token utilisé:', session.access_token?.substring(0, 20) + '...');
 
       const response = await fetch('/api/annonces', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${session.access_token}`
         },
         body: JSON.stringify(annonceData)
       });

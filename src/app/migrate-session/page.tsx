@@ -18,7 +18,7 @@ export default function MigrateSessionPage() {
       }
 
       // Get the current session data from localStorage
-      const authToken = localStorage.getItem('sb-pfapdbddlnkcunvffwoi-auth-token');
+      const authToken = typeof window !== 'undefined' ? localStorage.getItem('sb-pfapdbddlnkcunvffwoi-auth-token') : null;
       
       if (!authToken) {
         setMigrationStatus('❌ No auth token found in localStorage');
@@ -40,11 +40,13 @@ export default function MigrateSessionPage() {
         
         // Check if cookies are now set
         setTimeout(() => {
-          const hasCookies = document.cookie.includes('sb-pfapdbddlnkcunvffwoi-auth-token');
-          if (hasCookies) {
-            setMigrationStatus('🎉 Migration complete! Session is now stored in cookies. You can now access protected pages.');
-          } else {
-            setMigrationStatus('⚠️ Migration completed but cookies not detected. You may need to sign out and sign back in.');
+          if (typeof window !== 'undefined') {
+            const hasCookies = document.cookie.includes('sb-pfapdbddlnkcunvffwoi-auth-token');
+            if (hasCookies) {
+              setMigrationStatus('🎉 Migration complete! Session is now stored in cookies. You can now access protected pages.');
+            } else {
+              setMigrationStatus('⚠️ Migration completed but cookies not detected. You may need to sign out and sign back in.');
+            }
           }
         }, 1000);
       } else {
@@ -60,24 +62,37 @@ export default function MigrateSessionPage() {
     setMigrationStatus('🔄 Signing out and redirecting to Google OAuth...');
     
     // Clear everything
-    localStorage.clear();
-    document.cookie.split(";").forEach(function(c) { 
-      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
-    });
+    if (typeof window !== 'undefined') {
+      localStorage.clear();
+      document.cookie.split(";").forEach(function(c) { 
+        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+      });
+    }
     
     await supabase.auth.signOut();
     
     setTimeout(() => {
-      supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`
-        }
-      });
+      if (typeof window !== 'undefined') {
+        supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: `${window.location.origin}/auth/callback`
+          }
+        });
+      }
     }, 1000);
   };
 
   const checkCurrentState = () => {
+    if (typeof window === 'undefined') {
+      return {
+        hasLocalStorage: false,
+        hasCookies: false,
+        isAuthenticated: false,
+        userEmail: null
+      };
+    }
+    
     const authToken = localStorage.getItem('sb-pfapdbddlnkcunvffwoi-auth-token');
     const hasCookies = document.cookie.includes('sb-pfapdbddlnkcunvffwoi-auth-token');
     
