@@ -18,7 +18,7 @@ export default function DesktopNavigation({
   setIsUserMenuOpen,
   setUserMenuPosition
 }: DesktopNavigationProps) {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, profile, isAuthenticated, isLoading } = useAuth();
   const userButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const toggleUserMenu = useCallback(() => {
@@ -71,7 +71,7 @@ export default function DesktopNavigation({
                 className="text-gray-700 hover:text-gray-900 font-medium inline-flex items-center"
               >
                 <UserCircle2 className="w-5 h-5 mr-1.5" aria-hidden="true" />
-                {user?.name}
+                {profile?.name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'Utilisateur'}
               </button>
             ) : (
               <Link

@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { nunitoSans } from "./fonts";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "react-hot-toast";
+import AuthDebug from "@/components/AuthDebug";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -105,6 +106,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           {children}
+          <AuthDebug />
           <Toaster
             position="top-right"
             toastOptions={{

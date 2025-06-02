@@ -44,7 +44,7 @@ interface Annonce {
 }
 
 export default function MesAnnoncesPage() {
-  const { user, isAuthenticated, token, logout, isLoading: authLoading } = useAuth();
+  const { user, profile, isAuthenticated, signOut, isLoading: authLoading, session } = useAuth();
   const router = useRouter();
   const [annonces, setAnnonces] = useState<Annonce[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -57,17 +57,17 @@ export default function MesAnnoncesPage() {
     console.log('Auth state:', { 
       authLoading, 
       isAuthenticated, 
-      user: user?.id, 
-      token: token ? 'Present' : 'Missing' 
+      userId: user?.id, 
+      session: session ? 'Present' : 'Missing' 
     });
     
-    // Attendre que l'auth soit chargé avant de faire quoi que ce soit
+    // Wait for auth to load before doing anything
     if (authLoading) {
       console.log('Auth still loading, waiting...');
       return;
     }
     
-    if (!isAuthenticated || !token) {
+    if (!isAuthenticated || !session) {
       console.log('Not authenticated, redirecting to login');
       router.push('/login');
       return;
@@ -75,9 +75,9 @@ export default function MesAnnoncesPage() {
 
     console.log('Authenticated, fetching annonces');
     fetchUserAnnonces();
-  }, [authLoading, isAuthenticated, token, router]);
+  }, [authLoading, isAuthenticated, session, router]);
 
-  // Fermer le dropdown quand on clique ailleurs
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -92,29 +92,30 @@ export default function MesAnnoncesPage() {
   }, []);
 
   const fetchUserAnnonces = async () => {
-    if (!token) {
-      toast.error('Token d\'authentification manquant');
+    if (!session) {
+      toast.error('Session expirée, veuillez vous reconnecter');
+      await signOut();
       router.push('/login');
       return;
     }
 
     try {
       setIsLoading(true);
-      console.log('Fetching user annonces with token:', token ? 'Present' : 'Missing');
+      console.log('Fetching user annonces with session');
       
       const response = await fetch('/api/annonces/user', {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        }
+        },
+        credentials: 'include' // Include cookies for Supabase session
       });
       
       console.log('Response status:', response.status);
       
       if (response.status === 401) {
         toast.error('Session expirée, veuillez vous reconnecter');
-        logout();
+        await signOut();
         router.push('/login');
         return;
       }
@@ -141,9 +142,9 @@ export default function MesAnnoncesPage() {
       return;
     }
 
-    if (!token) {
-      toast.error('Token d\'authentification manquant');
-      logout();
+    if (!session) {
+      toast.error('Session expirée, veuillez vous reconnecter');
+      await signOut();
       router.push('/login');
       return;
     }
@@ -152,14 +153,14 @@ export default function MesAnnoncesPage() {
       const response = await fetch(`/api/annonces/${id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        }
+        },
+        credentials: 'include'
       });
 
       if (response.status === 401) {
         toast.error('Session expirée, veuillez vous reconnecter');
-        logout();
+        await signOut();
         router.push('/login');
         return;
       }
@@ -181,9 +182,9 @@ export default function MesAnnoncesPage() {
   const handleToggleStatus = async (id: number, currentStatus: string) => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
     
-    if (!token) {
-      toast.error('Token d\'authentification manquant');
-      logout();
+    if (!session) {
+      toast.error('Session expirée, veuillez vous reconnecter');
+      await signOut();
       router.push('/login');
       return;
     }
@@ -192,24 +193,28 @@ export default function MesAnnoncesPage() {
       const response = await fetch(`/api/annonces/${id}/status`, {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({ status: newStatus })
       });
 
       if (response.status === 401) {
         toast.error('Session expirée, veuillez vous reconnecter');
-        logout();
+        await signOut();
         router.push('/login');
         return;
       }
 
       if (response.ok) {
-        setAnnonces(prev => prev.map(annonce => 
-          annonce.id === id ? { ...annonce, status: newStatus as 'active' | 'inactive' } : annonce
-        ));
-        toast.success(`Annonce ${newStatus === 'active' ? 'activée' : 'désactivée'}`);
+        setAnnonces(prev => 
+          prev.map(annonce => 
+            annonce.id === id 
+              ? { ...annonce, status: newStatus as 'active' | 'inactive' | 'sold' }
+              : annonce
+          )
+        );
+        toast.success(`Annonce ${newStatus === 'active' ? 'activée' : 'désactivée'} avec succès`);
       } else {
         const errorData = await response.json().catch(() => ({}));
         toast.error(errorData.error || 'Erreur lors de la mise à jour');

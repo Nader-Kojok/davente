@@ -73,9 +73,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
       const response = await fetch('/api/upload/image', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-        },
+        credentials: 'include',
         body: formData
       });
 

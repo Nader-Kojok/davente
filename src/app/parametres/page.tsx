@@ -42,7 +42,7 @@ const timezoneOptions = [
 ];
 
 export default function ParametresPage() {
-  const { user, isAuthenticated, logout, refreshUser } = useAuth();
+  const { user, isAuthenticated, signOut, profile, updateProfile } = useAuth();
   const router = useRouter();
   const [activeSection, setActiveSection] = useState('account');
   const [isLoading, setIsLoading] = useState(false);
@@ -83,28 +83,28 @@ export default function ParametresPage() {
       return;
     }
 
-    if (user) {
+    if (profile) {
       setAccountSettings({
-        language: user.language || 'fr',
-        timezone: user.timezone || 'Africa/Dakar',
-        isActive: user.isActive ?? true,
+        language: profile.language || 'fr',
+        timezone: profile.timezone || 'Africa/Dakar',
+        isActive: profile.is_active ?? true,
       });
 
       setNotificationSettings({
-        emailNotifications: user.emailNotifications ?? true,
-        smsNotifications: user.smsNotifications ?? true,
-        pushNotifications: user.pushNotifications ?? true,
-        marketingEmails: user.marketingEmails ?? false
+        emailNotifications: profile.email_notifications ?? true,
+        smsNotifications: profile.sms_notifications ?? true,
+        pushNotifications: profile.push_notifications ?? true,
+        marketingEmails: profile.marketing_emails ?? false
       });
 
       setPrivacySettings({
-        showPhone: user.showPhone ?? true,
-        showEmail: user.showEmail ?? false,
-        allowSms: user.allowSms ?? true,
-        allowCalls: user.allowCalls ?? true
+        showPhone: profile.show_phone ?? true,
+        showEmail: profile.show_email ?? false,
+        allowSms: profile.allow_sms ?? true,
+        allowCalls: profile.allow_calls ?? true
       });
     }
-  }, [isAuthenticated, user, router]);
+  }, [isAuthenticated, profile, router]);
 
   const handleAccountSettingsUpdate = async () => {
     setIsLoading(true);
@@ -112,15 +112,15 @@ export default function ParametresPage() {
       const response = await fetch('/api/user/profile', {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+          'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify(accountSettings)
       });
 
       if (response.ok) {
         toast.success('Paramètres du compte mis à jour avec succès');
-        await refreshUser();
+        // Profile will be updated automatically through Supabase realtime
       } else {
         const errorData = await response.json();
         toast.error(errorData.error || 'Erreur lors de la mise à jour');
@@ -138,15 +138,15 @@ export default function ParametresPage() {
       const response = await fetch('/api/user/profile', {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+          'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify(notificationSettings)
       });
 
       if (response.ok) {
         toast.success('Préférences de notification mises à jour avec succès');
-        await refreshUser();
+        // Profile will be updated automatically through Supabase realtime
       } else {
         const errorData = await response.json();
         toast.error(errorData.error || 'Erreur lors de la mise à jour');
@@ -164,15 +164,15 @@ export default function ParametresPage() {
       const response = await fetch('/api/user/profile', {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+          'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify(privacySettings)
       });
 
       if (response.ok) {
         toast.success('Paramètres de confidentialité mis à jour avec succès');
-        await refreshUser();
+        // Profile will be updated automatically through Supabase realtime
       } else {
         const errorData = await response.json();
         toast.error(errorData.error || 'Erreur lors de la mise à jour');
@@ -200,9 +200,9 @@ export default function ParametresPage() {
       const response = await fetch('/api/user/password', {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+          'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({
           currentPassword: passwordData.currentPassword,
           newPassword: passwordData.newPassword
@@ -237,15 +237,15 @@ export default function ParametresPage() {
       const response = await fetch('/api/user/profile', {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+          'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({ isActive: false })
       });
 
       if (response.ok) {
         toast.success('Compte désactivé avec succès');
-        logout();
+        await signOut();
         router.push('/');
       } else {
         toast.error('Erreur lors de la désactivation');
@@ -272,14 +272,12 @@ export default function ParametresPage() {
     try {
       const response = await fetch('/api/user/delete', {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-        }
+        credentials: 'include'
       });
 
       if (response.ok) {
         toast.success('Compte supprimé définitivement');
-        logout();
+        await signOut();
         router.push('/');
       } else {
         toast.error('Erreur lors de la suppression');
@@ -291,8 +289,8 @@ export default function ParametresPage() {
     }
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await signOut();
     toast.success('Déconnexion réussie');
     router.push('/');
   };
@@ -463,7 +461,7 @@ export default function ParametresPage() {
                         <div>
                           <h3 className="text-sm font-medium text-gray-900">Téléphone</h3>
                           <p className="text-sm text-gray-600">
-                            {user.isPhoneVerified ? (
+                            {user.phone_confirmed_at ? (
                               <span className="text-green-600">✓ Vérifié</span>
                             ) : (
                               <span className="text-yellow-600">En attente</span>
@@ -479,7 +477,7 @@ export default function ParametresPage() {
                         <div>
                           <h3 className="text-sm font-medium text-gray-900">Email</h3>
                           <p className="text-sm text-gray-600">
-                            {user.isEmailVerified ? (
+                            {user.email_confirmed_at ? (
                               <span className="text-green-600">✓ Vérifié</span>
                             ) : (
                               <span className="text-yellow-600">En attente</span>

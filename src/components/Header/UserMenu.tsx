@@ -16,13 +16,13 @@ export default function UserMenu({
   setIsUserMenuOpen, 
   userMenuPosition 
 }: UserMenuProps) {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, signOut } = useAuth();
   const userMenuRef = useRef<HTMLDivElement | null>(null);
 
-  const handleLogout = useCallback(() => {
-    logout();
+  const handleLogout = useCallback(async () => {
+    await signOut();
     setIsUserMenuOpen(false);
-  }, [logout, setIsUserMenuOpen]);
+  }, [signOut, setIsUserMenuOpen]);
 
   // Handle click outside
   useEffect(() => {
@@ -52,7 +52,7 @@ export default function UserMenu({
       }}
     >
       <div className="px-4 py-2 text-sm text-gray-500 border-b border-gray-100">
-        {user?.mobile}
+        {user?.email || user?.phone}
       </div>
       <Link
         href="/profil"

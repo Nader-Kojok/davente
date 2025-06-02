@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Phone, ChevronLeft } from 'lucide-react';
+import { Phone, ChevronLeft, Mail } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import TextInput from '@/components/ui/TextInput';
 import PasswordInput from '@/components/ui/PasswordInput';
@@ -13,6 +13,8 @@ import Checkbox from '@/components/ui/Checkbox';
 import toast from 'react-hot-toast';
 
 export default function LoginPage() {
+  const [loginMethod, setLoginMethod] = useState<'email' | 'phone'>('email');
+  const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [isValid, setIsValid] = useState(true);
@@ -20,7 +22,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const countryCode = '+221';
   
-  const { login } = useAuth();
+  const { signInWithEmail, signInWithPhone, signInWithGoogle, signInWithFacebook } = useAuth();
   const router = useRouter();
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,12 +31,25 @@ export default function LoginPage() {
     setIsValid(value.length === 9);
   };
 
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+    setIsValid(value.includes('@') && value.includes('.'));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (phoneNumber.length !== 9) {
-      toast.error('Le numéro doit contenir 9 chiffres');
-      return;
+    if (loginMethod === 'phone') {
+      if (phoneNumber.length !== 9) {
+        toast.error('Le numéro doit contenir 9 chiffres');
+        return;
+      }
+    } else if (loginMethod === 'email') {
+      if (!email.includes('@') || !email.includes('.')) {
+        toast.error('Veuillez entrer une adresse email valide');
+        return;
+      }
     }
     
     if (!password) {
@@ -45,18 +60,55 @@ export default function LoginPage() {
     setIsLoading(true);
     
     try {
-      const fullPhoneNumber = `${countryCode}${phoneNumber}`;
-      const result = await login(fullPhoneNumber, password);
+      let result;
+      
+      if (loginMethod === 'phone') {
+        const fullPhoneNumber = `${countryCode}${phoneNumber}`;
+        result = await signInWithPhone(fullPhoneNumber, password);
+      } else {
+        result = await signInWithEmail(email, password);
+      }
       
       if (result.success) {
         toast.success('Connexion réussie !');
-        router.push('/'); // Redirect to homepage
+        router.push('/');
       } else {
         toast.error(result.error || 'Erreur de connexion');
       }
-    } catch (_error) {
-      setIsLoading(false);
+    } catch (error) {
       toast.error('Erreur de connexion au serveur');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    try {
+      const result = await signInWithGoogle();
+      if (!result.success && result.error) {
+        toast.error(result.error);
+      }
+      // Pour OAuth, la redirection se fait automatiquement
+    } catch (error) {
+      toast.error('Erreur de connexion avec Google');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleFacebookSignIn = async () => {
+    setIsLoading(true);
+    try {
+      const result = await signInWithFacebook();
+      if (!result.success && result.error) {
+        toast.error(result.error);
+      }
+      // Pour OAuth, la redirection se fait automatiquement
+    } catch (error) {
+      toast.error('Erreur de connexion avec Facebook');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -92,37 +144,94 @@ export default function LoginPage() {
             Connexion
           </h1>
 
+          {/* Login Method Toggle */}
+          <div className="flex mb-6 bg-gray-100 rounded-lg p-1">
+            <button
+              type="button"
+              onClick={() => setLoginMethod('email')}
+              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                loginMethod === 'email'
+                  ? 'bg-white text-primary-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Email
+            </button>
+            <button
+              type="button"
+              onClick={() => setLoginMethod('phone')}
+              className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                loginMethod === 'phone'
+                  ? 'bg-white text-primary-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Téléphone
+            </button>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label
-                htmlFor="phone"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Numéro de téléphone
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-4">
-                  <Phone className="h-5 w-5 text-gray-400" />
-                  <span className="ml-4 text-[#E00201] font-medium">{countryCode}</span>
+            {loginMethod === 'phone' ? (
+              <div>
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Numéro de téléphone
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-4">
+                    <Phone className="h-5 w-5 text-gray-400" />
+                    <span className="ml-4 text-[#E00201] font-medium">{countryCode}</span>
+                  </div>
+                  <TextInput
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={phoneNumber}
+                    onChange={handlePhoneChange}
+                    className={`form-input pl-24 ${isValid ? '' : 'border-red-500'}`}
+                    placeholder="77 123 45 67"
+                    maxLength={9}
+                    disabled={isLoading}
+                  />
                 </div>
-                <TextInput
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={phoneNumber}
-                  onChange={handlePhoneChange}
-                  className={`form-input pl-24 ${isValid ? '' : 'border-red-500'}`}
-                  placeholder="77 123 45 67"
-                  maxLength={9}
-                  disabled={isLoading}
-                />
+                {!isValid && phoneNumber.length > 0 && (
+                  <p className="mt-2 text-sm text-red-600">
+                    Le numéro doit contenir 9 chiffres
+                  </p>
+                )}
               </div>
-              {!isValid && phoneNumber.length > 0 && (
-                <p className="mt-2 text-sm text-red-600">
-                  Le numéro doit contenir 9 chiffres
-                </p>
-              )}
-            </div>
+            ) : (
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Adresse email
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-4">
+                    <Mail className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <TextInput
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={email}
+                    onChange={handleEmailChange}
+                    className={`form-input pl-12 ${isValid ? '' : 'border-red-500'}`}
+                    placeholder="votre@email.com"
+                    disabled={isLoading}
+                  />
+                </div>
+                {!isValid && email.length > 0 && (
+                  <p className="mt-2 text-sm text-red-600">
+                    Veuillez entrer une adresse email valide
+                  </p>
+                )}
+              </div>
+            )}
 
             <div>
               <label
@@ -179,6 +288,7 @@ export default function LoginPage() {
           <div className="space-y-3">
             <button
               type="button"
+              onClick={handleGoogleSignIn}
               className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
               disabled={isLoading}
             >
@@ -194,6 +304,7 @@ export default function LoginPage() {
 
             <button
               type="button"
+              onClick={handleFacebookSignIn}
               className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
               disabled={isLoading}
             >

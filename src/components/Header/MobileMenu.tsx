@@ -12,12 +12,12 @@ interface MobileMenuProps {
 }
 
 export default function MobileMenu({ isMenuOpen, setIsMenuOpen }: MobileMenuProps) {
-  const { user, isAuthenticated, logout, isLoading } = useAuth();
+  const { user, profile, isAuthenticated, signOut, isLoading } = useAuth();
   const allCategories = getCategoriesForDisplay();
   const mobileCategories = allCategories.slice(0, 6);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await signOut();
     setIsMenuOpen(false);
   };
 
@@ -108,7 +108,7 @@ export default function MobileMenu({ isMenuOpen, setIsMenuOpen }: MobileMenuProp
               {isAuthenticated ? (
                 <div className="space-y-3">
                   <div className="text-sm text-gray-500 px-4">
-                    Connecté en tant que {user?.name}
+                    Connecté en tant que {profile?.name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'Utilisateur'}
                   </div>
                   <Link
                     href="/profil"

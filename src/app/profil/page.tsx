@@ -63,7 +63,7 @@ const languageOptions = [
 ];
 
 function ProfilContent() {
-  const { user, isAuthenticated, refreshUser } = useAuth();
+  const { user, profile, isAuthenticated, updateProfile, session } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const isWelcome = searchParams.get('welcome') === 'true';
@@ -110,29 +110,29 @@ function ProfilContent() {
       return;
     }
 
-    if (user) {
+    if (user && profile) {
       setFormData({
-        name: user.name || '',
+        name: profile.name || '',
         email: user.email || '',
-        mobile: user.mobile || '',
-        picture: user.picture || '',
-        bio: user.bio || '',
-        location: user.location || '',
-        address: user.address || '',
-        dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '',
-        gender: user.gender || '',
-        profession: user.profession || '',
-        company: user.company || '',
-        website: user.website || '',
-        showPhone: user.showPhone ?? true,
-        showEmail: user.showEmail ?? false,
-        allowSms: user.allowSms ?? true,
-        allowCalls: user.allowCalls ?? true,
-        emailNotifications: user.emailNotifications ?? true,
-        smsNotifications: user.smsNotifications ?? true,
-        pushNotifications: user.pushNotifications ?? true,
-        marketingEmails: user.marketingEmails ?? false,
-        language: user.language || 'fr',
+        mobile: profile.mobile || '',
+        picture: profile.picture || '',
+        bio: profile.bio || '',
+        location: profile.location || '',
+        address: '', // Not in profile interface
+        dateOfBirth: profile.date_of_birth ? new Date(profile.date_of_birth).toISOString().split('T')[0] : '',
+        gender: profile.gender || '',
+        profession: profile.profession || '',
+        company: profile.company || '',
+        website: profile.website || '',
+        showPhone: profile.show_phone ?? true,
+        showEmail: profile.show_email ?? false,
+        allowSms: profile.allow_sms ?? true,
+        allowCalls: profile.allow_calls ?? true,
+        emailNotifications: profile.email_notifications ?? true,
+        smsNotifications: profile.sms_notifications ?? true,
+        pushNotifications: profile.push_notifications ?? true,
+        marketingEmails: profile.marketing_emails ?? false,
+        language: profile.language || 'fr',
       });
     }
 
@@ -147,7 +147,7 @@ function ProfilContent() {
 
       return () => clearTimeout(timer);
     }
-  }, [isAuthenticated, user, router, isWelcome]);
+  }, [isAuthenticated, user, profile, router, isWelcome]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -176,43 +176,41 @@ function ProfilContent() {
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      const dataToSend = { ...formData };
-      
-      // Convertir la date de naissance en format ISO si elle existe
-      if (dataToSend.dateOfBirth) {
-        dataToSend.dateOfBirth = new Date(dataToSend.dateOfBirth).toISOString();
-      }
+      const dataToSend = {
+        name: formData.name,
+        mobile: formData.mobile,
+        picture: formData.picture,
+        bio: formData.bio,
+        location: formData.location,
+        profession: formData.profession,
+        company: formData.company,
+        website: formData.website,
+        date_of_birth: formData.dateOfBirth ? new Date(formData.dateOfBirth).toISOString() : undefined,
+        gender: formData.gender,
+        show_phone: formData.showPhone,
+        show_email: formData.showEmail,
+        allow_sms: formData.allowSms,
+        allow_calls: formData.allowCalls,
+        email_notifications: formData.emailNotifications,
+        sms_notifications: formData.smsNotifications,
+        push_notifications: formData.pushNotifications,
+        marketing_emails: formData.marketingEmails,
+        language: formData.language,
+      };
 
-      console.log('Sending data:', dataToSend);
-      console.log('Picture URL being sent:', dataToSend.picture);
-      console.log('Token:', localStorage.getItem('auth_token'));
+      console.log('Updating profile with data:', dataToSend);
 
-      const response = await fetch('/api/user/profile', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-        },
-        body: JSON.stringify(dataToSend)
-      });
+      const result = await updateProfile(dataToSend);
 
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
-
-      if (response.ok) {
-        const responseData = await response.json();
-        console.log('Success response:', responseData);
-        console.log('Updated user picture:', responseData.user.picture);
+      if (result.success) {
         toast.success('Profil mis à jour avec succès');
         setIsEditing(false);
-        await refreshUser();
       } else {
-        const errorData = await response.json();
-        console.error('Error response:', errorData);
-        toast.error(errorData.error || 'Erreur lors de la mise à jour');
+        console.error('Update error:', result.error);
+        toast.error(result.error || 'Erreur lors de la mise à jour');
       }
     } catch (error) {
-      console.error('Fetch error:', error);
+      console.error('Update error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
       toast.error(`Erreur de connexion au serveur: ${errorMessage}`);
     } finally {
@@ -221,29 +219,29 @@ function ProfilContent() {
   };
 
   const handleCancel = () => {
-    if (user) {
+    if (user && profile) {
       setFormData({
-        name: user.name || '',
+        name: profile.name || '',
         email: user.email || '',
-        mobile: user.mobile || '',
-        picture: user.picture || '',
-        bio: user.bio || '',
-        location: user.location || '',
-        address: user.address || '',
-        dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '',
-        gender: user.gender || '',
-        profession: user.profession || '',
-        company: user.company || '',
-        website: user.website || '',
-        showPhone: user.showPhone ?? true,
-        showEmail: user.showEmail ?? false,
-        allowSms: user.allowSms ?? true,
-        allowCalls: user.allowCalls ?? true,
-        emailNotifications: user.emailNotifications ?? true,
-        smsNotifications: user.smsNotifications ?? true,
-        pushNotifications: user.pushNotifications ?? true,
-        marketingEmails: user.marketingEmails ?? false,
-        language: user.language || 'fr',
+        mobile: profile.mobile || '',
+        picture: profile.picture || '',
+        bio: profile.bio || '',
+        location: profile.location || '',
+        address: '', // Not in profile interface
+        dateOfBirth: profile.date_of_birth ? new Date(profile.date_of_birth).toISOString().split('T')[0] : '',
+        gender: profile.gender || '',
+        profession: profile.profession || '',
+        company: profile.company || '',
+        website: profile.website || '',
+        showPhone: profile.show_phone ?? true,
+        showEmail: profile.show_email ?? false,
+        allowSms: profile.allow_sms ?? true,
+        allowCalls: profile.allow_calls ?? true,
+        emailNotifications: profile.email_notifications ?? true,
+        smsNotifications: profile.sms_notifications ?? true,
+        pushNotifications: profile.push_notifications ?? true,
+        marketingEmails: profile.marketing_emails ?? false,
+        language: profile.language || 'fr',
       });
     }
     setIsEditing(false);

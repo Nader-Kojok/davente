@@ -27,8 +27,8 @@ import Textarea from '@/components/ui/Textarea';
 import toast from 'react-hot-toast';
 
 interface FormData {
-  // Étape 1: Type de compte
-  accountType: 'individual' | 'business';
+  // Étape 1: Méthode d'inscription
+  signupMethod: 'email' | 'phone';
   
   // Étape 2: Informations de base
   name: string;
@@ -37,16 +37,12 @@ interface FormData {
   password: string;
   confirmPassword: string;
   
-  // Étape 3: Informations personnelles/professionnelles
+  // Étape 3: Informations supplémentaires (optionnel)
   location: string;
   profession: string;
-  company: string;
-  website: string;
   bio: string;
-  dateOfBirth: string;
-  gender: string;
   
-  // Étape 4: Préférences
+  // Préférences
   language: string;
   emailNotifications: boolean;
   smsNotifications: boolean;
@@ -65,16 +61,10 @@ const LANGUAGES = [
   { value: 'en', label: 'English' }
 ];
 
-const GENDERS = [
-  { value: 'homme', label: 'Homme' },
-  { value: 'femme', label: 'Femme' },
-  { value: 'autre', label: 'Autre' }
-];
-
 export default function RegisterPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
-    accountType: 'individual',
+    signupMethod: 'email',
     name: '',
     phoneNumber: '',
     email: '',
@@ -82,11 +72,7 @@ export default function RegisterPage() {
     confirmPassword: '',
     location: '',
     profession: '',
-    company: '',
-    website: '',
     bio: '',
-    dateOfBirth: '',
-    gender: '',
     language: 'fr',
     emailNotifications: true,
     smsNotifications: true,
@@ -97,7 +83,7 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const countryCode = '+221';
   
-  const { register } = useAuth();
+  const { signUpWithEmail, signUpWithPhone, signInWithGoogle, signInWithFacebook, updateProfile } = useAuth();
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -129,7 +115,7 @@ export default function RegisterPage() {
 
     switch (step) {
       case 1:
-        // Type de compte - toujours valide car valeur par défaut
+        // Méthode d'inscription - toujours valide car valeur par défaut
         break;
         
       case 2:
@@ -139,14 +125,18 @@ export default function RegisterPage() {
           newErrors.name = 'Le nom doit contenir au moins 2 caractères';
         }
 
-        if (!formData.phoneNumber) {
-          newErrors.phoneNumber = 'Le numéro de téléphone est requis';
-        } else if (formData.phoneNumber.length !== 9) {
-          newErrors.phoneNumber = 'Le numéro doit contenir 9 chiffres';
-        }
-
-        if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-          newErrors.email = 'Format d\'email invalide';
+        if (formData.signupMethod === 'phone') {
+          if (!formData.phoneNumber) {
+            newErrors.phoneNumber = 'Le numéro de téléphone est requis';
+          } else if (formData.phoneNumber.length !== 9) {
+            newErrors.phoneNumber = 'Le numéro doit contenir 9 chiffres';
+          }
+        } else if (formData.signupMethod === 'email') {
+          if (!formData.email) {
+            newErrors.email = 'L\'email est requis';
+          } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+            newErrors.email = 'Format d\'email invalide';
+          }
         }
 
         if (!formData.password) {
@@ -161,19 +151,7 @@ export default function RegisterPage() {
         break;
 
       case 3:
-        if (formData.accountType === 'business') {
-          if (!formData.company.trim()) {
-            newErrors.company = 'Le nom de l\'entreprise est requis pour un compte business';
-          }
-        }
-
-        if (formData.website && !/^https?:\/\/.+/.test(formData.website)) {
-          newErrors.website = 'L\'URL doit commencer par http:// ou https://';
-        }
-        break;
-
-      case 4:
-        // Préférences - pas de validation requise
+        // Informations supplémentaires - toutes optionnelles
         break;
     }
 
@@ -183,7 +161,7 @@ export default function RegisterPage() {
 
   const nextStep = () => {
     if (validateStep(currentStep)) {
-      setCurrentStep(prev => Math.min(prev + 1, 4));
+      setCurrentStep(prev => Math.min(prev + 1, 3));
     }
   };
 
@@ -197,57 +175,73 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      const fullPhoneNumber = `${countryCode}${formData.phoneNumber}`;
+      let result;
       
-      // Préparer les données pour l'API
-      const registrationData = {
-        mobile: fullPhoneNumber,
-        password: formData.password,
-        name: formData.name,
-        picture: '',
-        accountType: formData.accountType,
-        email: formData.email || null,
-        location: formData.location || null,
-        profession: formData.profession || null,
-        company: formData.company || null,
-        website: formData.website || null,
-        bio: formData.bio || null,
-        dateOfBirth: formData.dateOfBirth || null,
-        gender: formData.gender || null,
-        language: formData.language,
-        emailNotifications: formData.emailNotifications,
-        smsNotifications: formData.smsNotifications,
-        marketingEmails: formData.marketingEmails
-      };
-
-      const result = await register(
-        registrationData.mobile,
-        registrationData.password,
-        registrationData.name,
-        registrationData.picture
-      );
+      if (formData.signupMethod === 'phone') {
+        const fullPhoneNumber = `${countryCode}${formData.phoneNumber}`;
+        result = await signUpWithPhone(fullPhoneNumber, formData.password, formData.name);
+      } else {
+        result = await signUpWithEmail(formData.email, formData.password, formData.name);
+      }
 
       if (result.success) {
-        // Mettre à jour le profil avec les informations supplémentaires
-        const token = localStorage.getItem('auth_token');
-        if (token) {
-          await fetch('/api/user/profile', {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(registrationData)
-          });
+        // Si l'inscription réussit, mettre à jour le profil avec les informations supplémentaires
+        if (formData.location || formData.profession || formData.bio) {
+          const profileUpdate = {
+            ...(formData.location && { location: formData.location }),
+            ...(formData.profession && { profession: formData.profession }),
+            ...(formData.bio && { bio: formData.bio }),
+            // Ajouter les préférences si nécessaire
+            language: formData.language
+          };
+
+          await updateProfile(profileUpdate);
         }
 
-        toast.success('Compte créé avec succès ! Bienvenue sur Grabi 🎉');
-        router.push('/profil?welcome=true');
+        if (result.error) {
+          // Cas où l'utilisateur doit vérifier son email/téléphone
+          toast.success(result.error);
+          router.push('/login?message=check-email');
+        } else {
+          toast.success('Compte créé avec succès ! Bienvenue sur Grabi 🎉');
+          router.push('/');
+        }
       } else {
         toast.error(result.error || 'Erreur lors de la création du compte');
       }
     } catch (error) {
+      console.error('Registration error:', error);
       toast.error('Erreur de connexion au serveur');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignUp = async () => {
+    setIsLoading(true);
+    try {
+      const result = await signInWithGoogle();
+      if (!result.success && result.error) {
+        toast.error(result.error);
+      }
+      // Pour OAuth, la redirection se fait automatiquement
+    } catch (error) {
+      toast.error('Erreur de connexion avec Google');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleFacebookSignUp = async () => {
+    setIsLoading(true);
+    try {
+      const result = await signInWithFacebook();
+      if (!result.success && result.error) {
+        toast.error(result.error);
+      }
+      // Pour OAuth, la redirection se fait automatiquement
+    } catch (error) {
+      toast.error('Erreur de connexion avec Facebook');
     } finally {
       setIsLoading(false);
     }
@@ -255,20 +249,20 @@ export default function RegisterPage() {
 
   const renderStepIndicator = () => (
     <div className="flex items-center justify-center mb-8">
-      {[1, 2, 3, 4].map((step) => (
+      {[1, 2, 3].map((step) => (
         <div key={step} className="flex items-center">
           <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+            className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
               step <= currentStep
                 ? 'bg-primary-600 text-white'
-                : 'bg-gray-200 text-gray-500'
+                : 'bg-gray-200 text-gray-600'
             }`}
           >
-            {step < currentStep ? <Check className="w-4 h-4" /> : step}
+            {step < currentStep ? <Check className="w-5 h-5" /> : step}
           </div>
-          {step < 4 && (
+          {step < 3 && (
             <div
-              className={`w-12 h-0.5 mx-2 ${
+              className={`w-16 h-1 mx-2 ${
                 step < currentStep ? 'bg-primary-600' : 'bg-gray-200'
               }`}
             />
@@ -282,58 +276,84 @@ export default function RegisterPage() {
     <div className="space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Quel type de compte souhaitez-vous créer ?
+          Comment souhaitez-vous vous inscrire ?
         </h2>
         <p className="text-gray-600">
-          Choisissez le type de compte qui correspond le mieux à vos besoins
+          Choisissez votre méthode d'inscription préférée
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Signup Method Toggle */}
+      <div className="flex mb-6 bg-gray-100 rounded-lg p-1">
         <button
           type="button"
-          onClick={() => setFormData(prev => ({ ...prev, accountType: 'individual' }))}
-          className={`p-6 border-2 rounded-lg text-left transition-all ${
-            formData.accountType === 'individual'
-              ? 'border-primary-600 bg-primary-50'
-              : 'border-gray-200 hover:border-gray-300'
+          onClick={() => setFormData(prev => ({ ...prev, signupMethod: 'email' }))}
+          className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center ${
+            formData.signupMethod === 'email'
+              ? 'bg-white text-primary-600 shadow-sm'
+              : 'text-gray-600 hover:text-gray-900'
           }`}
         >
-          <div className="flex items-center mb-4">
-            <User className="w-8 h-8 text-primary-600 mr-3" />
-            <h3 className="text-lg font-semibold">Particulier</h3>
+          <Mail className="w-4 h-4 mr-2" />
+          Email
+        </button>
+        <button
+          type="button"
+          onClick={() => setFormData(prev => ({ ...prev, signupMethod: 'phone' }))}
+          className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center ${
+            formData.signupMethod === 'phone'
+              ? 'bg-white text-primary-600 shadow-sm'
+              : 'text-gray-600 hover:text-gray-900'
+          }`}
+        >
+          <Phone className="w-4 h-4 mr-2" />
+          Téléphone
+        </button>
+      </div>
+
+      {/* Social Signup Options */}
+      <div className="space-y-3">
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-200"></div>
           </div>
-          <p className="text-gray-600 text-sm">
-            Pour vendre ou acheter des articles personnels, véhicules, immobilier, etc.
-          </p>
-          <ul className="mt-3 text-sm text-gray-500 space-y-1">
-            <li>• Vente d'articles personnels</li>
-            <li>• Interface simplifiée</li>
-            <li>• Profil personnel</li>
-          </ul>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-4 bg-white text-gray-500">
+              ou continuer avec
+            </span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleGoogleSignUp}
+          className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+          disabled={isLoading}
+        >
+          <Image
+            src="/google.svg"
+            alt="Google"
+            width={20}
+            height={20}
+            className="mr-3"
+          />
+          Continuer avec Google
         </button>
 
         <button
           type="button"
-          onClick={() => setFormData(prev => ({ ...prev, accountType: 'business' }))}
-          className={`p-6 border-2 rounded-lg text-left transition-all ${
-            formData.accountType === 'business'
-              ? 'border-primary-600 bg-primary-50'
-              : 'border-gray-200 hover:border-gray-300'
-          }`}
+          onClick={handleFacebookSignUp}
+          className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+          disabled={isLoading}
         >
-          <div className="flex items-center mb-4">
-            <Building2 className="w-8 h-8 text-primary-600 mr-3" />
-            <h3 className="text-lg font-semibold">Professionnel</h3>
-          </div>
-          <p className="text-gray-600 text-sm">
-            Pour les entreprises, commerces et professionnels qui vendent régulièrement.
-          </p>
-          <ul className="mt-3 text-sm text-gray-500 space-y-1">
-            <li>• Outils professionnels</li>
-            <li>• Statistiques avancées</li>
-            <li>• Profil entreprise</li>
-          </ul>
+          <Image
+            src="/facebook.svg"
+            alt="Facebook"
+            width={20}
+            height={20}
+            className="mr-3"
+          />
+          Continuer avec Facebook
         </button>
       </div>
     </div>
@@ -357,45 +377,48 @@ export default function RegisterPage() {
           name="name"
           value={formData.name}
           onChange={handleChange}
-          placeholder={formData.accountType === 'business' ? 'Nom du responsable' : 'Votre nom complet'}
+          placeholder="Votre nom complet"
           error={errors.name}
           disabled={isLoading}
           required
         />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Numéro de téléphone *
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 flex items-center pl-4">
-              <Phone className="h-5 w-5 text-gray-400" />
-              <span className="ml-4 text-primary-600 font-medium">{countryCode}</span>
+        {formData.signupMethod === 'phone' ? (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Numéro de téléphone *
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-4">
+                <Phone className="h-5 w-5 text-gray-400" />
+                <span className="ml-4 text-primary-600 font-medium">{countryCode}</span>
+              </div>
+              <TextInput
+                type="tel"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                className="pl-24"
+                placeholder="77 123 45 67"
+                maxLength={9}
+                error={errors.phoneNumber}
+                disabled={isLoading}
+              />
             </div>
-            <TextInput
-              type="tel"
-              name="phoneNumber"
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              className="pl-24"
-              placeholder="77 123 45 67"
-              maxLength={9}
-              error={errors.phoneNumber}
-              disabled={isLoading}
-            />
           </div>
-        </div>
-
-        <TextInput
-          label="Email (optionnel)"
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          placeholder="votre@email.com"
-          error={errors.email}
-          disabled={isLoading}
-        />
+        ) : (
+          <TextInput
+            label="Adresse email"
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="votre@email.com"
+            error={errors.email}
+            disabled={isLoading}
+            required
+          />
+        )}
 
         <PasswordInput
           label="Mot de passe"
@@ -424,16 +447,16 @@ export default function RegisterPage() {
     <div className="space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          {formData.accountType === 'business' ? 'Informations professionnelles' : 'Informations personnelles'}
+          Informations supplémentaires
         </h2>
         <p className="text-gray-600">
-          Ces informations nous aident à personnaliser votre expérience
+          Ces informations nous aident à personnaliser votre expérience (optionnel)
         </p>
       </div>
 
       <div className="space-y-4">
         <Select
-          label="Région"
+          label="Région (optionnel)"
           name="location"
           value={formData.location}
           onChange={handleChange}
@@ -442,105 +465,25 @@ export default function RegisterPage() {
           error={errors.location}
         />
 
-        {formData.accountType === 'business' ? (
-          <>
-            <TextInput
-              label="Nom de l'entreprise"
-              name="company"
-              value={formData.company}
-              onChange={handleChange}
-              placeholder="Nom de votre entreprise"
-              error={errors.company}
-              required
-            />
+        <TextInput
+          label="Profession (optionnel)"
+          name="profession"
+          value={formData.profession}
+          onChange={handleChange}
+          placeholder="Votre profession"
+          error={errors.profession}
+        />
 
-            <TextInput
-              label="Secteur d'activité"
-              name="profession"
-              value={formData.profession}
-              onChange={handleChange}
-              placeholder="Ex: Commerce, Services, Artisanat..."
-              error={errors.profession}
-            />
+        <Textarea
+          label="Bio (optionnel)"
+          name="bio"
+          value={formData.bio}
+          onChange={handleChange}
+          placeholder="Parlez-nous un peu de vous..."
+          rows={3}
+          maxLength={300}
+        />
 
-            <TextInput
-              label="Site web (optionnel)"
-              name="website"
-              value={formData.website}
-              onChange={handleChange}
-              placeholder="https://www.votre-site.com"
-              error={errors.website}
-            />
-
-            <Textarea
-              label="Description de l'entreprise"
-              name="bio"
-              value={formData.bio}
-              onChange={handleChange}
-              placeholder="Décrivez votre entreprise et vos services..."
-              rows={3}
-              maxLength={500}
-            />
-          </>
-        ) : (
-          <>
-            <TextInput
-              label="Profession (optionnel)"
-              name="profession"
-              value={formData.profession}
-              onChange={handleChange}
-              placeholder="Votre profession"
-              error={errors.profession}
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <TextInput
-                label="Date de naissance (optionnel)"
-                type="date"
-                name="dateOfBirth"
-                value={formData.dateOfBirth}
-                onChange={handleChange}
-                error={errors.dateOfBirth}
-              />
-
-              <Select
-                label="Genre (optionnel)"
-                name="gender"
-                value={formData.gender}
-                onChange={handleChange}
-                options={GENDERS}
-                placeholder="Sélectionnez"
-                error={errors.gender}
-              />
-            </div>
-
-            <Textarea
-              label="Bio (optionnel)"
-              name="bio"
-              value={formData.bio}
-              onChange={handleChange}
-              placeholder="Parlez-nous un peu de vous..."
-              rows={3}
-              maxLength={300}
-            />
-          </>
-        )}
-      </div>
-    </div>
-  );
-
-  const renderStep4 = () => (
-    <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Préférences
-        </h2>
-        <p className="text-gray-600">
-          Personnalisez votre expérience sur Grabi
-        </p>
-      </div>
-
-      <div className="space-y-6">
         <Select
           label="Langue préférée"
           name="language"
@@ -550,7 +493,7 @@ export default function RegisterPage() {
         />
 
         <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Notifications</h3>
+          <h3 className="text-sm font-medium text-gray-700 mb-3">Préférences de notification</h3>
           <div className="space-y-3">
             <label className="flex items-center">
               <input
@@ -587,7 +530,7 @@ export default function RegisterPage() {
                 className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
               />
               <span className="ml-3 text-sm text-gray-700">
-                Recevoir les offres et promotions par email
+                Recevoir les offres et promotions
               </span>
             </label>
           </div>
@@ -611,87 +554,94 @@ export default function RegisterPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="max-w-2xl mx-auto p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <Link
-            href="/"
-            className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            <ChevronLeft className="w-5 h-5 mr-1" />
-            Retour
-          </Link>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-md md:max-w-lg lg:max-w-xl mx-auto p-6">
+        {/* Back Button */}
+        <Link
+          href="/login"
+          className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-8"
+        >
+          <ChevronLeft className="w-5 h-5 mr-1" />
+          Retour à la connexion
+        </Link>
 
+        {/* Logo */}
+        <div className="text-center mb-8">
           <Link href="/">
             <Image
               src="/logo.svg"
               alt="Grabi Logo"
               width={120}
               height={40}
+              className="mx-auto"
               priority
             />
           </Link>
-
-          <div className="w-16" /> {/* Spacer for centering */}
         </div>
 
-        {/* Step Indicator */}
-        {renderStepIndicator()}
-
         {/* Form Container */}
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+        <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
+          <h1 className="h2 text-center mb-8">
+            Créer un compte
+          </h1>
+
+          {/* Step Indicator */}
+          {renderStepIndicator()}
+
+          {/* Step Content */}
           {currentStep === 1 && renderStep1()}
           {currentStep === 2 && renderStep2()}
           {currentStep === 3 && renderStep3()}
-          {currentStep === 4 && renderStep4()}
 
           {/* Navigation Buttons */}
-          <div className="flex justify-between mt-8 pt-6 border-t border-gray-200">
-            <button
-              type="button"
-              onClick={prevStep}
-              className={`flex items-center px-6 py-3 text-gray-600 hover:text-gray-900 transition-colors ${
-                currentStep === 1 ? 'invisible' : ''
-              }`}
-            >
-              <ChevronLeft className="w-4 h-4 mr-2" />
-              Précédent
-            </button>
-
-            {currentStep < 4 ? (
+          <div className="flex justify-between mt-8">
+            {currentStep > 1 && (
               <button
                 type="button"
-                onClick={nextStep}
-                className="flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
-              >
-                Suivant
-                <ChevronRight className="w-4 h-4 ml-2" />
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={handleSubmit}
+                onClick={prevStep}
+                className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
                 disabled={isLoading}
-                className="flex items-center px-8 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? 'Création...' : 'Créer mon compte'}
-                {!isLoading && <Check className="w-4 h-4 ml-2" />}
+                <ChevronLeft className="w-4 h-4 mr-1" />
+                Précédent
               </button>
             )}
-          </div>
-        </div>
 
-        {/* Login Link */}
-        <p className="mt-6 text-center text-sm text-gray-600">
-          Déjà inscrit ?{' '}
-          <Link
-            href="/login"
-            className="text-primary-600 hover:text-primary-700 font-medium transition-colors"
-          >
-            Se connecter
-          </Link>
-        </p>
+            <div className="ml-auto">
+              {currentStep < 3 ? (
+                <button
+                  type="button"
+                  onClick={nextStep}
+                  className="btn-primary flex items-center"
+                  disabled={isLoading}
+                >
+                  Suivant
+                  <ChevronRight className="w-4 h-4 ml-1" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  className={`btn-primary flex items-center ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Création...' : 'Créer mon compte'}
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Login Link */}
+          <p className="mt-8 text-center text-sm text-gray-600">
+            Déjà un compte ?{' '}
+            <Link
+              href="/login"
+              className="text-primary-500 hover:text-primary-600 transition-colors"
+            >
+              Se connecter
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
