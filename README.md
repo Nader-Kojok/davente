@@ -161,3 +161,151 @@ Pour toute question ou problème :
 - Ouvrir une issue sur GitHub
 - Consulter la documentation Prisma : https://www.prisma.io/docs
 - Documentation Next.js : https://nextjs.org/docs
+
+## 🚀 Démarrage rapide
+
+### Installation
+```bash
+git clone <repository-url>
+cd grabi
+npm install
+```
+
+### Configuration
+1. Copiez `.env.example` vers `.env`
+2. Configurez vos variables d'environnement :
+   - `DATABASE_URL` : URL de connexion Supabase (pooled)
+   - `DIRECT_URL` : URL de connexion directe Supabase
+   - `JWT_SECRET` : Clé secrète pour l'authentification
+   - Autres variables Supabase
+
+### Base de données
+
+#### 🧪 Développement local
+```bash
+# Tests rapides et modifications de schéma
+npm run db:push
+
+# Visualiser la base de données
+npm run db:studio
+
+# Peupler avec les catégories
+npm run db:seed
+```
+
+#### 🏗️ Avant déploiement
+```bash
+# Créer une migration pour vos changements
+npm run db:migrate
+
+# Exemple
+npx prisma migrate dev --name "add_new_feature"
+```
+
+#### 🚀 Production (automatique)
+- Vercel applique automatiquement `prisma migrate deploy`
+- Les migrations sont versionnées et sécurisées
+- Aucune intervention manuelle requise
+
+### Développement
+```bash
+npm run dev
+```
+
+## 📋 Workflow recommandé
+
+### 1. Développement local
+```bash
+# Modifier schema.prisma
+# Tester rapidement
+npm run db:push
+
+# Visualiser les changements
+npm run db:studio
+```
+
+### 2. Avant commit
+```bash
+# Créer une migration propre
+npm run db:migrate
+
+# Commit avec les fichiers de migration
+git add prisma/migrations/
+git commit -m "feat: add new database schema"
+```
+
+### 3. Déploiement
+```bash
+# Déployer sur Vercel
+vercel --prod
+
+# Les migrations s'appliquent automatiquement
+```
+
+## 🛠️ Scripts disponibles
+
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Démarre le serveur de développement |
+| `npm run build` | Build l'application |
+| `npm run db:push` | Synchronise le schéma (développement) |
+| `npm run db:migrate` | Crée une nouvelle migration |
+| `npm run db:studio` | Interface graphique Prisma |
+| `npm run db:seed` | Peuple la base avec les catégories |
+| `npm run db:reset` | Remet à zéro la base de données |
+
+## 🎯 Fonctionnalités
+
+- ✅ Authentification utilisateur
+- ✅ Publication d'annonces avec images
+- ✅ Système de catégories (12 catégories, 51 sous-catégories)
+- ✅ Recherche avancée et filtres
+- ✅ Favoris et bookmarks
+- ✅ Interface responsive
+- ✅ Optimisations SEO
+- ✅ Upload d'images (Vercel Blob)
+
+## 🏗️ Architecture
+
+- **Frontend** : Next.js 15 (App Router), TypeScript, Tailwind CSS
+- **Base de données** : Supabase (PostgreSQL)
+- **ORM** : Prisma
+- **Authentification** : JWT + Supabase Auth
+- **Déploiement** : Vercel
+- **Storage** : Vercel Blob Storage
+
+## 📦 Structure du projet
+
+```
+davente/
+├── src/
+│   ├── app/              # Pages Next.js (App Router)
+│   ├── components/       # Composants React réutilisables
+│   ├── lib/             # Utilitaires et configurations
+│   └── types/           # Types TypeScript
+├── prisma/
+│   ├── schema.prisma    # Schéma de base de données
+│   └── migrations/      # Historique des migrations
+├── scripts/             # Scripts de build et de setup
+└── public/             # Assets statiques
+```
+
+## 🔒 Sécurité
+
+- Validation côté serveur avec Zod
+- Authentification JWT sécurisée
+- Row Level Security (RLS) sur Supabase
+- Variables d'environnement chiffrées
+- Validation des uploads d'images
+
+## 📈 Performance
+
+- Server Components par défaut
+- Lazy loading des images
+- Code splitting automatique
+- Cache optimisé
+- Bundle analysis intégré
+
+---
+
+Développé avec ❤️ pour une expérience utilisateur moderne et performante.

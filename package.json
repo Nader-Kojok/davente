@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -16,7 +16,13 @@
     "setup:categories": "node scripts/setup-categories.js",
     "populate:categories": "node scripts/populate-categories-simple.js",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "db:push": "npx prisma db push",
+    "db:studio": "npx prisma studio",
+    "db:migrate": "npx prisma migrate dev",
+    "db:deploy": "npx prisma migrate deploy",
+    "db:reset": "npx prisma migrate reset",
+    "db:seed": "node scripts/populate-categories-direct.js"
   },
   "dependencies": {
     "@prisma/client": "^6.8.2",
