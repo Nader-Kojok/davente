@@ -24,6 +24,7 @@
     "@types/react-dropzone": "^4.2.2",
     "@types/react-image-gallery": "^1.2.4",
     "@types/react-input-mask": "^3.0.6",
+    "@vercel/blob": "^1.1.1",
     "bcryptjs": "^3.0.2",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { put } from '@vercel/blob';
 import { verifyToken, extractTokenFromHeader } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
@@ -44,47 +43,45 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (file.size > 5 * 1024 * 1024) { // 5MB max
+    // Reduce file size limit to respect Vercel's 4.5MB limit
+    if (file.size > 4 * 1024 * 1024) { // 4MB max to stay under Vercel's 4.5MB limit
       return NextResponse.json(
-        { error: 'L\'image ne doit pas dépasser 5MB' },
+        { error: 'L\'image ne doit pas dépasser 4MB' },
         { status: 400 }
       );
     }
 
-    // Générer un nom de fichier unique
+    // Generate unique filename
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 15);
     const extension = file.name.split('.').pop() || 'jpg';
     const fileName = `${type}_${payload.userId}_${timestamp}_${randomString}.${extension}`;
 
-    // Créer le dossier de destination
-    const uploadDir = join(process.cwd(), 'public', 'uploads', type);
     try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch (_error) {
-      // Le dossier existe déjà
+      // Upload to Vercel Blob instead of local filesystem
+      const blob = await put(fileName, file, {
+        access: 'public',
+        addRandomSuffix: false, // We already added our own suffix
+      });
+
+      return NextResponse.json({
+        url: blob.url,
+        fileName: blob.pathname,
+        size: file.size,
+        type: file.type,
+        message: 'Image téléchargée avec succès'
+      });
+
+    } catch (uploadError) {
+      console.error('Blob upload error:', uploadError);
+      return NextResponse.json(
+        { error: 'Erreur lors de l\'upload vers le stockage cloud' },
+        { status: 500 }
+      );
     }
 
-    // Sauvegarder le fichier
-    const filePath = join(uploadDir, fileName);
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    
-    await writeFile(filePath, buffer);
-
-    // Retourner l'URL publique
-    const publicUrl = `/uploads/${type}/${fileName}`;
-
-    return NextResponse.json({
-      url: publicUrl,
-      fileName,
-      size: file.size,
-      type: file.type,
-      message: 'Image téléchargée avec succès'
-    });
-
-  } catch (_error) {
-    console.error('Error uploading image:', _error);
+  } catch (error) {
+    console.error('Error uploading image:', error);
     return NextResponse.json(
       { error: 'Erreur lors de l\'upload de l\'image' },
       { status: 500 }

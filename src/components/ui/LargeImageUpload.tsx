@@ -1,26 +1,30 @@
 import React, { useState, useRef } from 'react';
 import Image from 'next/image';
-import { Camera, X, Loader2 } from 'lucide-react';
+import { Camera, X, Loader2, Upload } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { upload } from '@vercel/blob/client';
 
-interface ImageUploadProps {
+interface LargeImageUploadProps {
   currentImage?: string;
   onImageChange: (imageUrl: string) => void;
   className?: string;
   size?: 'sm' | 'md' | 'lg';
   shape?: 'circle' | 'square';
   disabled?: boolean;
+  maxSizeMB?: number;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({
+const LargeImageUpload: React.FC<LargeImageUploadProps> = ({
   currentImage,
   onImageChange,
   className = '',
   size = 'md',
   shape = 'circle',
-  disabled = false
+  disabled = false,
+  maxSizeMB = 50
 }) => {
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -45,8 +49,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       return;
     }
 
-    if (file.size > 4 * 1024 * 1024) { // 4MB max to respect Vercel's limits
-      toast.error('L\'image ne doit pas dépasser 4MB');
+    const maxSizeBytes = maxSizeMB * 1024 * 1024;
+    if (file.size > maxSizeBytes) {
+      toast.error(`L'image ne doit pas dépasser ${maxSizeMB}MB`);
       return;
     }
 
@@ -57,32 +62,38 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     };
     reader.readAsDataURL(file);
 
-    // Télécharger l'image
-    uploadImage(file);
+    // Télécharger l'image via client upload
+    uploadImageClient(file);
   };
 
-  const uploadImage = async (file: File) => {
+  const uploadImageClient = async (file: File) => {
     setIsUploading(true);
+    setUploadProgress(0);
     
     try {
-      const formData = new FormData();
-      formData.append('image', file);
-      formData.append('type', 'avatar');
-
-      const response = await fetch('/api/upload/image', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-        },
-        body: formData
-      });
-
-      if (!response.ok) {
-        throw new Error('Erreur lors du téléchargement');
+      // Get auth token
+      const authToken = localStorage.getItem('auth_token');
+      if (!authToken) {
+        throw new Error('Token d\'authentification requis');
       }
 
-      const data = await response.json();
-      onImageChange(data.url);
+      // Generate unique filename
+      const timestamp = Date.now();
+      const randomString = Math.random().toString(36).substring(2, 15);
+      const extension = file.name.split('.').pop() || 'jpg';
+      const fileName = `avatar_${timestamp}_${randomString}.${extension}`;
+
+      // Use client upload for larger files
+      const blob = await upload(fileName, file, {
+        access: 'public',
+        handleUploadUrl: '/api/upload/presigned',
+        clientPayload: authToken,
+        onUploadProgress: (progress) => {
+          setUploadProgress(Math.round(progress.percentage));
+        },
+      });
+
+      onImageChange(blob.url);
       toast.success('Image téléchargée avec succès');
     } catch (error) {
       console.error('Upload error:', error);
@@ -90,6 +101,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       setPreviewUrl(null);
     } finally {
       setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -131,7 +143,10 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         onClick={triggerFileInput}
       >
         {isUploading ? (
-          <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+          <div className="text-center">
+            <Loader2 className="w-6 h-6 text-gray-400 animate-spin mx-auto mb-1" />
+            <div className="text-xs text-gray-500">{uploadProgress}%</div>
+          </div>
         ) : displayImage ? (
           <Image
             src={displayImage}
@@ -142,13 +157,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
           />
         ) : (
           <div className="text-center">
-            <Image
-              src="/default-avatar.svg"
-              alt="Avatar par défaut"
-              width={size === 'lg' ? 64 : size === 'md' ? 48 : 32}
-              height={size === 'lg' ? 64 : size === 'md' ? 48 : 32}
-              className="opacity-50"
-            />
+            <Upload className="w-6 h-6 text-gray-400 mx-auto mb-1" />
+            <div className="text-xs text-gray-500">Jusqu'à {maxSizeMB}MB</div>
           </div>
         )}
       </div>
@@ -183,6 +193,16 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         </button>
       )}
 
+      {/* Barre de progression */}
+      {isUploading && uploadProgress > 0 && (
+        <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gray-200 rounded-full">
+          <div 
+            className="h-1 bg-primary-600 rounded-full transition-all duration-300"
+            style={{ width: `${uploadProgress}%` }}
+          />
+        </div>
+      )}
+
       {/* Input file caché */}
       <input
         ref={fileInputRef}
@@ -196,4 +216,4 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   );
 };
 
-export default ImageUpload; 
+export default LargeImageUpload; 
