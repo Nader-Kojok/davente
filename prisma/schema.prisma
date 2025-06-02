@@ -123,3 +123,20 @@ model Subcategory {
 
   @@unique([categoryId, slug])
 }
+
+model SearchTrend {
+  id          Int      @id @default(autoincrement())
+  query       String   @unique
+  searchCount Int      @default(1)
+  dailyCount  Int      @default(1)
+  weeklyCount Int      @default(1)
+  lastSearched DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([searchCount])
+  @@index([dailyCount])
+  @@index([weeklyCount])
+  @@index([lastSearched])
+  @@index([query])
+}

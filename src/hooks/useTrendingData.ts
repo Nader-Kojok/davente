@@ -21,51 +21,52 @@ export interface TrendingSearch {
   trendPercentage: number;
 }
 
-const TRENDING_STORAGE_KEY = 'trendingData';
-const CATEGORY_INTERACTIONS_KEY = 'categoryInteractions';
-
 export function useTrendingData() {
   const [trendingCategories, setTrendingCategories] = useState<TrendingCategory[]>([]);
   const [trendingSearches, setTrendingSearches] = useState<TrendingSearch[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { recentSearches } = useRecentSearches();
 
-  // Load trending data from localStorage
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const savedTrending = localStorage.getItem(TRENDING_STORAGE_KEY);
-        if (savedTrending) {
-          const data = JSON.parse(savedTrending);
-          setTrendingCategories(data.categories || []);
-          setTrendingSearches(data.searches || []);
-        } else {
-          // Initialize with default trending data
-          initializeDefaultTrending();
+  // Fetch trending data from API
+  const fetchTrendingData = useCallback(async () => {
+    try {
+      const [searchesResponse, categoriesResponse] = await Promise.all([
+        fetch('/api/trending/searches?limit=10'),
+        fetch('/api/trending/categories?limit=6')
+      ]);
+
+      if (searchesResponse.ok) {
+        const searchesData = await searchesResponse.json();
+        if (searchesData.success && searchesData.data) {
+          // Convert database format to component format
+          const searches = searchesData.data.map((item: any) => ({
+            query: item.query,
+            count: item.count,
+            trend: item.trend,
+            trendPercentage: item.trendPercentage,
+          }));
+          setTrendingSearches(searches);
         }
-      } catch (error) {
-        console.error('Error loading trending data:', error);
-        initializeDefaultTrending();
       }
+
+      if (categoriesResponse.ok) {
+        const categoriesData = await categoriesResponse.json();
+        if (categoriesData.success && categoriesData.data) {
+          setTrendingCategories(categoriesData.data);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching trending data:', error);
+      // Fallback to default data if API fails
+      setFallbackData();
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
-  // Update trending data based on recent searches
-  useEffect(() => {
-    updateTrendingFromRecentSearches();
-  }, [recentSearches]);
-
-  const initializeDefaultTrending = useCallback(() => {
-    const defaultCategories: TrendingCategory[] = [
-      {
-        id: 'vehicles',
-        name: 'Véhicules',
-        slug: 'vehicules',
-        icon: '🚗',
-        href: '/categories/vehicules',
-        searchCount: 150,
-        trend: 'up',
-        trendPercentage: 25
-      },
+  // Set fallback data in case of API errors
+  const setFallbackData = useCallback(() => {
+    const fallbackCategories: TrendingCategory[] = [
       {
         id: 'electronics',
         name: 'Électronique',
@@ -77,6 +78,16 @@ export function useTrendingData() {
         trendPercentage: 15
       },
       {
+        id: 'vehicles',
+        name: 'Véhicules',
+        slug: 'vehicules',
+        icon: '🚗',
+        href: '/categories/vehicules',
+        searchCount: 150,
+        trend: 'up',
+        trendPercentage: 25
+      },
+      {
         id: 'real-estate',
         name: 'Immobilier',
         slug: 'immobilier',
@@ -85,117 +96,51 @@ export function useTrendingData() {
         searchCount: 100,
         trend: 'stable',
         trendPercentage: 5
-      },
-      {
-        id: 'fashion',
-        name: 'Mode',
-        slug: 'mode',
-        icon: '👕',
-        href: '/categories/mode',
-        searchCount: 80,
-        trend: 'up',
-        trendPercentage: 30
       }
     ];
 
-    const defaultSearches: TrendingSearch[] = [
+    const fallbackSearches: TrendingSearch[] = [
       { query: 'iPhone', count: 45, trend: 'up', trendPercentage: 20 },
       { query: 'Voiture', count: 38, trend: 'up', trendPercentage: 15 },
-      { query: 'Appartement', count: 32, trend: 'stable', trendPercentage: 2 },
-      { query: 'Samsung Galaxy', count: 28, trend: 'up', trendPercentage: 25 },
-      { query: 'PlayStation', count: 25, trend: 'up', trendPercentage: 40 }
+      { query: 'Appartement', count: 32, trend: 'stable', trendPercentage: 2 }
     ];
 
-    setTrendingCategories(defaultCategories);
-    setTrendingSearches(defaultSearches);
-    saveTrendingData(defaultCategories, defaultSearches);
+    setTrendingCategories(fallbackCategories);
+    setTrendingSearches(fallbackSearches);
   }, []);
 
-  const updateTrendingFromRecentSearches = useCallback(() => {
-    if (recentSearches.length === 0) return;
-
-    // Count search frequencies
-    const searchCounts = new Map<string, number>();
-    recentSearches.forEach(search => {
-      const current = searchCounts.get(search.query) || 0;
-      searchCounts.set(search.query, current + 1);
-    });
-
-    // Update trending searches based on recent activity
-    setTrendingSearches(prev => {
-      const updated = [...prev];
-      
-      searchCounts.forEach((count, query) => {
-        const existingIndex = updated.findIndex(item => item.query.toLowerCase() === query.toLowerCase());
-        
-        if (existingIndex >= 0) {
-          // Update existing search
-          const oldCount = updated[existingIndex].count;
-          updated[existingIndex].count += count;
-          const percentageChange = ((updated[existingIndex].count - oldCount) / oldCount) * 100;
-          updated[existingIndex].trend = percentageChange > 10 ? 'up' : percentageChange < -10 ? 'down' : 'stable';
-          updated[existingIndex].trendPercentage = Math.round(Math.abs(percentageChange));
-        } else {
-          // Add new trending search
-          updated.push({
-            query,
-            count,
-            trend: 'up',
-            trendPercentage: 100 // New search
-          });
-        }
+  // Track search query
+  const trackSearch = useCallback(async (query: string) => {
+    if (!query || query.trim().length < 2) return;
+    
+    try {
+      await fetch('/api/search/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: query.trim() })
       });
-
-      // Sort by count and keep top 10
-      const sorted = updated.sort((a, b) => b.count - a.count).slice(0, 10);
-      return sorted;
-    });
-  }, [recentSearches]);
-
-  const saveTrendingData = useCallback((categories: TrendingCategory[], searches: TrendingSearch[]) => {
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem(TRENDING_STORAGE_KEY, JSON.stringify({
-          categories,
-          searches,
-          lastUpdated: Date.now()
-        }));
-      } catch (error) {
-        console.error('Error saving trending data:', error);
-      }
+      
+      // Refresh trending data after tracking
+      setTimeout(() => fetchTrendingData(), 1000);
+    } catch (error) {
+      console.error('Error tracking search:', error);
     }
-  }, []);
+  }, [fetchTrendingData]);
+
+  // Load trending data on mount
+  useEffect(() => {
+    fetchTrendingData();
+  }, [fetchTrendingData]);
 
   // Track category interaction
-  const trackCategoryInteraction = useCallback((categorySlug: string) => {
-    if (typeof window === 'undefined') return;
-
+  const trackCategoryInteraction = useCallback(async (categorySlug: string) => {
     try {
-      const interactions = JSON.parse(localStorage.getItem(CATEGORY_INTERACTIONS_KEY) || '{}');
-      interactions[categorySlug] = (interactions[categorySlug] || 0) + 1;
-      localStorage.setItem(CATEGORY_INTERACTIONS_KEY, JSON.stringify(interactions));
-
-      // Update trending categories based on interactions
-      setTrendingCategories(prev => {
-        const updated = prev.map(cat => {
-          if (cat.slug === categorySlug) {
-            return {
-              ...cat,
-              searchCount: cat.searchCount + 1,
-              trend: 'up' as const,
-              trendPercentage: Math.min(Math.round(cat.trendPercentage + 5), 100)
-            };
-          }
-          return cat;
-        });
-        
-        saveTrendingData(updated, trendingSearches);
-        return updated;
-      });
+      // Track category as a search query
+      await trackSearch(categorySlug);
     } catch (error) {
       console.error('Error tracking category interaction:', error);
     }
-  }, [trendingSearches, saveTrendingData]);
+  }, [trackSearch]);
 
   // Get top trending categories
   const getTopTrendingCategories = useCallback((limit: number = 4) => {
@@ -214,8 +159,11 @@ export function useTrendingData() {
   return {
     trendingCategories,
     trendingSearches,
+    isLoading,
+    trackSearch,
     trackCategoryInteraction,
     getTopTrendingCategories,
     getTopTrendingSearches,
+    refreshTrendingData: fetchTrendingData,
   };
 } 

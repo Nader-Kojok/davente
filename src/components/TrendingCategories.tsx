@@ -10,7 +10,7 @@ import { useTrendingData } from '@/hooks/useTrendingData';
 export default function TrendingCategories() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const { getTopTrendingCategories, trackCategoryInteraction } = useTrendingData();
+  const { getTopTrendingCategories, trackCategoryInteraction, isLoading } = useTrendingData();
   
   const trendingCategories = getTopTrendingCategories(4);
 

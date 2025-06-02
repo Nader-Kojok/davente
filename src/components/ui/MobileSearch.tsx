@@ -96,12 +96,25 @@ export default function MobileSearch({ isOpen, onClose }: MobileSearchProps) {
     }
   }, []);
 
-  const handleSearchSubmit = useCallback((e: React.FormEvent) => {
+  const handleSearchSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      saveRecentSearch(searchQuery.trim());
+      const query = searchQuery.trim();
+      saveRecentSearch(query);
+      
+      // Track search in database
+      try {
+        await fetch('/api/search/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query })
+        });
+      } catch (error) {
+        console.error('Error tracking search:', error);
+      }
+      
       onClose();
-      router.push(`/annonces?q=${encodeURIComponent(searchQuery)}`);
+      router.push(`/annonces?q=${encodeURIComponent(query)}`);
     }
   }, [searchQuery, router, saveRecentSearch, onClose]);
 
@@ -118,9 +131,21 @@ export default function MobileSearch({ isOpen, onClose }: MobileSearchProps) {
     onClose();
   }, [router, saveRecentSearch, onClose]);
 
-  const handleRecentSearchClick = useCallback((query: string) => {
+  const handleRecentSearchClick = useCallback(async (query: string) => {
     setSearchQuery(query);
     saveRecentSearch(query);
+    
+    // Track search in database
+    try {
+      await fetch('/api/search/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query })
+      });
+    } catch (error) {
+      console.error('Error tracking search:', error);
+    }
+    
     onClose();
     router.push(`/annonces?q=${encodeURIComponent(query)}`);
   }, [router, saveRecentSearch, onClose]);
