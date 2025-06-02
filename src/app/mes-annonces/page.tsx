@@ -11,7 +11,6 @@ import {
   Eye, 
   MoreVertical, 
   Search, 
-  LogOut,
   MapPin,
   Calendar,
   TrendingUp,
@@ -35,10 +34,17 @@ interface Annonce {
   gallery?: string[];
   createdAt: string;
   status: 'active' | 'inactive' | 'sold';
+  userId: number;
+  user?: {
+    id: number;
+    name: string;
+    picture: string;
+    mobile: string;
+  };
 }
 
 export default function MesAnnoncesPage() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, token, logout, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [annonces, setAnnonces] = useState<Annonce[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -48,13 +54,28 @@ export default function MesAnnoncesPage() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    console.log('Auth state:', { 
+      authLoading, 
+      isAuthenticated, 
+      user: user?.id, 
+      token: token ? 'Present' : 'Missing' 
+    });
+    
+    // Attendre que l'auth soit chargé avant de faire quoi que ce soit
+    if (authLoading) {
+      console.log('Auth still loading, waiting...');
+      return;
+    }
+    
+    if (!isAuthenticated || !token) {
+      console.log('Not authenticated, redirecting to login');
       router.push('/login');
       return;
     }
 
+    console.log('Authenticated, fetching annonces');
     fetchUserAnnonces();
-  }, [isAuthenticated, router]);
+  }, [authLoading, isAuthenticated, token, router]);
 
   // Fermer le dropdown quand on clique ailleurs
   useEffect(() => {
@@ -71,21 +92,44 @@ export default function MesAnnoncesPage() {
   }, []);
 
   const fetchUserAnnonces = async () => {
+    if (!token) {
+      toast.error('Token d\'authentification manquant');
+      router.push('/login');
+      return;
+    }
+
     try {
       setIsLoading(true);
+      console.log('Fetching user annonces with token:', token ? 'Present' : 'Missing');
+      
       const response = await fetch('/api/annonces/user', {
+        method: 'GET',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       });
       
+      console.log('Response status:', response.status);
+      
+      if (response.status === 401) {
+        toast.error('Session expirée, veuillez vous reconnecter');
+        logout();
+        router.push('/login');
+        return;
+      }
+      
       if (response.ok) {
         const data = await response.json();
-        setAnnonces(data);
+        console.log('Fetched annonces:', data);
+        setAnnonces(data || []);
       } else {
-        toast.error('Erreur lors du chargement des annonces');
+        const errorData = await response.json().catch(() => ({}));
+        console.error('API Error:', errorData);
+        toast.error(errorData.error || 'Erreur lors du chargement des annonces');
       }
     } catch (error) {
+      console.error('Network error:', error);
       toast.error('Erreur de connexion au serveur');
     } finally {
       setIsLoading(false);
@@ -97,21 +141,38 @@ export default function MesAnnoncesPage() {
       return;
     }
 
+    if (!token) {
+      toast.error('Token d\'authentification manquant');
+      logout();
+      router.push('/login');
+      return;
+    }
+
     try {
       const response = await fetch(`/api/annonces/${id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       });
+
+      if (response.status === 401) {
+        toast.error('Session expirée, veuillez vous reconnecter');
+        logout();
+        router.push('/login');
+        return;
+      }
 
       if (response.ok) {
         setAnnonces(prev => prev.filter(annonce => annonce.id !== id));
         toast.success('Annonce supprimée avec succès');
       } else {
-        toast.error('Erreur lors de la suppression');
+        const errorData = await response.json().catch(() => ({}));
+        toast.error(errorData.error || 'Erreur lors de la suppression');
       }
     } catch (error) {
+      console.error('Delete error:', error);
       toast.error('Erreur de connexion au serveur');
     }
     setShowDropdown(null);
@@ -120,15 +181,29 @@ export default function MesAnnoncesPage() {
   const handleToggleStatus = async (id: number, currentStatus: string) => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
     
+    if (!token) {
+      toast.error('Token d\'authentification manquant');
+      logout();
+      router.push('/login');
+      return;
+    }
+    
     try {
       const response = await fetch(`/api/annonces/${id}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ status: newStatus })
       });
+
+      if (response.status === 401) {
+        toast.error('Session expirée, veuillez vous reconnecter');
+        logout();
+        router.push('/login');
+        return;
+      }
 
       if (response.ok) {
         setAnnonces(prev => prev.map(annonce => 
@@ -136,18 +211,14 @@ export default function MesAnnoncesPage() {
         ));
         toast.success(`Annonce ${newStatus === 'active' ? 'activée' : 'désactivée'}`);
       } else {
-        toast.error('Erreur lors de la mise à jour');
+        const errorData = await response.json().catch(() => ({}));
+        toast.error(errorData.error || 'Erreur lors de la mise à jour');
       }
     } catch (error) {
+      console.error('Toggle status error:', error);
       toast.error('Erreur de connexion au serveur');
     }
     setShowDropdown(null);
-  };
-
-  const handleLogout = () => {
-    logout();
-    toast.success('Déconnexion réussie');
-    router.push('/');
   };
 
   const filteredAnnonces = annonces.filter(annonce => {
@@ -207,12 +278,24 @@ export default function MesAnnoncesPage() {
     return date.toLocaleDateString('fr-FR');
   };
 
-  if (!isAuthenticated || !user) {
+  if (authLoading || isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Chargement...</p>
+          <p className="text-gray-600">
+            {authLoading ? 'Vérification de l\'authentification...' : 'Chargement de vos annonces...'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Redirection vers la page de connexion...</p>
         </div>
       </div>
     );
@@ -224,92 +307,84 @@ export default function MesAnnoncesPage() {
       description="Gérez toutes vos annonces publiées"
     >
       {/* Header avec actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <div className="flex items-center space-x-4">
-          <h1 className="text-2xl font-bold text-gray-900">Mes annonces</h1>
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Mes annonces</h1>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800 w-fit">
             {annonces.length} annonce{annonces.length > 1 ? 's' : ''}
           </span>
         </div>
         
-        <div className="flex items-center space-x-3">
+        <div>
           <Link
             href="/publier"
-            className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors shadow-sm"
+            className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors shadow-sm"
           >
             <Plus className="w-4 h-4 mr-2" />
             Nouvelle annonce
           </Link>
-          
-          <button
-            onClick={handleLogout}
-            className="inline-flex items-center px-4 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Se déconnecter
-          </button>
         </div>
       </div>
 
       {/* Statistiques */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div className="bg-white p-4 sm:p-6 rounded-xl border border-gray-200 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-2xl font-bold text-gray-900">{annonces.length}</div>
-              <div className="text-sm text-gray-500">Total</div>
+              <div className="text-xl sm:text-2xl font-bold text-gray-900">{annonces.length}</div>
+              <div className="text-xs sm:text-sm text-gray-500">Total</div>
             </div>
-            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-              <Eye className="w-5 h-5 text-gray-600" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+              <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
             </div>
           </div>
         </div>
         
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+        <div className="bg-white p-4 sm:p-6 rounded-xl border border-gray-200 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-xl sm:text-2xl font-bold text-green-600">
                 {annonces.filter(a => a.status === 'active').length}
               </div>
-              <div className="text-sm text-gray-500">Actives</div>
+              <div className="text-xs sm:text-sm text-gray-500">Actives</div>
             </div>
-            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-              <Power className="w-5 h-5 text-green-600" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-lg flex items-center justify-center">
+              <Power className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
             </div>
           </div>
         </div>
         
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+        <div className="bg-white p-4 sm:p-6 rounded-xl border border-gray-200 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-2xl font-bold text-gray-600">
+              <div className="text-xl sm:text-2xl font-bold text-gray-600">
                 {annonces.filter(a => a.status === 'inactive').length}
               </div>
-              <div className="text-sm text-gray-500">Inactives</div>
+              <div className="text-xs sm:text-sm text-gray-500">Inactives</div>
             </div>
-            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-              <PowerOff className="w-5 h-5 text-gray-600" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+              <PowerOff className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
             </div>
           </div>
         </div>
         
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+        <div className="bg-white p-4 sm:p-6 rounded-xl border border-gray-200 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-2xl font-bold text-blue-600">
+              <div className="text-xl sm:text-2xl font-bold text-blue-600">
                 {annonces.filter(a => a.status === 'sold').length}
               </div>
-              <div className="text-sm text-gray-500">Vendues</div>
+              <div className="text-xs sm:text-sm text-gray-500">Vendues</div>
             </div>
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-blue-600" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+              <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
             </div>
           </div>
         </div>
       </div>
 
       {/* Filtres */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8">
+      <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200 mb-6 sm:mb-8">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div className="flex-1 max-w-md">
             <div className="relative">
@@ -512,8 +587,8 @@ export default function MesAnnoncesPage() {
                             </div>
                           </div>
                           
-                          {/* Actions rapides */}
-                          <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
+                          {/* Actions rapides - Masquées sur mobile */}
+                          <div className="hidden md:flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
                             <div className="flex items-center space-x-4">
                               <Link
                                 href={`/annonce/${annonce.id}`}

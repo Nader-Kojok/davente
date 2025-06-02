@@ -18,7 +18,6 @@ import {
   Shield,
   Eye,
   EyeOff,
-  LogOut,
   PartyPopper,
   Gift,
   Star
@@ -64,7 +63,7 @@ const languageOptions = [
 ];
 
 function ProfilContent() {
-  const { user, isAuthenticated, refreshUser, logout } = useAuth();
+  const { user, isAuthenticated, refreshUser } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const isWelcome = searchParams.get('welcome') === 'true';
@@ -250,11 +249,7 @@ function ProfilContent() {
     setIsEditing(false);
   };
 
-  const handleLogout = () => {
-    logout();
-    toast.success('Déconnexion réussie');
-    router.push('/');
-  };
+
 
   if (!isAuthenticated || !user) {
     return (
@@ -279,7 +274,7 @@ function ProfilContent() {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center relative">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 sm:p-8 text-center relative max-h-[90vh] overflow-y-auto">
           <button
             onClick={() => setShowWelcome(false)}
             className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
@@ -347,22 +342,22 @@ function ProfilContent() {
       description="Gérez vos informations personnelles et préférences"
     >
       {/* Actions en haut à droite */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-6 sm:mb-8 gap-4">
         <div></div> {/* Spacer */}
-        <div className="flex items-center space-x-3">
+        <div>
           {!isEditing ? (
             <button
               onClick={() => setIsEditing(true)}
-              className="inline-flex items-center px-4 py-2 text-sm font-medium text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors"
+              className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors"
             >
               <Edit3 className="w-4 h-4 mr-2" />
               Modifier
             </button>
           ) : (
-            <div className="flex space-x-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <button
                 onClick={handleCancel}
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                 disabled={isLoading}
               >
                 <X className="w-4 h-4 mr-2" />
@@ -370,7 +365,7 @@ function ProfilContent() {
               </button>
               <button
                 onClick={handleSave}
-                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50"
+                className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50"
                 disabled={isLoading}
               >
                 <Save className="w-4 h-4 mr-2" />
@@ -378,22 +373,14 @@ function ProfilContent() {
               </button>
             </div>
           )}
-          
-          <button
-            onClick={handleLogout}
-            className="inline-flex items-center px-4 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Se déconnecter
-          </button>
         </div>
       </div>
 
       {/* Profile Header */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-6">
-        <div className="bg-gradient-to-r from-primary-500 to-primary-600 px-6 py-8">
-          <div className="flex items-center space-x-6">
-            <div className="relative">
+        <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 px-4 sm:px-6 py-6 sm:py-8 border-b border-gray-200">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left space-y-4 sm:space-y-0 sm:space-x-6">
+            <div className="relative flex-shrink-0">
               {isEditing ? (
                 <ImageUpload
                   currentImage={formData.picture}
@@ -403,14 +390,14 @@ function ProfilContent() {
                   disabled={isLoading}
                 />
               ) : (
-                <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center overflow-hidden">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-white rounded-full flex items-center justify-center overflow-hidden mx-auto sm:mx-0 shadow-md border-3 border-white ring-2 ring-indigo-100">
                   {formData.picture ? (
                     <Image
                       src={formData.picture}
                       alt="Photo de profil"
                       width={96}
                       height={96}
-                      className="w-24 h-24 rounded-full object-cover"
+                      className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover"
                     />
                   ) : (
                     <Image
@@ -424,9 +411,9 @@ function ProfilContent() {
                 </div>
               )}
             </div>
-            <div className="text-white">
-              <div className="flex items-center space-x-3 mb-2">
-                <h2 className="text-3xl font-bold">{formData.name}</h2>
+            <div className="text-gray-800 flex-1 min-w-0">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-2 sm:space-y-0 sm:space-x-3 mb-2">
+                <h2 className="text-2xl sm:text-3xl font-bold truncate text-slate-800">{formData.name}</h2>
                 {user?.accountType && (
                   <AccountTypeBadge 
                     accountType={user.accountType} 
@@ -434,22 +421,22 @@ function ProfilContent() {
                   />
                 )}
               </div>
-              <div className="flex items-center space-x-4 mt-2">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-1 sm:space-y-0 sm:space-x-4 mt-2">
                 {formData.location && (
                   <div className="flex items-center">
-                    <MapPin className="w-4 h-4 mr-1" />
-                    <span className="text-primary-100">{formData.location}</span>
+                    <MapPin className="w-4 h-4 mr-1 flex-shrink-0 text-indigo-500" />
+                    <span className="text-slate-600 truncate">{formData.location}</span>
                   </div>
                 )}
                 {formData.profession && (
                   <div className="flex items-center">
-                    <Briefcase className="w-4 h-4 mr-1" />
-                    <span className="text-primary-100">{formData.profession}</span>
+                    <Briefcase className="w-4 h-4 mr-1 flex-shrink-0 text-indigo-500" />
+                    <span className="text-slate-600 truncate">{formData.profession}</span>
                   </div>
                 )}
               </div>
               {formData.bio && (
-                <p className="text-primary-100 mt-2 max-w-md">{formData.bio}</p>
+                <p className="text-slate-600 mt-2 text-sm sm:text-base leading-relaxed">{formData.bio}</p>
               )}
             </div>
           </div>
@@ -459,30 +446,34 @@ function ProfilContent() {
       {/* Tabs */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <div className="border-b border-gray-200">
-          <nav className="flex space-x-8 px-6">
-            {tabs.map((tab) => {
+          <nav className="flex overflow-x-auto px-4 sm:px-6 scrollbar-hide">
+            {tabs.map((tab, index) => {
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`
-                    flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors
+                    flex items-center py-4 px-2 sm:px-4 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap flex-shrink-0
                     ${activeTab === tab.id
                       ? 'border-primary-500 text-primary-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                     }
+                    ${index > 0 ? 'ml-4 sm:ml-8' : ''}
                   `}
                 >
-                  <Icon className="w-4 h-4 mr-2" />
-                  {tab.label}
+                  <Icon className="w-4 h-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className="sm:hidden">
+                    {tab.label.split(' ')[0]}
+                  </span>
                 </button>
               );
             })}
           </nav>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {/* Onglet Informations personnelles */}
           {activeTab === 'personal' && (
             <div className="space-y-6">
@@ -490,7 +481,7 @@ function ProfilContent() {
                 Informations personnelles
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 {/* Nom complet */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -702,7 +693,7 @@ function ProfilContent() {
                 Contact & Localisation
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                 {/* Téléphone */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">

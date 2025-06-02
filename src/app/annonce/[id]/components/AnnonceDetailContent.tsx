@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import BookmarkButton from '@/components/ui/BookmarkButton';
+import { getCategoryById, getSubcategoryById } from '@/lib/categories';
 
 interface User {
   id: number;
@@ -76,11 +77,147 @@ interface AnnonceDetailContentProps {
   annonceId: string;
 }
 
+// Fonctions de traduction
+const translateCategory = (category: string): string => {
+  const translations: { [key: string]: string } = {
+    'electronics': 'Électronique',
+    'computers': 'Ordinateurs',
+    'phones': 'Téléphones',
+    'tablets': 'Tablettes',
+    'gaming': 'Jeux vidéo',
+    'audio': 'Audio & Hi-Fi',
+    'photo': 'Photo & Vidéo',
+    'tv': 'TV & Cinéma',
+    'accessories': 'Accessoires',
+    'vehicles': 'Véhicules',
+    'cars': 'Voitures',
+    'motorcycles': 'Motos',
+    'bicycles': 'Vélos',
+    'trucks': 'Camions',
+    'boats': 'Bateaux',
+    'parts': 'Pièces & Accessoires',
+    'real-estate': 'Immobilier',
+    'apartments': 'Appartements',
+    'houses': 'Maisons',
+    'commercial': 'Commercial',
+    'land': 'Terrains',
+    'rentals': 'Locations',
+    'fashion': 'Mode',
+    'clothing': 'Vêtements',
+    'shoes': 'Chaussures',
+    'bags': 'Sacs',
+    'jewelry': 'Bijoux',
+    'watches': 'Montres',
+    'beauty': 'Beauté',
+    'home': 'Maison & Jardin',
+    'furniture': 'Meubles',
+    'appliances': 'Électroménager',
+    'decoration': 'Décoration',
+    'garden': 'Jardin',
+    'tools': 'Outils',
+    'sports': 'Sports & Loisirs',
+    'fitness': 'Fitness',
+    'outdoor': 'Plein air',
+    'music': 'Musique',
+    'books': 'Livres',
+    'movies': 'Films',
+    'art': 'Art & Collection',
+    'jobs': 'Emplois',
+    'services': 'Services',
+    'education': 'Éducation',
+    'health': 'Santé',
+    'animals': 'Animaux',
+    'pets': 'Animaux de compagnie',
+    'livestock': 'Bétail',
+    'pet-supplies': 'Accessoires pour animaux',
+    'other': 'Autres'
+  };
+  
+  return translations[category.toLowerCase()] || category;
+};
+
+const translateCondition = (condition: string): string => {
+  const translations: { [key: string]: string } = {
+    'new': 'Neuf',
+    'like-new': 'Comme neuf',
+    'very-good': 'Très bon état',
+    'good': 'Bon état',
+    'fair': 'État correct',
+    'poor': 'Mauvais état',
+    'used': 'Occasion',
+    'refurbished': 'Reconditionné',
+    'damaged': 'Endommagé',
+    'for-parts': 'Pour pièces'
+  };
+  
+  return translations[condition.toLowerCase()] || condition;
+};
+
+const translateStatus = (status: string): string => {
+  const translations: { [key: string]: string } = {
+    'active': 'Disponible',
+    'sold': 'Vendu',
+    'pending': 'En attente',
+    'expired': 'Expiré',
+    'suspended': 'Suspendu',
+    'draft': 'Brouillon'
+  };
+  
+  return translations[status.toLowerCase()] || status;
+};
+
+const translateFieldName = (fieldName: string): string => {
+  const translations: { [key: string]: string } = {
+    'brand': 'Marque',
+    'model': 'Modèle',
+    'year': 'Année',
+    'color': 'Couleur',
+    'size': 'Taille',
+    'weight': 'Poids',
+    'material': 'Matériau',
+    'storage': 'Stockage',
+    'memory': 'Mémoire',
+    'processor': 'Processeur',
+    'screen': 'Écran',
+    'battery': 'Batterie',
+    'connectivity': 'Connectivité',
+    'warranty': 'Garantie',
+    'mileage': 'Kilométrage',
+    'fuel': 'Carburant',
+    'transmission': 'Transmission',
+    'doors': 'Portes',
+    'seats': 'Places',
+    'engine': 'Moteur',
+    'power': 'Puissance',
+    'rooms': 'Pièces',
+    'bedrooms': 'Chambres',
+    'bathrooms': 'Salles de bain',
+    'area': 'Surface',
+    'floor': 'Étage',
+    'parking': 'Parking',
+    'furnished': 'Meublé',
+    'balcony': 'Balcon',
+    'garden': 'Jardin',
+    'price': 'Prix',
+    'negotiable': 'Négociable',
+    'shipping': 'Livraison',
+    'pickup': 'Retrait'
+  };
+  
+  // Transformer camelCase en mots séparés et traduire
+  const readable = fieldName.replace(/([A-Z])/g, ' $1').toLowerCase().trim();
+  
+  return translations[readable] || translations[fieldName.toLowerCase()] || 
+         fieldName.charAt(0).toUpperCase() + fieldName.slice(1).replace(/([A-Z])/g, ' $1');
+};
+
 export default function AnnonceDetailContent({ annonceId }: AnnonceDetailContentProps) {
   const router = useRouter();
   const [annonce, setAnnonce] = useState<Annonce | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [similarAnnonces, setSimilarAnnonces] = useState<Annonce[]>([]);
+  const [loadingSimilar, setLoadingSimilar] = useState(false);
 
   const fetchAnnonce = useCallback(async () => {
     try {
@@ -90,6 +227,8 @@ export default function AnnonceDetailContent({ annonceId }: AnnonceDetailContent
       if (response.ok) {
         const data = await response.json();
         setAnnonce(data);
+        // Charger les annonces similaires après avoir chargé l'annonce principale
+        fetchSimilarAnnonces(data);
       } else if (response.status === 404) {
         toast.error('Annonce non trouvée');
         router.push('/');
@@ -103,6 +242,31 @@ export default function AnnonceDetailContent({ annonceId }: AnnonceDetailContent
       setIsLoading(false);
     }
   }, [annonceId, router]);
+
+  const fetchSimilarAnnonces = useCallback(async (currentAnnonce: Annonce) => {
+    try {
+      setLoadingSimilar(true);
+      // Construire l'URL de recherche pour les annonces similaires
+      const searchParams = new URLSearchParams({
+        category: currentAnnonce.category
+      });
+
+      const response = await fetch(`/api/annonces?${searchParams.toString()}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Filtrer les annonces pour exclure l'annonce actuelle et limiter à 3
+        const filteredAnnonces = data
+          .filter((annonce: Annonce) => annonce.id !== currentAnnonce.id)
+          .slice(0, 3);
+        setSimilarAnnonces(filteredAnnonces);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des annonces similaires:', error);
+    } finally {
+      setLoadingSimilar(false);
+    }
+  }, []);
 
   useEffect(() => {
     fetchAnnonce();
@@ -223,9 +387,15 @@ export default function AnnonceDetailContent({ annonceId }: AnnonceDetailContent
             Annonces
           </Link>
           <ChevronRight className="w-4 h-4" />
-          <Link href={`/categories/${annonce.category}`} className="hover:text-[#E00201] transition-colors">
-            {annonce.category}
-          </Link>
+          {(() => {
+            const categoryData = getCategoryById(annonce.category);
+            const categorySlug = categoryData?.slug || annonce.category;
+            return (
+              <Link href={`/categories/${categorySlug}`} className="hover:text-[#E00201] transition-colors">
+                {translateCategory(annonce.category)}
+              </Link>
+            );
+          })()}
           <ChevronRight className="w-4 h-4" />
           <span className="text-gray-900 font-medium truncate">{annonce.title}</span>
         </div>
@@ -366,45 +536,14 @@ export default function AnnonceDetailContent({ annonceId }: AnnonceDetailContent
                 <div className="text-3xl lg:text-4xl font-bold text-[#E00201]">
                   {annonce.price.toLocaleString('fr-FR')} FCFA
                 </div>
-                <div className="flex items-center gap-3">
-                  <BookmarkButton
-                    annonceId={annonce.id}
-                    annonceData={{
-                      id: annonce.id,
-                      title: annonce.title,
-                      description: annonce.description,
-                      price: annonce.price,
-                      location: annonce.location,
-                      picture: annonce.picture,
-                      gallery: annonce.gallery,
-                      createdAt: annonce.createdAt,
-                      status: annonce.status,
-                      category: annonce.category,
-                      subcategory: annonce.subcategory,
-                      condition: annonce.condition,
-                      user: {
-                        id: annonce.user.id,
-                        name: annonce.user.name,
-                        picture: annonce.user.picture,
-                        mobile: annonce.user.mobile,
-                        showPhone: annonce.user.showPhone,
-                        isVerified: annonce.user.isVerified
-                      }
-                    }}
-                    size="md"
-                    variant="outline"
-                    showText={true}
-                  />
-                  <div className={`px-4 py-2 rounded-full text-sm font-medium ${
-                    annonce.status === 'active' 
-                      ? 'bg-green-100 text-green-800' 
-                      : annonce.status === 'sold'
-                      ? 'bg-gray-100 text-gray-800'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    {annonce.status === 'active' ? 'Disponible' : 
-                     annonce.status === 'sold' ? 'Vendu' : 'Inactif'}
-                  </div>
+                <div className={`px-4 py-2 rounded-full text-sm font-medium ${
+                  annonce.status === 'active' 
+                    ? 'bg-green-100 text-green-800' 
+                    : annonce.status === 'sold'
+                    ? 'bg-gray-100 text-gray-800'
+                    : 'bg-gray-100 text-gray-800'
+                }`}>
+                  {translateStatus(annonce.status)}
                 </div>
               </div>
               
@@ -435,38 +574,76 @@ export default function AnnonceDetailContent({ annonceId }: AnnonceDetailContent
             {/* Characteristics */}
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Caractéristiques</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {annonce.category && (
-                  <div className="flex justify-between py-3 border-b border-gray-100">
-                    <span className="text-gray-600 font-medium">Catégorie</span>
-                    <span className="font-semibold text-gray-900">{annonce.category}</span>
-                  </div>
-                )}
-                {annonce.subcategory && (
-                  <div className="flex justify-between py-3 border-b border-gray-100">
-                    <span className="text-gray-600 font-medium">Sous-catégorie</span>
-                    <span className="font-semibold text-gray-900">{annonce.subcategory}</span>
-                  </div>
-                )}
-                {annonce.condition && (
-                  <div className="flex justify-between py-3 border-b border-gray-100">
-                    <span className="text-gray-600 font-medium">État</span>
-                    <span className="font-semibold text-gray-900">{annonce.condition}</span>
-                  </div>
-                )}
+              <div className="space-y-0 bg-white rounded-lg overflow-hidden">
+                {(() => {
+                  const characteristics = [];
+                  let index = 0;
+                  
+                  if (annonce.category) {
+                    // Trouver la catégorie par ID pour obtenir le slug
+                    const categoryData = getCategoryById(annonce.category);
+                    const categorySlug = categoryData?.slug || annonce.category;
+                    
+                    characteristics.push(
+                      <div key="category" className={`flex justify-between py-3 px-4 border-b border-gray-100 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                        <span className="text-gray-600 font-medium">Catégorie</span>
+                        <Link 
+                          href={`/categories/${categorySlug}`}
+                          className="font-semibold text-[#E00201] hover:text-[#CB0201] transition-colors cursor-pointer"
+                        >
+                          {translateCategory(annonce.category)}
+                        </Link>
+                      </div>
+                    );
+                    index++;
+                  }
+                  
+                  if (annonce.subcategory) {
+                    // Trouver la catégorie et sous-catégorie par ID pour obtenir les slugs
+                    const categoryData = getCategoryById(annonce.category);
+                    const subcategoryData = getSubcategoryById(annonce.category, annonce.subcategory);
+                    const categorySlug = categoryData?.slug || annonce.category;
+                    const subcategorySlug = subcategoryData?.slug || annonce.subcategory;
+                    
+                    characteristics.push(
+                      <div key="subcategory" className={`flex justify-between py-3 px-4 border-b border-gray-100 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                        <span className="text-gray-600 font-medium">Sous-catégorie</span>
+                        <Link 
+                          href={`/categories/${categorySlug}?subcategory=${subcategorySlug}`}
+                          className="font-semibold text-[#E00201] hover:text-[#CB0201] transition-colors cursor-pointer"
+                        >
+                          {translateCategory(annonce.subcategory)}
+                        </Link>
+                      </div>
+                    );
+                    index++;
+                  }
+                  
+                  if (annonce.condition) {
+                    characteristics.push(
+                      <div key="condition" className={`flex justify-between py-3 px-4 border-b border-gray-100 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                        <span className="text-gray-600 font-medium">État</span>
+                        <span className="font-semibold text-gray-900">{translateCondition(annonce.condition)}</span>
+                      </div>
+                    );
+                    index++;
+                  }
+                  
+                  if (annonce.additionalFields && Object.keys(annonce.additionalFields).length > 0) {
+                    Object.entries(annonce.additionalFields).forEach(([key, value]) => {
+                      characteristics.push(
+                        <div key={key} className={`flex justify-between py-3 px-4 border-b border-gray-100 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                          <span className="text-gray-600 font-medium capitalize">{translateFieldName(key)}</span>
+                          <span className="font-semibold text-gray-900">{String(value)}</span>
+                        </div>
+                      );
+                      index++;
+                    });
+                  }
+                  
+                  return characteristics;
+                })()}
               </div>
-              
-              {/* Additional Fields */}
-              {annonce.additionalFields && Object.keys(annonce.additionalFields).length > 0 && (
-                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {Object.entries(annonce.additionalFields).map(([key, value]) => (
-                    <div key={key} className="flex justify-between py-3 border-b border-gray-100">
-                      <span className="text-gray-600 font-medium capitalize">{key.replace(/([A-Z])/g, ' $1')}</span>
-                      <span className="font-semibold text-gray-900">{String(value)}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -613,32 +790,82 @@ export default function AnnonceDetailContent({ annonceId }: AnnonceDetailContent
           {/* Similar Ads */}
           <div className="bg-white rounded-xl shadow-sm p-6">
             <h3 className="font-semibold text-gray-900 mb-4">Annonces similaires</h3>
-            <div className="space-y-3">
-              <Link href="#" className="block p-3 border border-gray-200 rounded-lg hover:border-red-300 transition-colors">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">Article similaire 1</p>
-                    <p className="text-sm text-[#E00201] font-semibold">25,000 FCFA</p>
+            
+            {loadingSimilar ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="p-3 border border-gray-200 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0 animate-pulse"></div>
+                      <div className="flex-1 min-w-0 space-y-2">
+                        <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                        <div className="h-3 bg-gray-200 rounded w-2/3 animate-pulse"></div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </Link>
-              <Link href="#" className="block p-3 border border-gray-200 rounded-lg hover:border-red-300 transition-colors">
-                <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0"></div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">Article similaire 2</p>
-                    <p className="text-sm text-[#E00201] font-semibold">30,000 FCFA</p>
-                  </div>
-                </div>
-              </Link>
-            </div>
-            <Link 
-              href={`/annonces?category=${annonce.category}`}
-              className="block mt-4 text-center text-sm text-[#E00201] hover:text-[#CB0201] font-medium"
-            >
-              Voir plus d'annonces similaires
-            </Link>
+                ))}
+              </div>
+            ) : similarAnnonces.length > 0 ? (
+              <div className="space-y-3">
+                {similarAnnonces.map((similarAnnonce) => (
+                  <Link 
+                    key={similarAnnonce.id} 
+                    href={`/annonce/${similarAnnonce.id}`} 
+                    className="block p-3 border border-gray-200 rounded-lg hover:border-red-300 transition-colors"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="relative w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200">
+                        <Image
+                          src={similarAnnonce.picture || '/images/placeholder.svg'}
+                          alt={similarAnnonce.title}
+                          fill
+                          className="object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = '/images/placeholder.svg';
+                          }}
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate" title={similarAnnonce.title}>
+                          {similarAnnonce.title}
+                        </p>
+                        <p className="text-sm text-[#E00201] font-semibold">
+                          {similarAnnonce.price.toLocaleString('fr-FR')} FCFA
+                        </p>
+                        <p className="text-xs text-gray-500 truncate">
+                          {similarAnnonce.location}
+                        </p>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-4">
+                <p className="text-sm text-gray-500">Aucune annonce similaire trouvée</p>
+              </div>
+            )}
+            
+            {(() => {
+              const categoryData = getCategoryById(annonce.category);
+              const categorySlug = categoryData?.slug || annonce.category;
+              const subcategoryData = getSubcategoryById(annonce.category, annonce.subcategory);
+              const subcategorySlug = subcategoryData?.slug;
+              
+              const linkHref = subcategorySlug 
+                ? `/categories/${categorySlug}?subcategory=${subcategorySlug}`
+                : `/categories/${categorySlug}`;
+              
+              return (
+                <Link 
+                  href={linkHref}
+                  className="block mt-4 text-center text-sm text-[#E00201] hover:text-[#CB0201] font-medium"
+                >
+                  Voir plus d'annonces similaires
+                </Link>
+              );
+            })()}
           </div>
         </div>
       </div>

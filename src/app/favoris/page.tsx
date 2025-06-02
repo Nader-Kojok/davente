@@ -54,18 +54,17 @@ export default function FavorisPage() {
       description={total > 0 ? `${total} annonce${total > 1 ? 's' : ''} sauvegardée${total > 1 ? 's' : ''}` : 'Aucune annonce sauvegardée'}
     >
       {/* Actions en haut à droite */}
-      <div className="flex items-center justify-between mb-8">
-        <div></div> {/* Spacer */}
-        {total > 0 && (
+      {total > 0 && (
+        <div className="flex justify-end mb-6 sm:mb-8">
           <button
             onClick={refreshBookmarks}
-            className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+            className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
             Actualiser
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Error State */}
       {error && (
@@ -98,7 +97,7 @@ export default function FavorisPage() {
 
       {/* Bookmarks Grid */}
       {total > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {bookmarks.map((bookmark) => (
             <div
               key={bookmark.id}

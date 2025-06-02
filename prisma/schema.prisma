@@ -8,41 +8,41 @@ datasource db {
 }
 
 model User {
-  id                 Int       @id @default(autoincrement())
-  mobile             String    @unique
+  id                 Int        @id @default(autoincrement())
+  mobile             String     @unique
   password           String
   name               String
   picture            String
-  createdAt          DateTime  @default(now())
+  createdAt          DateTime   @default(now())
   address            String?
-  allowCalls         Boolean   @default(true)
-  allowSms           Boolean   @default(true)
+  allowCalls         Boolean    @default(true)
+  allowSms           Boolean    @default(true)
   bio                String?
   company            String?
   dateOfBirth        DateTime?
-  email              String?   @unique
-  emailNotifications Boolean   @default(true)
+  email              String?    @unique
+  emailNotifications Boolean    @default(true)
   gender             String?
-  isActive           Boolean   @default(true)
-  isEmailVerified    Boolean   @default(false)
-  isPhoneVerified    Boolean   @default(false)
-  isVerified         Boolean   @default(false)
-  language           String    @default("fr")
+  isActive           Boolean    @default(true)
+  isEmailVerified    Boolean    @default(false)
+  isPhoneVerified    Boolean    @default(false)
+  isVerified         Boolean    @default(false)
+  language           String     @default("fr")
   lastLoginAt        DateTime?
   location           String?
-  marketingEmails    Boolean   @default(false)
+  marketingEmails    Boolean    @default(false)
   profession         String?
-  pushNotifications  Boolean   @default(true)
-  showEmail          Boolean   @default(false)
-  showPhone          Boolean   @default(true)
-  smsNotifications   Boolean   @default(true)
-  successfulSales    Int       @default(0)
-  timezone           String    @default("Africa/Dakar")
-  totalListings      Int       @default(0)
-  totalViews         Int       @default(0)
-  updatedAt          DateTime  @default(now()) @updatedAt
+  pushNotifications  Boolean    @default(true)
+  showEmail          Boolean    @default(false)
+  showPhone          Boolean    @default(true)
+  smsNotifications   Boolean    @default(true)
+  successfulSales    Int        @default(0)
+  timezone           String     @default("Africa/Dakar")
+  totalListings      Int        @default(0)
+  totalViews         Int        @default(0)
+  updatedAt          DateTime   @default(now()) @updatedAt
   website            String?
-  accountType        String    @default("individual")
+  accountType        String     @default("individual")
   annonces           Annonce[]
   bookmarks          Bookmark[]
 }
@@ -72,15 +72,14 @@ model Annonce {
   user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   bookmarks        Bookmark[]
 
-  // Performance indexes
-  @@index([status, createdAt(sort: Desc)]) // Most common query pattern
-  @@index([status, categoryId, createdAt(sort: Desc)]) // Category filtering
-  @@index([status, price]) // Price filtering
-  @@index([status, location]) // Location filtering
-  @@index([status, condition]) // Condition filtering
-  @@index([userId, status]) // User's listings
-  @@index([title]) // Text search on title
-  @@index([status, categoryId, subcategoryId, createdAt(sort: Desc)]) // Complex filtering
+  @@index([status, createdAt(sort: Desc)])
+  @@index([status, categoryId, createdAt(sort: Desc)])
+  @@index([status, price])
+  @@index([status, location])
+  @@index([status, condition])
+  @@index([userId, status])
+  @@index([title])
+  @@index([status, categoryId, subcategoryId, createdAt(sort: Desc)])
 }
 
 model Bookmark {
@@ -88,8 +87,8 @@ model Bookmark {
   userId    Int
   annonceId Int
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   annonce   Annonce  @relation(fields: [annonceId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, annonceId])
 }

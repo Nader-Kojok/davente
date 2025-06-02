@@ -323,44 +323,47 @@ export default function ParametresPage() {
       description="Gérez vos préférences et paramètres de compte"
     >
       {/* Actions en haut à droite */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-6 sm:mb-8 gap-4">
         <div></div> {/* Spacer */}
         <button
           onClick={handleLogout}
-          className="inline-flex items-center px-4 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+          className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
         >
           <LogOut className="w-4 h-4 mr-2" />
           Se déconnecter
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-6">
         {/* Sidebar Menu */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden sticky top-6">
-            <nav className="space-y-1">
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden lg:sticky lg:top-6">
+            <nav className="flex lg:flex-col overflow-x-auto lg:overflow-x-visible lg:space-y-1 space-x-1 lg:space-x-0 p-1 lg:p-0">
               {menuItems.map((item) => {
                 const Icon = item.icon;
                 return (
                   <button
                     key={item.id}
                     onClick={() => setActiveSection(item.id)}
-                    className={`w-full flex items-center justify-between px-4 py-4 text-left transition-colors ${
+                    className={`flex-shrink-0 lg:w-full flex items-center justify-between px-3 lg:px-4 py-3 lg:py-4 text-left transition-colors rounded lg:rounded-none whitespace-nowrap ${
                       activeSection === item.id
-                        ? 'bg-primary-50 text-primary-700 border-r-4 border-primary-500'
+                        ? 'bg-primary-50 text-primary-700 lg:border-r-4 lg:border-primary-500'
                         : 'text-gray-700 hover:bg-gray-50'
                     }`}
                   >
                     <div className="flex items-start">
-                      <Icon className={`w-5 h-5 mr-3 mt-0.5 ${
+                      <Icon className={`w-4 h-4 lg:w-5 lg:h-5 mr-2 lg:mr-3 mt-0.5 ${
                         item.id === 'danger' ? 'text-red-500' : ''
                       }`} />
-                      <div>
+                      <div className="hidden lg:block">
                         <div className="text-sm font-medium">{item.label}</div>
                         <div className="text-xs text-gray-500 mt-1">{item.description}</div>
                       </div>
+                      <div className="lg:hidden text-xs font-medium">
+                        {item.label.split(' ')[0]}
+                      </div>
                     </div>
-                    <ChevronRight className="w-4 h-4 flex-shrink-0" />
+                    <ChevronRight className="w-3 h-3 lg:w-4 lg:h-4 flex-shrink-0 hidden lg:block" />
                   </button>
                 );
               })}
@@ -370,7 +373,7 @@ export default function ParametresPage() {
 
         {/* Content Area */}
         <div className="lg:col-span-3">
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
             
             {/* Paramètres du compte */}
             {activeSection === 'account' && (
@@ -453,7 +456,7 @@ export default function ParametresPage() {
                 
                 <div className="space-y-8">
                   {/* Informations de sécurité */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="p-4 bg-gray-50 rounded-lg">
                       <div className="flex items-center">
                         <Phone className="w-5 h-5 text-gray-400 mr-2" />

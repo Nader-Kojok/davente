@@ -1,20 +1,45 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import BaseLink from "@/components/ui/BaseLink";
 import { Plus } from "lucide-react";
-import { useRecentListings } from "@/hooks/useRecentListings";
 import UnifiedListingCard, { UnifiedListing } from '@/components/ui/UnifiedListingCard';
 
 export default function CurrentListings() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   
-  // Récupérer les annonces récentes de la catégorie Électronique (ID 4)
-  const { listings, isLoading, error } = useRecentListings({ 
-    limit: 8, 
-    categoryId: 4 // Électronique
-  });
+  // Récupérer les annonces récentes de la catégorie Électronique
+  const [listings, setListings] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchListings = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        // Utiliser l'API principale des annonces avec la catégorie electronics
+        const response = await fetch('/api/annonces?category=electronics');
+        
+        if (response.ok) {
+          const data = await response.json();
+          // Limiter à 8 annonces pour l'affichage
+          setListings(data.slice(0, 8));
+        } else {
+          throw new Error('Erreur lors du chargement des annonces');
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Une erreur est survenue');
+        console.error('Error fetching listings:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchListings();
+  }, []);
 
   const scroll = (direction: "left" | "right") => {
     const container = scrollContainerRef.current;
@@ -37,7 +62,21 @@ export default function CurrentListings() {
   };
 
   // Convertir les données pour correspondre au format attendu par UnifiedListingCard
-  const convertToUnifiedFormat = (listing: any): UnifiedListing => ({
+  const convertToUnifiedFormat = (listing: {
+    id: number;
+    title: string;
+    description?: string;
+    price: number;
+    location: string;
+    picture?: string;
+    createdAt: string;
+    condition?: string;
+    subcategory?: string;
+    user: {
+      name: string;
+      picture?: string;
+    };
+  }): UnifiedListing => ({
     id: listing.id.toString(),
     title: listing.title,
     description: listing.description || listing.title,
@@ -83,9 +122,7 @@ export default function CurrentListings() {
           <div>
             <h2 className="h2">En ce moment sur Grabi</h2>
             <p className="text-gray-600 mt-1">
-              {listings.length > 0 && listings[0].subcategory 
-                ? listings[0].subcategory.name 
-                : "Téléphones & Objets connectés"}
+              Électronique
             </p>
           </div>
           <BaseLink href="/categories/electronique">
