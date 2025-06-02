@@ -8,10 +8,10 @@ import {
   Grid3X3, 
   List, 
   SlidersHorizontal,
-  X,
-  ChevronDown,
-  Package,
-  Tag,
+  X, 
+  ChevronDown, 
+  Package, 
+  Tag, 
   Euro,
   ArrowUpDown
 } from 'lucide-react';
