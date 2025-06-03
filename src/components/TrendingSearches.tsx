@@ -6,18 +6,14 @@ import { useTrendingData } from '@/hooks/useTrendingData';
 import { useRecentSearches } from '@/hooks/useRecentSearches';
 
 export default function TrendingSearches() {
-  const { getTopTrendingSearches, isLoading, trackSearch } = useTrendingData();
+  const { getTopTrendingSearches } = useTrendingData();
   const { addRecentSearch } = useRecentSearches();
   const router = useRouter();
   
   const trendingSearches = getTopTrendingSearches(8);
 
-  const handleSearchClick = async (query: string) => {
+  const handleSearchClick = (query: string) => {
     addRecentSearch(query);
-    
-    // Track search in database
-    await trackSearch(query);
-    
     router.push(`/annonces?q=${encodeURIComponent(query)}`);
   };
 
@@ -46,37 +42,6 @@ export default function TrendingSearches() {
   const formatPercentage = (percentage: number) => {
     return Math.round(percentage);
   };
-
-  // Show loading state
-  if (isLoading) {
-    return (
-      <section className="py-8 px-4 sm:px-6 lg:px-8 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-3">
-              <Flame className="w-6 h-6 text-[#E00201]" />
-              <h2 className="text-2xl font-bold text-gray-900">Recherches tendances</h2>
-            </div>
-            <div className="text-sm text-gray-500">
-              Chargement...
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[...Array(8)].map((_, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 animate-pulse"
-              >
-                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    );
-  }
 
   // Don't render if no trending searches
   if (trendingSearches.length === 0) {

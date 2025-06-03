@@ -158,7 +158,7 @@ export default function SearchBar({ isSearchFocused, setIsSearchFocused }: Searc
     setSelectedSuggestionIndex(-1);
   }, [router, addRecentSearch, setIsSearchFocused]);
 
-  const handleSearchSubmit = useCallback(async (e: React.FormEvent) => {
+  const handleSearchSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     
     const allSuggestions = getAllSuggestions();
@@ -172,24 +172,11 @@ export default function SearchBar({ isSearchFocused, setIsSearchFocused }: Searc
     
     // Otherwise, use the search query
     if (searchQuery.trim()) {
-      const query = searchQuery.trim();
-      addRecentSearch(query);
-      
-      // Track search in database
-      try {
-        await fetch('/api/search/track', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query })
-        });
-      } catch (error) {
-        console.error('Error tracking search:', error);
-      }
-      
+      addRecentSearch(searchQuery.trim());
       setIsSearchFocused(false);
       setSearchSuggestions([]);
       setSelectedSuggestionIndex(-1);
-      router.push(`/annonces?q=${encodeURIComponent(query)}`);
+      router.push(`/annonces?q=${encodeURIComponent(searchQuery)}`);
     }
   }, [searchQuery, router, addRecentSearch, selectedSuggestionIndex, getAllSuggestions, handleSuggestionClick, setIsSearchFocused]);
 
